@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ma Sói - The Ultimate Matrix</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+</head>
+
+<body class="theme-day" id="app-body">
+
+    <!-- 🔥 NÚT TRA CỨU NHÂN VẬT GÓC MÀN HÌNH (FLOATING WIKI BUTTON) -->
+    <button class="fab-wiki" onclick="app.openCodexModal()">📖</button>
+    <!-- 🔥 HỆ THỐNG THÔNG BÁO VÀ XÁC NHẬN (CUSTOM UI) -->
+    <div id="toast-container"></div>
+    <div id="custom-confirm">
+        <div class="confirm-box">
+            <h3 style="color: var(--danger); margin-top: 0; letter-spacing: 1px;">⚠️ CẢNH BÁO TỬ THẦN</h3>
+            <p id="confirm-message" class="confirm-message">Bạn có chắc chắn?</p>
+            <div class="confirm-actions">
+                <button id="btn-confirm-yes" class="btn-danger"
+                    style="flex: 1; box-shadow: 0 4px 15px rgba(231,76,60,0.4);">CHẤP NHẬN</button>
+                <button id="btn-confirm-no" class="btn-secondary" style="flex: 1;">HỦY BỎ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔥 MODAL CÁO THỊ TỐI THƯỢNG (CHỈ BIẾN MẤT KHI CHÍNH TAY ẤN XÁC NHẬN) -->
+    <div id="modal-announcement" class="modal" style="z-index: 10001;">
+        <div class="modal-content"
+            style="border: 2px solid var(--primary); box-shadow: 0 0 40px rgba(52,152,219,0.4); max-width: 450px;">
+            <h2 id="announce-title"
+                style="color: var(--primary); margin-top: 0; letter-spacing: 1px; text-transform: uppercase;">THÔNG BÁO
+            </h2>
+            <div id="announce-message"
+                style="font-size: 17px; margin-bottom: 25px; line-height: 1.6; color: var(--text-color); text-align: left; padding: 15px; background: rgba(0,0,0,0.1); border-radius: 8px; border-left: 4px solid var(--primary);">
+            </div>
+            <button class="btn-primary"
+                style="padding: 15px; font-size: 18px; font-weight: bold; width: 100%; box-shadow: 0 5px 15px rgba(52,152,219,0.5);"
+                onclick="document.getElementById('modal-announcement').classList.remove('active')">✅ ĐÃ GHI
+                NHẬN</button>
+        </div>
+    </div>
+
+    <!-- 🔥 MODAL TRA CỨU TỪ ĐIỂN NHÂN VẬT -->
+    <div id="modal-codex" class="modal">
+        <div class="modal-content" style="text-align: left; max-height: 85vh;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px;">
+                <h3 style="margin: 0; color: var(--primary);">📚 TỪ ĐIỂN NHÂN VẬT</h3>
+                <button class="btn-secondary" style="width: auto; padding: 6px 12px; margin: 0;"
+                    onclick="app.closeCodexModal()">✕ Đóng</button>
+            </div>
+            <input type="text" id="codex-search" placeholder="🔍 Tìm kiếm nhân vật (Ví dụ: Tiên tri, Sói...)"
+                oninput="app.filterCodex(this.value)" style="margin-bottom: 15px;">
+            <div id="codex-list"
+                style="display: flex; flex-direction: column; gap: 10px; max-height: 55vh; overflow-y: auto; padding-right: 5px;">
+                <!-- Dữ liệu nhân vật sẽ được nạp động tại đây -->
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         HTML: CÁC MÀN HÌNH (SCREENS)
+         ========================================= -->
+
+    <!-- 1. MÀN HÌNH CHỜ (LOBBY) -->
+    <div id="screen-lobby" class="screen active">
+        <div class="glass-panel">
+            <h1 style="letter-spacing: 4px; margin-bottom: 30px;">MA SÓI</h1>
+            <input type="number" id="room-code" placeholder="Nhập Mã Phòng (4 số)">
+            <input type="text" id="player-name" placeholder="Tên Hiển Thị Của Bạn">
+            <button id="btn-join" onclick="app.joinRoom()">VÀO PHÒNG LÀM NGƯỜI CHƠI</button>
+            <hr style="border: 0; height: 1px; background: rgba(0,0,0,0.1); margin: 20px 0;">
+            <button class="btn-secondary" id="btn-create" onclick="app.createRoom()">TẠO PHÒNG MỚI (QUẢN TRÒ)</button>
+        </div>
+    </div>
+
+    <!-- 2. MÀN HÌNH NGƯỜI CHƠI (PLAYER VIEW) -->
+    <div id="screen-player" class="screen">
+        <h2 id="player-status-text" style="text-align: center; margin-top: 3vh;">Bầu trời đang sáng...</h2>
+        <p id="player-room-info" style="text-align: center; font-size: 14px; opacity: 0.8; margin-bottom: 10px;"></p>
+
+        <div id="player-morning-news"
+            style="display: none; background: rgba(231, 76, 60, 0.15); border-left: 4px solid var(--danger); padding: 12px; margin: 0 20px 20px 20px; border-radius: 6px; font-size: 14px; text-align: left; animation: fadeIn 0.5s; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        </div>
+
+        <div class="card-container" id="player-card" onmousedown="app.revealCard()" onmouseup="app.hideCard()"
+            onmouseleave="app.hideCard()" ontouchstart="app.revealCard()" ontouchend="app.hideCard()">
+            <div class="card-inner">
+                <div class="card-front">
+                    <h1>?</h1>
+                    <p style="font-size: 14px; font-weight: normal; margin-top: 20px;">CHẠM & GIỮ ĐỂ XEM VAI TRÒ</p>
+                </div>
+                <div class="card-back">
+                    <h2 id="role-name" style="margin-bottom: 0;">Đang chờ phát bài...</h2>
+                    <div class="role-icon" id="role-icon">❓</div>
+                    <p id="role-desc" style="font-size: 12px; padding: 0 15px; text-align: center;">Quản trò chưa phát
+                        bài hoặc game chưa bắt đầu.</p>
+                </div>
+            </div>
+        </div>
+        <!-- 🔥 KHU VỰC KÍCH HOẠT KỸ NĂNG ĐẶC QUYỀN (HIỂN THỊ ĐỘNG) -->
+        <div id="player-active-skills" style="width: 100%; display: none; margin-top: 15px; animation: fadeIn 0.5s;">
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn-secondary" style="width: auto; padding: 10px 30px;" onclick="app.leaveRoom()">Thoát
+                Phòng</button>
+        </div>
+    </div>
+
+    <!-- 3. MÀN HÌNH QUẢN TRÒ (GM DASHBOARD) -->
+    <div id="screen-gm" class="screen">
+        <div class="gm-header">
+            <h2>ĐIỀU HÀNH PHÒNG <span id="gm-room-id" style="color: var(--primary);">----</span></h2>
+            <p id="gm-player-count-text" style="font-size: 14px; opacity: 0.8; margin-top: -10px;">Số người chơi hiện
+                tại: 0</p>
+            <div class="controls">
+                <button onclick="app.toggleTime('day', this)">🌤️ BAN NGÀY</button>
+                <button style="background: #2c3e50;" onclick="app.toggleTime('night', this)">🌙 BAN ĐÊM</button>
+                <button id="btn-ghost-vision" style="background: #9b59b6;" onclick="app.toggleGhostVision(this)">👁️ HỒN MA: ĐƯỢC XEM BÀI</button>
+                <button class="btn-success" onclick="app.openRoleModal()">🃏 PHÁT BÀI MỚI</button>
+                <button class="btn-danger" onclick="app.endGame()">❌ HỦY PHÒNG</button>
+            </div>
+        </div>
+
+        <div class="player-grid" id="gm-player-grid">
+            <!-- Render danh sách người chơi từ Backend realtime -->
+        </div>
+
+        <div class="night-panel" id="night-panel" style="display: none;">
+            <button class="btn-danger" style="background: #c0392b; font-size: 18px;"
+                onclick="app.commitNightActions()">🔥 CHỐT KẾT QUẢ ĐÊM 🔥</button>
+        </div>
+    </div>
+
+    <!-- 4. MODAL CHỌN BÀI CHO QUẢN TRÒ -->
+    <div id="modal-roles" class="modal">
+        <!-- Cắt bỏ mọi tham số max-height inline rác rưởi -->
+        <div class="modal-content" style="max-width: 800px; padding: 15px;">
+
+            <!-- HEADER (CỐ ĐỊNH TRÊN CÙNG) -->
+            <div
+                style="flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: var(--primary);">🃏 CHỌN NHÂN VẬT (PHÁT BÀI)</h3>
+                <p id="modal-role-counter"
+                    style="font-weight: bold; color: var(--danger); font-size: 16px; margin: 8px 0 0 0;">Đã chọn: 0 / 0
+                    bài</p>
+            </div>
+
+            <!-- BODY (KHU VỰC DUY NHẤT ĐƯỢC CUỘN) -->
+            <!-- flex: 1 giúp khối này tự động phình to lấp đầy khoảng trống, nhưng không đẩy Footer ra ngoài -->
+            <div id="role-picker-container" style="flex: 1; overflow-y: auto; padding-right: 5px; text-align: left;">
+                <!-- JS sẽ nạp 3 danh sách phe phái vào đây -->
+            </div>
+
+            <!-- FOOTER (ĐÓNG ĐINH DƯỚI ĐÁY) -->
+            <div
+                style="flex-shrink: 0; margin-top: 15px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <button class="btn-success" onclick="app.confirmDistributeCards(this)" style="margin:0;">✅ XÁC NHẬN PHÁT
+                    BÀI</button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-danger" style="background: #e67e22; margin:0; flex: 1;"
+                        onclick="app.resetSelectedRoles(this)">🔄 CHỌN LẠI</button>
+                    <button class="btn-secondary" onclick="app.closeRoleModal(this)" style="margin:0; flex: 1;">❌ HỦY
+                        BỎ</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🔥 MODAL 4.5: CONTEXT MENU (GIAO DIỆN HÀNH ĐỘNG ĐA NHIỆM CHO QUẢN TRÒ) -->
+    <div id="modal-gm-action" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h3 id="gm-action-target-name" style="color: var(--primary); margin-top: 0; font-size: 24px;">Nguyễn Văn A
+            </h3>
+            <p id="gm-action-target-role" style="font-size: 14px; opacity: 0.8; margin-bottom: 20px;">Vai trò: ???</p>
+
+            <div id="gm-action-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- JS sẽ nạp động các nút (Phù thủy độc, Ghép đôi, Ảnh tử...) vào đây -->
+            </div>
+
+            <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <button class="btn-secondary" onclick="app.closeGMActionMenu()">❌ Hủy bỏ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. MODAL BỎ PHIẾU TREO CỔ (REAL-TIME) -->
+    <div id="modal-vote" class="modal">
+        <div class="modal-content" style="border: 4px solid var(--danger); background: #1a0505; color: white;">
+            <h2 style="color: var(--danger); margin-top:0; letter-spacing: 2px;">⚖️ PHÁN QUYẾT TỬ HÌNH</h2>
+            <h1 id="vote-target-name" style="font-size: 36px; margin: 10px 0;">Nguyễn Văn A</h1>
+            <p style="font-size: 16px; opacity: 0.8;">Thời gian phán quyết: <span id="vote-timer"
+                    style="font-size:32px; font-weight:bold; color: var(--danger);">30</span>s</p>
+
+            <div
+                style="width: 100%; background: #333; height: 10px; border-radius: 5px; margin: 20px 0; overflow: hidden;">
+                <div id="vote-progress"
+                    style="width: 100%; height: 100%; background: var(--danger); transition: width 1s linear;"></div>
+            </div>
+
+            <!-- Dành cho người chơi bình thường -->
+            <div id="vote-actions" style="display:none; gap: 15px; margin-top:30px;">
+                <button class="btn-danger"
+                    style="flex:1; padding: 25px; font-size: 24px; box-shadow: 0 5px 15px rgba(231,76,60,0.5);"
+                    onclick="app.castVote('die')">👎 CHẾT</button>
+                <button class="btn-success"
+                    style="flex:1; padding: 25px; font-size: 24px; box-shadow: 0 5px 15px rgba(46,204,113,0.5);"
+                    onclick="app.castVote('live')">👍 SỐNG</button>
+            </div>
+
+            <h3 id="vote-status-msg" style="display:none; color: #f1c40f; margin-top: 20px;">Bạn đã bỏ phiếu. Đang chờ
+                những người khác...</h3>
+
+            <!-- Dành cho Quản trò -->
+            <div id="vote-gm-panel"
+                style="display:none; margin-top:20px; border-top: 1px solid #555; padding-top: 20px;">
+                <h3 style="margin-bottom: 5px;">THỐNG KÊ TRỰC TIẾP:</h3>
+                <p style="font-size: 18px; margin-top: 0;">Số người sống: <span id="tally-total">0</span> | Quá bán cần:
+                    <span id="tally-req" style="color:#f1c40f;">0</span>
+                </p>
+                <div
+                    style="display:flex; justify-content: space-around; font-size: 24px; font-weight: bold; margin: 20px 0;">
+                    <span style="color:var(--danger)">👎 CHẾT: <span id="tally-die">0</span></span>
+                    <span style="color:var(--success)">👍 SỐNG: <span id="tally-live">0</span></span>
+                </div>
+                <button class="btn-danger" id="btn-resolve-vote"
+                    style="background: #e67e22; font-size: 20px; padding: 15px;" onclick="app.resolveVote()">🔥 CHỐT KẾT
+                    QUẢ NGAY 🔥</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT: REST API CONSUMER (NHÚNG GAS NGOÀI)
+         ========================================= -->
+    <script src="app.js"></script>
+</body>
+</html>

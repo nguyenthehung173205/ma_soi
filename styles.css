@@ -1,0 +1,699 @@
+/* =========================================
+           CSS: KIẾN TRÚC GIAO DIỆN & UI/UX
+           ========================================= */
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #2c3e50;
+            --primary: #3498db;
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --card-bg: #ffffff;
+            --transition-speed: 0.6s;
+        }
+
+        /* Cơ chế Theme Động (Không độ trễ) */
+        .theme-night {
+            --bg-color: #0a0e17;
+            --text-color: #ecf0f1;
+            --primary: #2980b9;
+            --card-bg: #1a252c;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            user-select: none;
+            -webkit-user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+
+            /* 🔥 KHIÊN BẢO VỆ 3 LỚP (TRỊ TẬN GỐC LỖI TRÌNH DUYỆT MOBILE) */
+            min-height: 100vh;
+            /* Lớp 1: Fallback cho bọn trình duyệt đồ đá */
+            min-height: 100dvh;
+            /* Lớp 2: Công nghệ Dynamic Viewport mới nhất (Tự co giãn khi thanh công cụ thò ra) */
+            min-height: calc(var(--vh, 1vh) * 100);
+            /* Lớp 3: Áp chế vật lý bằng JavaScript (Bảo hiểm tuyệt đối) */
+
+            overflow-x: hidden;
+            /* Dọn đường cho vùng Safe Area của iPhone tai thỏ/Home bar */
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Nút Bấm Tiêu Chuẩn */
+        button {
+            padding: 14px 24px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 13px;
+            margin: 4px 2px;
+            width: auto;
+        }
+
+        /* Form Nhập Liệu */
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 10vh;
+        }
+
+        .theme-night .glass-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Lá Bài (Touch & Hold) */
+        .card-container {
+            width: 260px;
+            height: 380px;
+            margin: 30px auto;
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card-front {
+            background: repeating-linear-gradient(45deg, #2c3e50, #2c3e50 15px, #34495e 15px, #34495e 30px);
+            color: white;
+            font-size: 18px;
+            border: 4px solid #1abc9c;
+        }
+
+        .card-front h1 {
+            font-size: 80px;
+            margin: 0;
+        }
+
+        .card-back {
+            background: var(--card-bg);
+            transform: rotateY(180deg);
+            border: 4px solid var(--primary);
+            text-align: center;
+        }
+
+        .role-icon {
+            font-size: 70px;
+            margin: 10px 0;
+        }
+
+        /* Lưới Điều Khiển Quản Trò */
+        .gm-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .controls button {
+            width: calc(50% - 10px);
+        }
+
+        .player-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            /* 🔥 BƠM OXY CHO UI: Đẩy không gian đáy lên 100px để không bị nút Chốt Đêm đè lên mặt */
+            padding-bottom: 100px;
+        }
+
+        .gm-player-card {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .gm-player-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            word-break: break-word;
+        }
+
+        .gm-player-card p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Trạng Thái Đêm & Sinh Tử */
+        .gm-player-card.pending-death {
+            border-color: var(--danger);
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
+            animation: pulse 1s infinite alternate;
+        }
+
+        .gm-player-card.dead {
+            filter: grayscale(100%);
+            opacity: 0.65;
+            /* Tăng độ sáng lên một chút để Quản trò dễ nhìn tên */
+            /* pointer-events: none; 🔥 ĐÃ BỊ TIÊU DIỆT ĐỂ QUẢN TRÒ CÓ THỂ BẤM VÀO */
+            border-color: #7f8c8d;
+        }
+
+        .night-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            z-index: 100;
+        }
+
+        .night-panel button {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            border: 2px solid #fff;
+        }
+
+        /* 🔥 ĐẠI CÔNG TRÌNH MODAL BẤT TỬ */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Đồng bộ với Thước đo quang học, trừ hao để chống cắt mép */
+            height: calc(var(--vh, 1vh) * 100);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            /* Giữ khoảng thở an toàn với viền màn hình */
+            box-sizing: border-box;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            /* Ép Modal không bao giờ cao vượt quá 95% diện tích thực tế */
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            /* Biến Modal thành trục dọc */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* CSS CHO BẢNG ĐIỀU BINH KHIỂN TƯỚNG (3 PHE PHÁI) */
+        .faction-header {
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            text-align: left;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .theme-day .faction-header {
+            border-bottom-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .role-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .role-card {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .role-card.selected {
+            border-color: var(--primary);
+            background: rgba(52, 152, 219, 0.15);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .role-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .role-card-desc {
+            font-size: 11px;
+            opacity: 0.8;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .count-badge {
+            background: #95a5a6;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .role-card.selected .count-badge {
+            background: var(--primary);
+        }
+
+        @keyframes pulse {
+            from {
+                box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+            }
+
+            to {
+                box-shadow: 0 0 25px rgba(231, 76, 60, 1);
+            }
+        }
+
+        /* ================================================================= */
+        /* 🔥 TỐI ƯU HÓA MOBILE (THIẾT KẾ ĐỘC QUYỀN BỞI CHUYÊN GIA 22 NĂM) 🔥 */
+        /* ================================================================= */
+        @media (max-width: 600px) {
+
+            /* 1. Thu gọn Form Sảnh Chờ (Lobby) */
+            .glass-panel {
+                padding: 20px 15px;
+                margin-top: 5vh;
+                border-radius: 12px;
+            }
+
+            .glass-panel h1 {
+                font-size: 26px;
+                margin-bottom: 20px;
+                letter-spacing: 2px;
+            }
+
+            /* 2. Lá Bài Thông Minh: Tự co giãn theo màn hình điện thoại (Tỷ lệ Vàng) */
+            .card-container {
+                width: 70vw;
+                height: 105vw;
+                max-height: 55vh;
+                margin: 20px auto;
+            }
+
+            .card-front h1 {
+                font-size: 60px;
+            }
+
+            .role-icon {
+                font-size: 55px;
+                margin: 5px 0;
+            }
+
+            /* 3. Lưới Quản Trò: Ép hiển thị 2 cột, gọn gàng, bao quát toàn cảnh */
+            .player-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .gm-player-card {
+                padding: 10px;
+                border-radius: 8px;
+            }
+
+            .gm-player-card h4 {
+                font-size: 15px;
+                margin-bottom: 2px;
+            }
+
+            .gm-player-card p {
+                font-size: 13px;
+            }
+
+            .btn-sm {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            /* 4. Tinh chỉnh Cửa Sổ Bỏ Phiếu (Sinh tử nằm trong ngón cái) */
+            .modal-content {
+                padding: 15px;
+                width: 95%;
+            }
+
+            #vote-target-name {
+                font-size: 26px !important;
+                margin: 5px 0 !important;
+            }
+
+            #vote-timer {
+                font-size: 28px !important;
+            }
+
+            #vote-actions button {
+                padding: 15px !important;
+                font-size: 18px !important;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+            }
+
+            #vote-gm-panel p,
+            #vote-gm-panel span {
+                font-size: 16px !important;
+            }
+
+            #btn-resolve-vote {
+                font-size: 16px !important;
+                padding: 12px !important;
+            }
+
+            /* 5. Nút Khóa Đáy (Chống cấn ngón tay ở các đời iPhone Tai thỏ/Home bar) */
+            .night-panel {
+                width: 95%;
+                bottom: max(15px, env(safe-area-inset-bottom));
+            }
+
+            /* 6. Lưới Phát Bài Đa Chức Năng (Đọc rõ mô tả trên màn nhỏ) */
+            .role-picker-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .role-card {
+                padding: 10px;
+            }
+
+            .role-card-header span {
+                font-size: 15px;
+            }
+
+            .role-card-desc {
+                font-size: 12px;
+            }
+        }
+
+        /* 🔥 CSS CHO TỪ ĐIỂN NHÂN VẬT (CODEX ITEM) */
+        .codex-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .theme-night .codex-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .codex-icon {
+            font-size: 30px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .codex-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .codex-info p {
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+
+        /* 🔥 HỆ THỐNG THÔNG BÁO TỐI THƯỢNG (TOAST & CONFIRM) */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(10, 14, 23, 0.95);
+            backdrop-filter: blur(8px);
+            border-left: 4px solid var(--primary);
+            color: #ecf0f1;
+            padding: 16px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeOut 0.5s ease-out 4s forwards;
+            max-width: 320px;
+            line-height: 1.5;
+            pointer-events: auto;
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(-10px);
+                visibility: hidden;
+            }
+        }
+
+        /* Custom Confirm Modal */
+        #custom-confirm {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #custom-confirm.active {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .confirm-box {
+            background: var(--card-bg);
+            border: 2px solid var(--danger);
+            border-radius: 12px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(231, 76, 60, 0.3);
+        }
+
+        .confirm-message {
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        /* 🔥 NÚT WIKI (THUMB ZONE - CHUẨN THÁI CÔNG HỌC) */
+        .fab-wiki {
+            position: fixed;
+            /* Đẩy lên 85px để KHÔNG đè lên nút "Chốt Kết Quả Đêm" hay "Thoát Phòng" */
+            bottom: max(85px, env(safe-area-inset-bottom) + 65px);
+            right: 20px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 24px;
+            z-index: 9999;
+            /* Luôn nổi trên mọi thứ */
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            /* Hiệu ứng nảy vật lý mượt mà */
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, box-shadow 0.3s;
+        }
+
+        .fab-wiki:active {
+            transform: scale(0.85);
+        }
+
+        /* Khi trời tối, Nút Wiki tự động phát sáng để dễ bấm */
+        .theme-night .fab-wiki {
+            background: #f39c12;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
+            border: 2px solid #fff;
+        }
