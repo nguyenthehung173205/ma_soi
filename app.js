@@ -172,6 +172,7 @@
                     if (res.status === 'success') {
                         this.state.role = 'gm';
                         this.state.roomCode = res.roomCode;
+                        sessionStorage.setItem('werewolf_session', JSON.stringify({ role: 'gm', roomCode: res.roomCode }));
                         document.getElementById('gm-room-id').innerText = res.roomCode;
                         this.switchScreen('screen-gm');
                         this.startPolling();
@@ -198,6 +199,7 @@
                         this.state.role = 'player';
                         this.state.playerId = res.playerId;
                         this.state.roomCode = res.roomCode;
+                        sessionStorage.setItem('werewolf_session', JSON.stringify({ role: 'player', playerId: res.playerId, roomCode: res.roomCode, playerName: name }));
                         document.getElementById('player-room-info').innerText = `Mã phòng: ${res.roomCode} | Tên: ${name}`;
                         this.switchScreen('screen-player');
                         this.startPolling();
@@ -271,6 +273,7 @@
 
             leaveRoom() {
                 this.stopPolling();
+                sessionStorage.removeItem('werewolf_session');
 
                 // 🔥 BẮN NGƯ LÔI BÁO TỬ (Sử dụng .catch để không bị văng Unhandled Promise)
                 if (this.state.roomCode) {
@@ -1924,29 +1927,31 @@
         };
 
         // =======================================================================
-        // 🔥 CÔNG TẮC TỬ THẦN (DEAD MAN'S SWITCH) - ĐỘC QUYỀN CHO QUẢN TRÒ
+        // 🔥 AUTO REJOIN SESSION LOGIC
         // =======================================================================
-        const triggerDoomsday = () => {
-            // Chỉ kích nổ nếu kẻ đang bỏ trốn là QUẢN TRÒ (gm)
-            if (app.state.roomCode && app.state.role === 'gm') {
-                const payload = JSON.stringify({
-                    action: 'leaveRoom', // Gọi thẳng vào hàm leaveRoom ở Backend
-                    roomCode: app.state.roomCode,
-                    playerId: app.state.playerId,
-                    role: 'gm'
-                });
-
-                // Bắn ngư lôi xuyên qua cái chết của trình duyệt!
-                // Dù tab bị tắt cái "Rụp", tín hiệu này vẫn lao thẳng tới Google Sheets!
-                navigator.sendBeacon(SUPABASE_URL + '/functions/v1/werewolf-engine', payload);
+        const savedSession = sessionStorage.getItem('werewolf_session');
+        if (savedSession) {
+            try {
+                const session = JSON.parse(savedSession);
+                if (session.role === 'gm') {
+                    app.state.role = 'gm';
+                    app.state.roomCode = session.roomCode;
+                    document.getElementById('gm-room-id').innerText = session.roomCode;
+                    app.switchScreen('screen-gm');
+                    app.startPolling();
+                } else if (session.role === 'player') {
+                    app.state.role = 'player';
+                    app.state.playerId = session.playerId;
+                    app.state.roomCode = session.roomCode;
+                    document.getElementById('player-room-info').innerText = `Mã phòng: ${session.roomCode} | Tên: ${session.playerName}`;
+                    app.switchScreen('screen-player');
+                    app.startPolling();
+                }
+            } catch (e) {
+                console.error("Lỗi phục hồi phiên:", e);
+                sessionStorage.removeItem('werewolf_session');
             }
-        };
-
-        // Cảm biến 1: Bắt dính hành vi tắt Tab trên Desktop (Windows/Mac)
-        window.addEventListener('beforeunload', triggerDoomsday);
-
-        // Cảm biến 2: Bắt dính hành vi vuốt tắt App trên Mobile (iOS/Android)
-        window.addEventListener('pagehide', triggerDoomsday);
+        }
 
         // =======================================================================
         // 🔥 THƯỚC ĐO QUANG HỌC (VIEWPORT RESIZE ENGINE) - DIỆT LỖI CHE MÀN HÌNH
