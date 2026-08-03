@@ -1176,7 +1176,7 @@
                     // 🔥 CẤP QUYỀN THAO TÁC TRÊN CẢ NGƯỜI SỐNG LẪN KẺ CHẾT
                     if (this.state.role === 'gm') {
                         let btnColor = this.state.time === 'night' ? 'var(--primary)' : '#e67e22';
-                        let btnIcon = this.state.time === 'night' ? '⚡ Dùng Kỹ Năng' : '⚖️ Hành Động Ngày';
+                        let btnIcon = this.state.time === 'night' ? '⚡ Cập nhật trạng thái' : '⚖️ Cập nhật trạng thái';
 
                         // Nếu là xác chết, đổi màu nút sang xám u ám và đổi tên
                         if (isDead) {
