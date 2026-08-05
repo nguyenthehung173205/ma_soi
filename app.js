@@ -365,6 +365,15 @@
                     // Nếu trong lúc chờ API trả về mà Quản trò lỡ bấm nút, LẬP TỨC HỦY BỎ dữ liệu cũ này!
                     if (this.state.isSyncing) return;
 
+                    // Nếu nhận được lỗi từ máy chủ (phòng không tồn tại hoặc đã bị hủy)
+                    if (res && res.status === 'error') {
+                        if (this.state.role !== 'gm') {
+                            alert("Quản trò đã hủy phòng hoặc phòng không còn tồn tại!");
+                        }
+                        this.leaveRoom();
+                        return;
+                    }
+
                     if (res && res.players) {
                         let hasChanges = false;
                         if (this.state.players.length !== res.players.length) hasChanges = true;
