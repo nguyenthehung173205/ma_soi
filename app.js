@@ -57,10 +57,9 @@
                 'Cupid (Thần tình yêu)': { icon: '💘', desc: 'Đầu ván chơi, Cupid ghép đôi 2 người bất kỳ (có thể tự ghép cho mình) để họ biết mặt và vai trò của nhau. Nếu họ khác phe, họ thành phe thứ 3 với nhiệm vụ là 2 người cuối cùng sống sót; nếu 1 trong 2 người chết, người kia cũng bắt buộc phải chết theo.' },
                 'Cảnh sát trưởng (Trưởng làng)': { icon: '🎖️', desc: 'Là lá bài chức danh bầu chọn ban ngày dành cho bất kỳ ai. Phiếu bầu treo cổ của Cảnh sát trưởng được tính là 2 phiếu, khi chết có quyền chuyển chức danh này cho bất kỳ ai.' },
                 'Cô Bé (Ti hí)': { icon: '👁️‍🗨️', desc: 'Từ đêm thứ hai, khi sói thức dậy, Cô Bé có quyền hé mắt để nhận biết xem ai là sói, nhưng nếu để sói phát hiện ra thì sẽ bị giết chết ngay lập tức.' },
-                'Sói thường': { icon: '🐺', desc: 'Mỗi đêm, những người mang lá bài này thức dậy cùng nhau và chọn cắn chết 1 người. Sói có thể chọn không cắn ai hoặc tự tàn sát lẫn nhau.' },
-                'Sói con': { icon: '🐾', desc: 'Chức năng giống hệt Sói thường, nhưng khi Sói con chết, đêm hôm sau bầy Sói sẽ được quyền cắn hai người liên tục.' },
-                'Sói trắng': { icon: '🐺❄️', desc: 'Thức dậy chung với Sói thường để cắn người, nhưng cứ hai đêm một lần có quyền giết 1 con Sói thường khác. Nhiệm vụ của Sói trắng là trở thành người duy nhất còn sống trên bàn chơi.' },
-                'Cặp đôi khác phe yêu nhau': { icon: '💞', desc: 'Do Cupid ghép đôi từ đầu game, trở thành phe thứ ba độc lập với nhiệm vụ là hai người duy nhất còn sống sót.' },
+                'Ma sói': { icon: '🐺', desc: 'Mỗi đêm, những người mang lá bài này thức dậy cùng nhau và chọn cắn chết 1 người. Sói có thể chọn không cắn ai hoặc tự tàn sát lẫn nhau.' },
+                'Sói con': { icon: '🐾', desc: 'Chức năng giống hệt Ma sói, nhưng khi Sói con chết, đêm hôm sau bầy Sói sẽ được quyền cắn hai người liên tục.' },
+                'Sói trắng': { icon: '🐺❄️', desc: 'Thức dậy chung với Ma sói để cắn người, nhưng cứ hai đêm một lần có quyền giết 1 con Ma sói khác. Nhiệm vụ của Sói trắng là trở thành người duy nhất còn sống trên bàn chơi.' },
                 'Nửa người nửa sói': { icon: '🌓', desc: 'Ban đầu thuộc phe dân làng, nếu bị Sói cắn ban đêm sẽ không chết mà lập tức biến thành Sói.' },
                 'Ăn Trộm': { icon: '🗝️', desc: 'Đêm đầu tiên, Ăn trộm được nhìn và chọn 1 trong 2 lá bài chức năng dư ở ngoài làm vai trò của mình. Tuy nhiên, nếu ít nhất 1 trong 2 lá đó là Sói, Ăn trộm bắt buộc phải chọn Sói.' },
                 'Thằng ngốc': { icon: '🤡', desc: 'Nếu bị dân làng bầu treo cổ, Thằng ngốc lật lá bài lên để được tha thứ và tiếp tục sống nhưng sẽ mất vĩnh viễn quyền bầu chọn. Nếu là Cảnh sát trưởng thì phải chuyển quyền cho người khác, và vẫn sẽ chết nếu bị Sói cắn hoặc Thợ săn bắn.' },
@@ -74,15 +73,15 @@
                 'Thiên sứ': { icon: '👼', desc: 'Thắng ngay lập tức nếu bị Sói cắn vào đêm đầu tiên hoặc bị dân làng treo cổ vào sáng đầu tiên. Nếu sống sót qua vòng đầu, Thiên sứ sẽ mất chức năng và trở thành một dân làng bình thường.' },
                 'Thẩm phán lắp bắp': { icon: '⚖️', desc: 'Một lần duy nhất trong ván chơi, bằng dấu hiệu đã thống nhất với Quản trò từ đêm đầu, Thẩm phán có quyền quyết định tiến hành lần bỏ phiếu treo cổ thứ 2 trong cùng một buổi sáng.' },
                 'Hiệp sĩ kiếm gỉ': { icon: '🗡️', desc: 'Nếu bị sói cắn, Hiệp sĩ sẽ chết, nhưng con Sói cắn hiệp sĩ sẽ bị thương và cũng sẽ chết sau 1 ngày đêm (Quản trò sẽ công bố Sói chết vào sáng hôm sau nữa).' },
-                'Cáo': { icon: '🦊', desc: 'Mỗi đêm chọn 3 người chơi, nếu trong đó có ít nhất 1 Ma sói thì Cáo giữ nguyên năng lực. Nếu không có Ma sói nào trong 3 người, Cáo sẽ mất đi năng lực này vĩnh viễn.' },
+                'Hồ ly': { icon: '🦊', desc: 'Mỗi đêm chọn 3 người chơi, nếu trong đó có ít nhất 1 Ma sói thì Hồ ly giữ nguyên năng lực. Nếu không có Ma sói nào trong 3 người, Hồ ly sẽ mất đi năng lực này vĩnh viễn.' },
                 'Người thuần phục gấu': { icon: '🐻', desc: 'Quản trò sẽ ra dấu hiệu báo cho Người thuần phục gấu biết nếu một trong hai người ngồi ngay bên cạnh nhân vật này là Ma sói.' },
-                'Diễn viên': { icon: '🎭', desc: 'Trong 3 đêm đầu tiên, có thể tráo đổi thẻ của mình với 1 trong 3 thẻ bài dự phòng ở ngoài. Sau đêm thứ ba, Diễn viên sẽ mất chức năng và trở thành Dân thường.' },
+                'Diễn viên': { icon: '🎭', desc: 'Quản trò sẽ lựa ra 3 lá chức năng. Mỗi đêm, Diễn viên có thể chọn ngẫu nhiên 1 trong 3 lá để thực hiện chức năng. Mỗi lá chỉ được chọn 1 lần trong trò chơi.' },
                 'Hầu gái': { icon: '🧹', desc: 'Bất cứ khi nào trong trò chơi, có thể trao đổi thẻ của mình với nạn nhân bị làng bỏ phiếu treo cổ và đóng vai nhân vật đó cho đến cuối trò chơi.' },
                 'Thành viên giáo phái': { icon: '✝️', desc: 'Thuộc 1 trong 2 phe được chia từ đầu ván (theo giới tính, tuổi tác...), chiến thắng khi dùng thành kiến lôi kéo dân làng loại bỏ được tất cả người chơi của phe đối địch.' },
                 'Đứa trẻ hoang dã': { icon: '👶', desc: 'Vào đầu trò chơi, chọn một người chơi làm thần tượng. Nếu thần tượng này chết trong quá trình chơi, Đứa trẻ hoang dã sẽ lập tức biến thành Ma sói.' },
                 'Chó sói (Bán Sói / Sói Lai)': { icon: '🐕', desc: 'Khi bắt đầu trò chơi, nhân vật này được quyền tự lựa chọn muốn trở thành một Dân làng bình thường hay một Ma sói.' },
                 'Sói lớn xấu xa': { icon: '👹', desc: 'Thuộc phe sói, mỗi đêm có thể thức dậy lần hai để ăn thịt thêm 1 nạn nhân nữa chừng nào Sói con, Đứa trẻ hoang dã hay Chó sói trên bàn vẫn chưa chết.' },
-                'Sói trùm': { icon: '👑', desc: 'Thuộc phe sói, một lần duy nhất trong trò chơi có thể biến nạn nhân vừa bị bầy sói cắn thành một Ma sói thay vì để người đó chết.' },
+                'Sói quỷ': { icon: '👑', desc: 'Thuộc phe sói, một lần duy nhất trong trò chơi có thể biến nạn nhân vừa bị bầy sói cắn thành một Ma sói thay vì để người đó chết.' },
                 'Bà đồng': { icon: '🔮', desc: 'Tối đa 5 lần trong ván, được quyền chọn 1 trong 4 câu hỏi từ lá Gọi Hồn và chỉ định 1 người. Sáng hôm sau, người đó đọc to câu hỏi và người chết đầu tiên trong ván phải trả lời ngắn gọn "CÓ" hoặc "KHÔNG".' },
                 'Cảnh sát': { icon: '👮', desc: 'Do Cảnh sát trưởng bổ nhiệm, phụ trách bốc và đọc các lá bài Sự kiện làm thông báo cho cả làng mỗi sáng. Cảnh sát trưởng có thể bãi chức và chọn Cảnh sát mới bất cứ lúc nào trước khi cả làng bỏ phiếu.' },
                 'Nguyệt Nữ': { icon: '🌙', desc: 'Mỗi đêm chọn 1 người để vô hiệu hóa kỹ năng của người đó trong suốt đêm. Nguyệt Nữ không thể vô hiệu hóa chức năng của Bảo vệ và các kỹ năng áp dụng vào ban ngày.' },
@@ -1371,14 +1370,14 @@
                             'Dân làng', 'Tiên tri', 'Bảo vệ', 'Thợ săn', 'Phù Thủy', 'Cupid (Thần tình yêu)',
                             'Cảnh sát trưởng (Trưởng làng)', 'Cô Bé (Ti hí)', 'Thằng ngốc', 'Già làng', 'Người thế thân',
                             'Con quạ', 'Hai chị em', 'Ba anh em', 'Thẩm phán lắp bắp', 'Hiệp sĩ kiếm gỉ',
-                            'Cáo', 'Người thuần phục gấu', 'Diễn viên', 'Hầu gái', 'Bà đồng',
+                            'Hồ ly', 'Người thuần phục gấu', 'Diễn viên', 'Hầu gái', 'Bà đồng',
                             'Cảnh sát', 'Dược sĩ', 'Kị sĩ', 'Người gọi hồn'
                         ]
                     },
                     {
                         id: 'faction-soi', name: '🐺 PHE MA SÓI & ĐỒNG MINH', roles: [
-                            'Sói thường', 'Sói con', 'Nửa người nửa sói', 'Đứa trẻ hoang dã',
-                            'Chó sói (Bán Sói / Sói Lai)', 'Sói lớn xấu xa', 'Sói trùm',
+                            'Ma sói', 'Sói con', 'Nửa người nửa sói', 'Đứa trẻ hoang dã',
+                            'Chó sói (Bán Sói / Sói Lai)', 'Sói lớn xấu xa', 'Sói quỷ',
                             'Sói lửa', 'Anh Em Sói'
                         ]
                     },
@@ -1594,7 +1593,7 @@
                 const flags = this.state.gameFlags || {};
                 const night = this.state.nightCount || 1;
 
-                let hasWolf = livingRoles.some(r => ['Sói thường', 'Sói con', 'Sói trắng', 'Sói lớn xấu xa', 'Sói trùm', 'Sói lửa', 'Anh Em Sói', 'Nửa người nửa sói', 'Đứa trẻ hoang dã'].includes(r));
+                let hasWolf = livingRoles.some(r => ['Ma sói', 'Sói con', 'Sói trắng', 'Sói lớn xấu xa', 'Sói quỷ', 'Sói lửa', 'Anh Em Sói', 'Nửa người nửa sói', 'Đứa trẻ hoang dã'].includes(r));
 
                 if (this.state.time === 'night') {
                     if (flags.isManualMode) {
@@ -1657,11 +1656,11 @@
                             }
                         }
 
-                        if (livingRoles.includes('Sói trùm')) {
+                        if (livingRoles.includes('Sói quỷ')) {
                             if (!flags.usedWolfFather) {
                                 atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'WOLF_FATHER_CONVERT', '👑 Cha Sói Cảm Hóa')">👑 Cha Sói: Biến thành Sói</button>`;
                             } else {
-                                atkHtml += `<button disabled style="background: #555;">👑 Sói trùm: Đã dùng quyền năng</button>`;
+                                atkHtml += `<button disabled style="background: #555;">👑 Sói quỷ: Đã dùng quyền năng</button>`;
                             }
                         }
 
