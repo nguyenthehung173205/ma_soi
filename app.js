@@ -367,18 +367,9 @@
                     // Nếu nhận được lỗi từ máy chủ (phòng không tồn tại hoặc đã bị hủy)
                     if (res && res.status === 'error') {
                         if (this.state.role !== 'gm') {
-                            Swal.fire({
-                                title: 'Thông báo',
-                                text: 'Quản trò đã hủy phòng hoặc phòng không còn tồn tại!',
-                                icon: 'warning',
-                                confirmButtonText: 'OK',
-                                allowOutsideClick: false
-                            }).then(() => {
-                                this.leaveRoom();
-                            });
-                        } else {
-                            this.leaveRoom();
+                            alert("Quản trò đã hủy phòng hoặc phòng không còn tồn tại!");
                         }
+                        this.leaveRoom();
                         return;
                     }
 
