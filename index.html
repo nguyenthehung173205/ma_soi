@@ -125,8 +125,9 @@
         <!-- 🔥 KHU VỰC KÍCH HOẠT KỸ NĂNG ĐẶC QUYỀN (HIỂN THỊ ĐỘNG) -->
         <div id="player-active-skills" style="width: 100%; display: none; margin-top: 15px; animation: fadeIn 0.5s;">
         </div>
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn-secondary" style="width: auto; padding: 10px 30px;" onclick="app.leaveRoom()">Thoát
+        <div style="text-align: center; margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <button class="btn-secondary" style="width: auto; padding: 10px 20px; font-size: 14px; background: #2980b9;" onclick="app.showLivingPlayers()">👥 SỐ NGƯỜI SỐNG</button>
+            <button class="btn-secondary" style="width: auto; padding: 10px 30px;" onclick="app.confirmLeaveRoom()">Thoát
                 Phòng</button>
         </div>
     </div>
@@ -141,9 +142,11 @@
                 <button onclick="app.toggleTime('day', this)">🌤️ BAN NGÀY</button>
                 <button style="background: #2c3e50;" onclick="app.toggleTime('night', this)">🌙 BAN ĐÊM</button>
                 <button id="btn-ghost-vision" style="background: #9b59b6;" onclick="app.toggleGhostVision(this)">👁️ HỒN MA: ĐƯỢC XEM BÀI</button>
+                <button style="background: #e67e22;" onclick="document.getElementById('modal-gm-guide').classList.add('active')">📖 HƯỚNG DẪN QUẢN TRÒ</button>
                 <button class="btn-success" onclick="app.openRoleModal()">🃏 PHÁT BÀI MỚI</button>
-                <button class="btn-danger" onclick="app.endGame()">❌ HỦY PHÒNG</button>
+                <button class="btn-danger" onclick="app.endGame()">🚨 HỦY PHÒNG</button>
             </div>
+            <button id="btn-ghost-leave" class="btn-secondary" style="display: none; margin-top: 10px;" onclick="app.confirmLeaveRoom()">🚪 THOÁT PHÒNG</button>
         </div>
 
         <div class="player-grid" id="gm-player-grid">
@@ -256,7 +259,39 @@
     </div>
 
     <!-- =========================================
-         JAVASCRIPT: REST API CONSUMER (NHÚNG GAS NGOÀI)
+         MODAL: HƯỚNG DẪN QUẢN TRÒ
+         ========================================= -->
+    <div id="modal-gm-guide" class="modal">
+        <div class="modal-content" style="max-width: 700px; padding: 25px; text-align: left;">
+            <h2 style="color: #f39c12; border-bottom: 2px solid #e67e22; padding-bottom: 10px; margin-top: 0;">📖 SỔ TAY QUẢN TRÒ</h2>
+            <div style="max-height: 60vh; overflow-y: auto; padding-right: 10px; color: #ecf0f1; font-size: 15px; line-height: 1.6;">
+                <h3 style="color: #3498db;">1. CƠ CHẾ CHIA BÀI & BÀI NỌC</h3>
+                <ul style="margin-left: 20px;">
+                    <li><strong>Bài Nọc:</strong> Nếu ván có <b>Ăn Trộm</b>, cần bốc thêm <b>2 lá bài nọc</b>. Nếu có <b>Diễn Viên</b>, cần bốc thêm <b>3 lá bài nọc</b>. (Cả 2 thì cần bốc 5 lá bài nọc).</li>
+                    <li><strong>Cách bốc bài:</strong> Hãy chọn đủ số lá bài cho tất cả người chơi trước. Các lá bài bạn chọn dư cuối cùng sẽ tự động được cất riêng làm Bài Nọc, tuyệt đối không bị chia cho người chơi.</li>
+                    <li>Hệ thống sẽ hiện lại danh sách bài nọc cho bạn kiểm tra trước khi xác nhận phát bài.</li>
+                </ul>
+
+                <h3 style="color: #e74c3c; margin-top: 20px;">2. CHẾ ĐỘ CHƠI: THỦ CÔNG VS TỰ ĐỘNG</h3>
+                <ul style="margin-left: 20px;">
+                    <li><b>Thủ công (Mặc định):</b> Quản trò tự gọi từng chức năng dậy, tự quyết định ai sống ai chết. Chức năng của hệ thống chỉ là để người chơi lật bài làm hiệu ứng. Hệ thống sẽ KHÔNG tự động giết ai.</li>
+                    <li><b>Tự động (Chuyên gia):</b> Quản trò nhường quyền cho hệ thống. Người chơi tự bấm chọn mục tiêu. Cuối đêm, Quản trò bấm "Chốt Kết Quả Đêm", hệ thống sẽ tự tổng hợp danh sách người bị cắn chết/bảo vệ/cứu sống và tự động đào thải Diễn Viên/Thiên Sứ theo luật.</li>
+                </ul>
+
+                <h3 style="color: #2ecc71; margin-top: 20px;">3. THAO TÁC QUẢN LÝ</h3>
+                <ul style="margin-left: 20px;">
+                    <li>Nhấn vào Thẻ của bất kỳ người chơi nào để mở menu Tối Cao.</li>
+                    <li>Tại đây bạn có thể <b>Đổi Bài</b>, <b>Giết</b>, <b>Hồi Sinh</b>, hoặc irục Xuất</b> họ khỏi phòng.</li>
+                    <li>Sử dụng chức năng "HỒN MA: ĐƯỢC XEM BÀI" để thiết lập quyền nhìn trộm cho những người đã chết.</li>
+                </ul>
+            </div>
+            
+            <button class="btn-primary" style="margin-top: 20px; width: 100%; background: #95a5a6;" onclick="document.getElementById('modal-gm-guide').classList.remove('active')">ĐÃ HIỂU</button>
+        </div>
+    </div>
+
+    <!-- =========================================
+         JAVASCRIPT: REST API CONSUMER (NHÚNG GẦN NGOẠI)
          ========================================= -->
     <script src="app.js"></script>
 </body>
