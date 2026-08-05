@@ -1118,22 +1118,19 @@
 
             showLivingPlayers() {
                 const livingPlayers = this.state.players.filter(p => p.status !== 'Dead' && p.status !== 'dead');
-                const listHtml = livingPlayers.map(p => `<li>${p.name}</li>`).join('');
-                Swal.fire({
-                    title: 'Danh sách người còn sống',
-                    html: `
-                        <div style="text-align: left; max-height: 50vh; overflow-y: auto;">
-                            <p style="font-weight: bold; margin-bottom: 10px;">Tổng cộng: ${livingPlayers.length} người</p>
-                            <ul style="list-style-type: disc; padding-left: 20px;">
-                                ${listHtml}
-                            </ul>
-                        </div>
-                    `,
-                    icon: 'info',
-                    confirmButtonText: 'Đóng',
-                    background: '#2c3e50',
-                    color: '#ecf0f1'
-                });
+                const listHtml = livingPlayers.map(p => `<li style="margin-bottom: 5px;">${p.name}</li>`).join('');
+                
+                const messageHtml = `
+                    <p style="font-weight: bold; margin-bottom: 10px; color: var(--primary); font-size: 18px;">Tổng cộng: ${livingPlayers.length} người</p>
+                    <div style="max-height: 45vh; overflow-y: auto; padding-right: 10px;">
+                        <ul style="list-style-type: disc; padding-left: 20px; margin: 0; font-size: 16px;">
+                            ${listHtml}
+                        </ul>
+                    </div>
+                `;
+                
+                // Tái sử dụng chính Bảng Thông Báo có sẵn của bạn để hiển thị
+                this.showAnnouncement('👁️ NHỮNG NGƯỜI CÒN SỐNG', messageHtml);
             },
 
             renderGMGrid() {
