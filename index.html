@@ -25,6 +25,8 @@
 
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Thư viện SweetAlert2 cho Popup đẹp mắt -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 </head>
@@ -101,7 +103,9 @@
     <!-- 2. MÀN HÌNH NGƯỜI CHƠI (PLAYER VIEW) -->
     <div id="screen-player" class="screen">
         <h2 id="player-status-text" style="text-align: center; margin-top: 3vh;">Bầu trời đang sáng...</h2>
-        <p id="player-room-info" style="text-align: center; font-size: 14px; opacity: 0.8; margin-bottom: 10px;"></p>
+        <p id="player-room-info" style="text-align: center; font-size: 14px; opacity: 0.8; margin-bottom: 5px;"></p>
+        <p id="player-living-count" style="text-align: center; font-size: 14px; font-weight: bold; color: #2ecc71; margin-top: 0; margin-bottom: 15px; cursor: pointer;" onclick="app.showLivingPlayers()">Số người sống: -- 👁 (Chạm để xem)</p>
+
 
         <div id="player-morning-news"
             style="display: none; background: rgba(231, 76, 60, 0.15); border-left: 4px solid var(--danger); padding: 12px; margin: 0 20px 20px 20px; border-radius: 6px; font-size: 14px; text-align: left; animation: fadeIn 0.5s; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
