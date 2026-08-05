@@ -419,6 +419,9 @@
                         }
 
                         this.state.players = res.players;
+                        const livingCount = res.players.filter(p => p.status !== 'Dead' && p.status !== 'dead').length;
+                        const elLivingCount = document.getElementById('player-living-count');
+                        if (elLivingCount) elLivingCount.innerText = `Số người sống: ${livingCount} 👁 (Chạm để xem)`;
                         // Cập nhật bộ đếm đêm từ Backend
                         if (res.nightCount !== undefined) this.state.nightCount = res.nightCount;
 
