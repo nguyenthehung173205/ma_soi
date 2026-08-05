@@ -420,7 +420,15 @@
                         this.state.players = res.players;
                         const livingCount = res.players.filter(p => p.status !== 'Dead' && p.status !== 'dead').length;
                         const elLivingCount = document.getElementById('player-living-count');
-                        if (elLivingCount) elLivingCount.innerText = `Số người sống: ${livingCount} 👁 (Chạm để xem)`;
+                        if (elLivingCount) {
+                            elLivingCount.innerText = `Số người sống: ${livingCount} 👁 (Chạm để xem)`;
+                            // Ép sự kiện bấm và CSS trực tiếp từ JS để chống kẹt HTML
+                            elLivingCount.onclick = () => app.showLivingPlayers();
+                            elLivingCount.style.cursor = 'pointer';
+                            elLivingCount.style.textDecoration = 'underline';
+                            elLivingCount.style.position = 'relative';
+                            elLivingCount.style.zIndex = '9999'; // Đẩy lên trên cùng, chống mọi thẻ div khác đè lên
+                        }
                         // Cập nhật bộ đếm đêm từ Backend
                         if (res.nightCount !== undefined) this.state.nightCount = res.nightCount;
 
