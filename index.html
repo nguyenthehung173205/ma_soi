@@ -262,31 +262,34 @@
          MODAL: HƯỚNG DẪN QUẢN TRÒ
          ========================================= -->
     <div id="modal-gm-guide" class="modal">
-        <div class="modal-content" style="max-width: 700px; padding: 25px; text-align: left;">
-            <h2 style="color: #f39c12; border-bottom: 2px solid #e67e22; padding-bottom: 10px; margin-top: 0;">📖 SỔ TAY QUẢN TRÒ</h2>
-            <div style="max-height: 60vh; overflow-y: auto; padding-right: 10px; color: #ecf0f1; font-size: 15px; line-height: 1.6;">
-                <h3 style="color: #3498db;">1. CƠ CHẾ CHIA BÀI & BÀI NỌC</h3>
+        <div class="modal-content" style="max-width: 750px; padding: 25px; text-align: left; background-color: #ffffff; color: #000000; box-shadow: 0 5px 25px rgba(0,0,0,0.5);">
+            <h2 style="color: #d35400; border-bottom: 2px solid #e67e22; padding-bottom: 10px; margin-top: 0; text-align: center;">📖 SỔ TAY QUẢN TRÒ (CHI TIẾT)</h2>
+            <div style="max-height: 60vh; overflow-y: auto; padding-right: 15px; font-size: 15px; line-height: 1.6;">
+                
+                <h3 style="color: #2980b9; border-left: 4px solid #2980b9; padding-left: 10px;">1. GIAI ĐOẠN PHÁT BÀI & CƠ CHẾ BÀI NỌC</h3>
                 <ul style="margin-left: 20px;">
-                    <li><strong>Bài Nọc:</strong> Nếu ván có <b>Ăn Trộm</b>, cần bốc thêm <b>2 lá bài nọc</b>. Nếu có <b>Diễn Viên</b>, cần bốc thêm <b>3 lá bài nọc</b>. (Cả 2 thì cần bốc 5 lá bài nọc).</li>
-                    <li><strong>Cách bốc bài:</strong> Hãy chọn đủ số lá bài cho tất cả người chơi trước. Các lá bài bạn chọn dư cuối cùng sẽ tự động được cất riêng làm Bài Nọc, tuyệt đối không bị chia cho người chơi.</li>
-                    <li>Hệ thống sẽ hiện lại danh sách bài nọc cho bạn kiểm tra trước khi xác nhận phát bài.</li>
+                    <li><b>Cách chọn bài:</b> Bấm vào nút <b>"PHÁT BÀI MỚI"</b>. Hãy nhấp để chọn số lượng bài tương ứng với tổng số người đang có trong phòng.</li>
+                    <li><b>Cơ chế Bài Nọc:</b> Hệ thống đã tự động tính toán. Nếu bạn chọn nhân vật <b>Ăn Trộm</b>, hệ thống sẽ yêu cầu bạn phải bốc dư thêm <b>2 lá bài nọc</b>. Nếu có thêm <b>Diễn Viên</b>, bạn phải bốc thêm <b>3 lá bài nọc</b>. (Nếu có cả 2, bạn phải chọn dư ra tổng cộng 5 lá).</li>
+                    <li><b>Thuật toán xáo bài:</b> Những lá bài mà bạn click chọn SAU CÙNG (bằng đúng số lượng bài nọc yêu cầu) sẽ bị tách riêng làm Bài Nọc. Máy chủ sẽ chỉ lấy <b>ĐÚNG N lá bài đầu tiên</b> để xáo ngẫu nhiên và chia cho N người chơi. Bài nọc tuyệt đối không bị trộn vào tay người chơi, bạn có thể hoàn toàn yên tâm.</li>
                 </ul>
 
-                <h3 style="color: #e74c3c; margin-top: 20px;">2. CHẾ ĐỘ CHƠI: THỦ CÔNG VS TỰ ĐỘNG</h3>
+                <h3 style="color: #c0392b; border-left: 4px solid #c0392b; padding-left: 10px; margin-top: 20px;">2. CHẾ ĐỘ CHƠI: THỦ CÔNG VS TỰ ĐỘNG</h3>
                 <ul style="margin-left: 20px;">
-                    <li><b>Thủ công (Mặc định):</b> Quản trò tự gọi từng chức năng dậy, tự quyết định ai sống ai chết. Chức năng của hệ thống chỉ là để người chơi lật bài làm hiệu ứng. Hệ thống sẽ KHÔNG tự động giết ai.</li>
-                    <li><b>Tự động (Chuyên gia):</b> Quản trò nhường quyền cho hệ thống. Người chơi tự bấm chọn mục tiêu. Cuối đêm, Quản trò bấm "Chốt Kết Quả Đêm", hệ thống sẽ tự tổng hợp danh sách người bị cắn chết/bảo vệ/cứu sống và tự động đào thải Diễn Viên/Thiên Sứ theo luật.</li>
+                    <li><b>Chế độ Thủ công (Mặc định):</b> Quản trò làm chủ mọi tình huống. Hệ thống sẽ KHÔNG tự động giết bất kỳ ai. Người chơi chỉ thao tác lật bài/kích hoạt kĩ năng để tạo hiệu ứng hình ảnh. Mọi sinh sát đều do Quản trò bấm chọn ở bảng điều khiển (nhấp vào tên người chơi -> Chọn <b>Tiêu diệt</b>). Chế độ này phù hợp khi Quản trò muốn tự mình kể chuyện và linh hoạt điều phối.</li>
+                    <li><b>Chế độ Tự động (Nâng cao):</b> Mọi quyền lực được giao cho hệ thống xử lý. Sói sẽ chọn cắn ai trên điện thoại của Sói, Bảo vệ tự chọn mục tiêu bảo vệ, Phù thủy tự dùng bình độc/cứu... Cuối đêm, Quản trò chỉ cần bấm nút <b>"Chốt Kết Quả Đêm"</b>, máy chủ sẽ quét các phiếu bầu, tự đối chiếu luật chơi và tự động xuất ra danh sách người chết trong đêm. Quản trò không cần nhớ gì cả.</li>
                 </ul>
 
-                <h3 style="color: #2ecc71; margin-top: 20px;">3. THAO TÁC QUẢN LÝ</h3>
+                <h3 style="color: #27ae60; border-left: 4px solid #27ae60; padding-left: 10px; margin-top: 20px;">3. THAO TÁC QUẢN LÝ (MENU TỐI CAO)</h3>
                 <ul style="margin-left: 20px;">
-                    <li>Nhấn vào Thẻ của bất kỳ người chơi nào để mở menu Tối Cao.</li>
-                    <li>Tại đây bạn có thể <b>Đổi Bài</b>, <b>Giết</b>, <b>Hồi Sinh</b>, hoặc irục Xuất</b> họ khỏi phòng.</li>
-                    <li>Sử dụng chức năng "HỒN MA: ĐƯỢC XEM BÀI" để thiết lập quyền nhìn trộm cho những người đã chết.</li>
+                    <li>Nhấp thẳng vào khung tên của bất kỳ người chơi nào trên lưới hiển thị của Quản trò, một <b>Menu Quản Lý</b> sẽ hiện ra.</li>
+                    <li><b>Đổi Bài:</b> Chuyển đổi vai trò của người chơi (dành cho các trường hợp như Sói Lai chọn làm Sói, Diễn viên đổi bài, Trẻ hoang dã hắc hóa...). Hệ thống sẽ tự động cập nhật ngay trên điện thoại của họ.</li>
+                    <li><b>Băng hoại / Hồi sinh:</b> Giết chết một người hoặc hồi sinh họ từ cõi chết.</li>
+                    <li><b>Trục xuất:</b> Đuổi vĩnh viễn một người chơi phá rối ra khỏi phòng.</li>
+                    <li><b>HỒN MA ĐƯỢC XEM BÀI:</b> Bật/tắt tính năng cho phép những người đã chết được quyền nhìn thấy toàn bộ vai trò của những người còn sống (như một khán giả thực thụ).</li>
                 </ul>
             </div>
             
-            <button class="btn-primary" style="margin-top: 20px; width: 100%; background: #95a5a6;" onclick="document.getElementById('modal-gm-guide').classList.remove('active')">ĐÃ HIỂU</button>
+            <button class="btn-primary" style="margin-top: 20px; width: 100%; background: #2c3e50; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" onclick="document.getElementById('modal-gm-guide').classList.remove('active')">ĐÃ RÕ LUẬT, BẮT ĐẦU ĐIỀU HÀNH</button>
         </div>
     </div>
 
