@@ -271,6 +271,12 @@
                 }
             },
 
+            async confirmLeaveRoom() {
+                if (await this.confirmAction("Bạn có chắc chắn muốn thoát phòng không? Hành động này không thể hoàn tác!")) {
+                    this.leaveRoom();
+                }
+            },
+
             leaveRoom() {
                 this.stopPolling();
                 sessionStorage.removeItem('werewolf_session');
@@ -831,6 +837,7 @@
                 this.state.role = 'spectator';
                 this.switchScreen('screen-gm');
                 document.querySelector('.gm-header .controls').style.display = 'none';
+                document.getElementById('btn-ghost-leave').style.display = 'inline-block';
                 document.getElementById('night-panel').style.display = 'none';
                 // Đổi thông báo để họ biết họ có quyền năng gì
                 let visionEnabled = (this.state.gameFlags && this.state.gameFlags.ghostVisionEnabled !== false);
@@ -957,7 +964,8 @@
                     }
 
                     // 🎭 ĐẶC QUYỀN DIỄN VIÊN: TRÁO ĐỔI NHÂN PHẬN (CHỈ 3 ĐÊM ĐẦU)
-                    if (me.role === 'Diễn viên' && this.state.time === 'night' && this.state.nightCount <= 2 && (!this.state.gameFlags || !this.state.gameFlags.isManualMode)) {
+                    let isOriginalActor = me.role === 'Diễn viên' || (me.state && me.state.originalRole === 'Diễn viên');
+                    if (isOriginalActor && this.state.time === 'night' && this.state.nightCount <= 2 && (!this.state.gameFlags || !this.state.gameFlags.isManualMode)) {
                         let spares = this.state.spareCards || [];
                         // Lọc bỏ những lá bài đã bị đào thải
                         let validSpares = spares.filter(r => !r.includes('Đã đào thải'));
@@ -1056,9 +1064,15 @@
 
                             // Cấy thêm HTML vào khung skillArea thay vì ghi đè
                             skillArea.innerHTML += `
-                            <div class="glass-panel" style="margin-top: 15px; border-color: #f39c12; background: rgba(0,0,0,0.6); padding: 15px;">
+                            <div class="glass-panel secret-info-container" style="margin-top: 15px; border-color: #f39c12; background: rgba(0,0,0,0.6); padding: 15px;"
+                                 onmousedown="this.classList.add('is-revealed')" 
+                                 onmouseup="this.classList.remove('is-revealed')" 
+                                 onmouseleave="this.classList.remove('is-revealed')" 
+                                 ontouchstart="this.classList.add('is-revealed')" 
+                                 ontouchend="this.classList.remove('is-revealed')">
                                 <h4 style="color: #f1c40f; margin-top:0; font-size: 18px;">👁️ THÔNG TIN MẬT</h4>
-                                <div style="color: #ecf0f1; text-align: left; padding: 0 10px;">${msgHtml}</div>
+                                <div class="secret-info-overlay">👆 Chạm & Giữ để xem</div>
+                                <div class="secret-info-content" style="color: #ecf0f1; text-align: left; padding: 0 10px;">${msgHtml}</div>
                             </div>
                         `;
                         }
@@ -1084,6 +1098,26 @@
                 }
             },
 
+            showLivingPlayers() {
+                const livingPlayers = this.state.players.filter(p => p.status !== 'Dead' && p.status !== 'dead');
+                const listHtml = livingPlayers.map(p => `<li>${p.name}</li>`).join('');
+                Swal.fire({
+                    title: 'Danh sách người còn sống',
+                    html: `
+                        <div style="text-align: left; max-height: 50vh; overflow-y: auto;">
+                            <p style="font-weight: bold; margin-bottom: 10px;">Tổng cộng: ${livingPlayers.length} người</p>
+                            <ul style="list-style-type: disc; padding-left: 20px;">
+                                ${listHtml}
+                            </ul>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Đóng',
+                    background: '#2c3e50',
+                    color: '#ecf0f1'
+                });
+            },
+
             renderGMGrid() {
                 const grid = document.getElementById('gm-player-grid');
                 grid.innerHTML = '';
@@ -1093,7 +1127,22 @@
                 // Mỗi khi có một người vừa Join phòng, hệ thống tự động ép Khung Chọn Bài cập nhật lại con số!
                 this.updateRoleCounter();
 
-                this.state.players.forEach(p => {
+                let sortedPlayers = [...this.state.players];
+                sortedPlayers.sort((a, b) => {
+                    const isDeadA = (a.status === 'Dead' || a.status === 'dead');
+                    const isDeadB = (b.status === 'Dead' || b.status === 'dead');
+                    if (isDeadA !== isDeadB) return isDeadA ? 1 : -1;
+                    
+                    const getGroupId = (p) => {
+                        if (p.role && (p.role.includes('Sói') || p.role === 'Đứa trẻ hoang dã' || p.role === 'Nửa người nửa sói')) return 1;
+                        if (p.state && p.state.loverId) return 2;
+                        if (p.state && p.state.piperCharmed) return 3;
+                        return 99;
+                    };
+                    return getGroupId(a) - getGroupId(b);
+                });
+
+                sortedPlayers.forEach(p => {
                     const isDead = (p.status === 'Dead' || p.status === 'dead');
 
                     const el = document.createElement('div');
@@ -1365,12 +1414,14 @@
 
             toggleSelectRole(roleName) {
                 // 🔥 TIÊN TRI TOÁN HỌC: Nếu thẻ chuẩn bị bốc lên (hoặc thẻ đã có sẵn) là Ăn Trộm/Diễn Viên -> Tự động nới lỏng giới hạn lên +2
-                const willNeedSpare = this.state.selectedRolesPool.includes('Ăn Trộm') ||
-                    this.state.selectedRolesPool.includes('Diễn viên') ||
-                    roleName === 'Ăn Trộm' ||
-                    roleName === 'Diễn viên';
+                const willHaveThief = this.state.selectedRolesPool.includes('Ăn Trộm') || roleName === 'Ăn Trộm';
+                const willHaveActor = this.state.selectedRolesPool.includes('Diễn viên') || roleName === 'Diễn viên';
+                
+                let spareCount = 0;
+                if (willHaveThief) spareCount += 2;
+                if (willHaveActor) spareCount += 3;
 
-                const maxAllowed = this.state.players.length + (willNeedSpare ? 2 : 0);
+                const maxAllowed = this.state.players.length + spareCount;
 
                 if (this.state.selectedRolesPool.length >= maxAllowed) {
                     alert(`Tối đa là ${maxAllowed} bài! (Đã tính các quy tắc Bài Nọc). Hãy bấm "CHỌN LẠI TỪ ĐẦU" nếu muốn sửa.`);
@@ -1414,11 +1465,16 @@
 
             updateRoleCounter() {
                 const playerCount = this.state.players.length;
-                const needsSpare = this.state.selectedRolesPool.includes('Ăn Trộm') || this.state.selectedRolesPool.includes('Diễn viên');
-                const requiredCards = playerCount + (needsSpare ? 2 : 0);
+                const hasThief = this.state.selectedRolesPool.includes('Ăn Trộm');
+                const hasActor = this.state.selectedRolesPool.includes('Diễn viên');
+                let spareCount = 0;
+                if (hasThief) spareCount += 2;
+                if (hasActor) spareCount += 3;
+
+                const requiredCards = playerCount + spareCount;
 
                 // Cảnh báo đỏ rực nếu có Bài Nọc
-                const extraText = needsSpare ? ` <span style="font-size:14px; color:#f39c12;">(+2 Bài Nọc)</span>` : "";
+                const extraText = spareCount > 0 ? ` <span style="font-size:14px; color:#f39c12;">(+${spareCount} Bài Nọc)</span>` : "";
                 document.getElementById('modal-role-counter').innerHTML = `Đã chọn: ${this.state.selectedRolesPool.length} / ${requiredCards} bài ${extraText}`;
 
                 Object.keys(this.masterRoles).forEach(r => {
@@ -1453,12 +1509,23 @@
 
             async confirmDistributeCards(btn = null) {
                 const playerCount = this.state.players.length;
-                const needsSpare = this.state.selectedRolesPool.includes('Ăn Trộm') || this.state.selectedRolesPool.includes('Diễn viên');
-                const requiredCards = playerCount + (needsSpare ? 2 : 0);
+                const hasThief = this.state.selectedRolesPool.includes('Ăn Trộm');
+                const hasActor = this.state.selectedRolesPool.includes('Diễn viên');
+                let spareCount = 0;
+                if (hasThief) spareCount += 2;
+                if (hasActor) spareCount += 3;
+
+                const requiredCards = playerCount + spareCount;
 
                 if (this.state.selectedRolesPool.length !== requiredCards) {
                     alert(`Sự chênh lệch Vật lý! Bạn đã chọn ${this.state.selectedRolesPool.length} lá, nhưng hệ thống yêu cầu đúng ${requiredCards} lá!`);
                     return;
+                }
+
+                if (spareCount > 0) {
+                    const spareCards = this.state.selectedRolesPool.slice(playerCount);
+                    const confirmMsg = `Bài Nọc gồm ${spareCount} lá:\n- ${spareCards.join('\n- ')}\n\nLưu ý: Chỉ xáo và chia ${playerCount} lá đầu tiên cho người chơi. Bạn có chắc chắn muốn phát bài?`;
+                    if (!(await this.confirmAction(confirmMsg))) return;
                 }
 
                 // 🚨 KHÓA VAN AN TOÀN TRUYỆT ĐỐI! 
