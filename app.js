@@ -368,9 +368,18 @@
                     // Nếu nhận được lỗi từ máy chủ (phòng không tồn tại hoặc đã bị hủy)
                     if (res && res.status === 'error') {
                         if (this.state.role !== 'gm') {
-                            alert("Quản trò đã hủy phòng hoặc phòng không còn tồn tại!");
+                            Swal.fire({
+                                title: 'Thông báo',
+                                text: 'Quản trò đã hủy phòng hoặc phòng không còn tồn tại!',
+                                icon: 'warning',
+                                confirmButtonText: 'OK',
+                                allowOutsideClick: false
+                            }).then(() => {
+                                this.leaveRoom();
+                            });
+                        } else {
+                            this.leaveRoom();
                         }
-                        this.leaveRoom();
                         return;
                     }
 
@@ -977,10 +986,10 @@
 
                     // 🎭 ĐẶC QUYỀN DIỄN VIÊN: TRÁO ĐỔI NHÂN PHẬN (CHỈ 3 ĐÊM ĐẦU)
                     let isOriginalActor = me.role === 'Diễn viên' || (me.state && me.state.originalRole === 'Diễn viên');
-                    if (isOriginalActor && this.state.time === 'night' && this.state.nightCount <= 2 && (!this.state.gameFlags || !this.state.gameFlags.isManualMode)) {
+                    if (isOriginalActor && this.state.time === 'night' && (!this.state.gameFlags || !this.state.gameFlags.isManualMode)) {
                         let spares = this.state.spareCards || [];
-                        // Lọc bỏ những lá bài đã bị đào thải
-                        let validSpares = spares.filter(r => !r.includes('Đã đào thải'));
+                        // Lọc bỏ những lá bài đã bị đào thải hoặc đã được sử dụng
+                        let validSpares = spares.filter(r => !r.includes('Đã đào thải') && !r.includes('[Đã dùng]'));
 
                         if (validSpares.length > 0) {
                             let buttons = validSpares.map(r => `<button class="btn-primary" style="margin: 4px; box-shadow: 0 4px 10px rgba(52,152,219,0.4);" onclick="app.usePlayerSkill('ACTOR_SWAP_${r}', this)">Nhập vai: ${r}</button>`).join('');
@@ -988,8 +997,8 @@
                             skillArea.style.display = 'block';
                             skillArea.innerHTML += `
                     <div class="glass-panel" style="margin-top: 10px; border-color: #3498db; background: rgba(0,0,0,0.85); padding: 15px;">
-                        <h4 style="color: #3498db; margin-top:0;">🎭 TỦ ĐỒ DIỄN VIÊN (Đêm ${this.state.nightCount}/3)</h4>
-                        <p style="font-size: 13px; color: #ecf0f1; margin-bottom: 10px;">Bạn có muốn vứt bỏ thân phận Diễn Viên để lấy 1 trong các lá bài dự phòng này không? (Sau đêm 3, Bạn sẽ vĩnh viễn hóa thành Dân thường).</p>
+                        <h4 style="color: #3498db; margin-top:0;">🎭 TỦ ĐỒ DIỄN VIÊN</h4>
+                        <p style="font-size: 13px; color: #ecf0f1; margin-bottom: 10px;">Bạn có muốn tạm vứt bỏ thân phận Diễn Viên để lấy 1 trong các lá bài dự phòng này không? Mỗi lá chỉ được chọn 1 lần duy nhất, sang đêm sau bạn sẽ tự động quay về Diễn Viên.</p>
                         <div style="display: flex; flex-wrap: wrap; justify-content: center;">
                             ${buttons}
                         </div>
