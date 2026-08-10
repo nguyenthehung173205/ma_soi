@@ -1118,18 +1118,8 @@
 
             showLivingPlayers() {
                 const livingPlayers = this.state.players.filter(p => p.status !== 'Dead' && p.status !== 'dead');
-                const listHtml = livingPlayers.map(p => `<li style="margin-bottom: 5px;">${p.name}</li>`).join('');
-                
-                const messageHtml = `
-                    <p style="font-weight: bold; margin-bottom: 10px; color: var(--primary); font-size: 18px;">Tổng cộng: ${livingPlayers.length} người</p>
-                    <div style="max-height: 45vh; overflow-y: auto; padding-right: 10px;">
-                        <ul style="list-style-type: disc; padding-left: 20px; margin: 0; font-size: 16px;">
-                            ${listHtml}
-                        </ul>
-                    </div>
-                `;
-                
-                // Tái sử dụng chính Bảng Thông Báo có sẵn của bạn để hiển thị
+                const listHtml = livingPlayers.map(p => `<span style="display: inline-block; padding: 5px 12px; margin: 4px; background: rgba(46, 204, 113, 0.15); border: 1px solid var(--success); border-radius: 20px; color: var(--success); font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">${p.name}</span>`).join('');
+                const messageHtml = `<p style="font-weight: bold; margin-bottom: 15px; color: var(--primary); font-size: 18px; text-align: center;">Tổng cộng: ${livingPlayers.length} người</p><div style="max-height: 45vh; overflow-y: auto; text-align: center; padding: 5px;">${listHtml}</div>`;
                 this.showAnnouncement('👁️ NHỮNG NGƯỜI CÒN SỐNG', messageHtml);
             },
 
@@ -1354,7 +1344,16 @@
                     alert("Phòng chưa có người chơi nào tham gia!");
                     return;
                 }
-                this.state.selectedRolesPool = [];
+                const savedPool = localStorage.getItem('werewolf_selected_roles');
+                if (savedPool) {
+                    try {
+                        this.state.selectedRolesPool = JSON.parse(savedPool);
+                    } catch (e) {
+                        this.state.selectedRolesPool = [];
+                    }
+                } else {
+                    this.state.selectedRolesPool = [];
+                }
                 const container = document.getElementById('role-picker-container');
                 container.innerHTML = '';
 
@@ -1478,7 +1477,28 @@
                 }, 150);
             },
 
+            showSelectedRolesSummary() {
+                if (this.state.selectedRolesPool.length === 0) {
+                    alert("Chưa có lá bài nào được chọn!");
+                    return;
+                }
+                const counts = {};
+                this.state.selectedRolesPool.forEach(r => {
+                    counts[r] = (counts[r] || 0) + 1;
+                });
+                let html = '';
+                for (const [role, count] of Object.entries(counts)) {
+                    const rData = this.masterRoles[role];
+                    const icon = rData ? rData.icon : '❓';
+                    const desc = rData ? rData.desc : '';
+                    html += `<div style="display: flex; align-items: flex-start; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 24px; margin-right: 15px; min-width: 30px; text-align: center;">${icon}</div><div><div style="font-weight: bold; font-size: 16px; color: var(--primary); margin-bottom: 5px;">${role} <span style="color: var(--danger);">x${count}</span></div><div style="font-size: 13px; opacity: 0.8;">${desc}</div></div></div>`;
+                }
+                const messageHtml = `<div style="max-height: 50vh; overflow-y: auto; padding-right: 5px; text-align: left;">${html}</div>`;
+                this.showAnnouncement('📋 DANH SÁCH BÀI ĐÃ CHỌN', messageHtml);
+            },
+
             updateRoleCounter() {
+                localStorage.setItem('werewolf_selected_roles', JSON.stringify(this.state.selectedRolesPool));
                 const playerCount = this.state.players.length;
                 const hasThief = this.state.selectedRolesPool.includes('Ăn Trộm');
                 const hasActor = this.state.selectedRolesPool.includes('Diễn viên');
