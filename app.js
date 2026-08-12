@@ -86,7 +86,7 @@
                 'Cảnh sát': { icon: '👮', desc: 'Do Cảnh sát trưởng bổ nhiệm, phụ trách bốc và đọc các lá bài Sự kiện làm thông báo cho cả làng mỗi sáng. Cảnh sát trưởng có thể bãi chức và chọn Cảnh sát mới bất cứ lúc nào trước khi cả làng bỏ phiếu.' },
                 'Nguyệt Nữ': { icon: '🌙', desc: 'Mỗi đêm chọn 1 người để vô hiệu hóa kỹ năng của người đó trong suốt đêm. Nguyệt Nữ không thể vô hiệu hóa chức năng của Bảo vệ và các kỹ năng áp dụng vào ban ngày.' },
                 'Thầy thôi miên': { icon: '😵‍💫', desc: 'Mỗi đêm tỉnh dậy chọn mê hoặc 1 người (không được chọn 1 người liên tiếp 2 đêm). Nếu đêm đó Thầy thôi miên chết, người bị mê hoặc sẽ phải chết thay.' },
-                'Dược sĩ': { icon: '💊', desc: 'Dược sĩ có 2 bình Mê Hồn Dược và Hồi Phục Dược. Mỗi đêm Dược sĩ sẽ được gọi dậy để sử dụng 2 bình (mỗi bình dùng 1 lần). Mê Hồn Dược làm 1 người mất quyền biểu quyết và không được nói chuyện 1 ngày. Hồi Phục Dược nếu quăng trúng Phù thủy thì sẽ được hồi bình cứu.' },
+                'Dược sĩ': { icon: '💊', desc: 'Dược sĩ có 2 bình Mê Hồn Dược và Hồi Phục Dược (mỗi bình dùng 1 lần). Mê Hồn Dược làm 1 người mất quyền biểu quyết vào sáng hôm sau. Phục Hồi Dược không thể tự cứu sống, nhưng nếu quăng trúng Phù thủy thì sẽ giúp Phù thủy được hồi lại bình cứu mạng.' },
                 'Người múa rối': { icon: '🎎', desc: 'Một lần duy nhất trong suốt ván chơi, có thể ép bầy Sói phải cắn 1 người do mình chỉ định, thậm chí có thể ép Sói cắn chính đồng loại của mình.' },
                 'Sát thủ': { icon: '🥷', desc: 'Cứ mỗi 2 đêm, nếu số phiếu bầu treo cổ chỉ vào Sát thủ đạt đủ 4 phiếu, Sát thủ sẽ được quyền chỉ định giết chết 1 người.' },
                 'Kị sĩ': { icon: '🐎', desc: 'Duy nhất một lần vào ban ngày trước khi treo cổ, được lật bài lên và chỉ định 1 người. Nếu người đó là Sói, Sói chết và ngày kết thúc; nếu không phải, Kị sĩ tự chết và trò chơi tiếp tục.' },
@@ -1775,6 +1775,10 @@
                             if (!flags.usedPuppeteer) spcHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối Điều Khiển')">🎎 Người Múa Rối: Ép Sói Cắn</button>`;
                             else spcHtml += `<button disabled style="background: #555;">🎎 Người Múa Rối: Đứt dây rối</button>`;
                         }
+                        if (livingRoles.includes('Dược sĩ')) {
+                            if (!flags.usedPharmaSleep) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Bị Đánh Thuốc Mê')">💊 Dược Sĩ: Đánh Thuốc Mê</button>`;
+                            else spcHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình mê hồn</button>`;
+                        }
 
                         // --- KỸ NĂNG MỌI ĐÊM ---
                         if (livingRoles.includes('Thợ săn')) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Đích ngắm Thợ Săn')">🏹 Thợ Săn: Chọn Mục Tiêu Chết Thay</button>`;
@@ -2146,6 +2150,7 @@
                 e.preventDefault();
                 pos3 = e.clientX;
                 pos4 = e.clientY;
+                elmnt.style.transition = 'none'; // Tắt hiệu ứng để kéo mượt
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
             }
@@ -2154,6 +2159,7 @@
                 // Không preventDefault ở đây để tránh chặn sự kiện click
                 pos3 = e.touches[0].clientX;
                 pos4 = e.touches[0].clientY;
+                elmnt.style.transition = 'none'; // Tắt hiệu ứng để kéo mượt
                 document.ontouchend = closeDragElement;
                 document.ontouchmove = elementTouchDrag;
             }
@@ -2169,7 +2175,7 @@
             }
 
             function elementTouchDrag(e) {
-                e.preventDefault(); // Ngăn cuộn trang khi đang kéo
+                if (e.cancelable) e.preventDefault(); // Ngăn cuộn trang khi đang kéo
                 pos1 = pos3 - e.touches[0].clientX;
                 pos2 = pos4 - e.touches[0].clientY;
                 pos3 = e.touches[0].clientX;
@@ -2195,6 +2201,7 @@
             }
 
             function closeDragElement() {
+                elmnt.style.transition = ''; // Bật lại hiệu ứng mặc định
                 document.onmouseup = null;
                 document.onmousemove = null;
                 document.ontouchend = null;
