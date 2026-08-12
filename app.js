@@ -967,18 +967,18 @@
 
                 if (winner === 'VILLAGE') {
                     overlay.style.background = 'radial-gradient(circle, #2980b9, #2c3e50)';
-                    overlay.innerHTML = \`
+                    overlay.innerHTML = `
                         <h1 style="font-size: 3rem; text-shadow: 0 0 30px #f1c40f, 0 0 10px #f1c40f; color: #f1c40f; text-align: center;">✨ PHE DÂN CHIẾN THẮNG ✨</h1>
                         <p style="font-size: 1.5rem; margin-top: 10px; text-align: center;">Toàn bộ Sói đã bị tiêu diệt!</p>
                         <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; background: #f39c12; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
-                    \`;
+                    `;
                 } else if (winner === 'WOLF') {
                     overlay.style.background = 'radial-gradient(circle, #c0392b, #2c3e50)';
-                    overlay.innerHTML = \`
+                    overlay.innerHTML = `
                         <h1 style="font-size: 3rem; text-shadow: 0 0 30px #ff0000, 0 0 10px #ff0000; color: #ff4757; text-align: center;">🐺 PHE SÓI CHIẾN THẮNG 🐺</h1>
                         <p style="font-size: 1.5rem; margin-top: 10px; text-align: center;">Số lượng Sói đã áp đảo Dân Làng!</p>
                         <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
-                    \`;
+                    `;
                 }
             },
 
