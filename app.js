@@ -71,7 +71,7 @@
                 'Hai chị em': { icon: '👯‍♀️', desc: 'Thuộc phe dân làng, không có chức năng đặc biệt ngoài việc thức dậy cùng nhau vào đêm đầu tiên để nhận biết nhau, giúp tạo sự tin tưởng.' },
                 'Ba anh em': { icon: '👨‍👦‍👦', desc: 'Thuộc phe dân làng, không có chức năng đặc biệt ngoài việc ba người thức dậy vào đêm đầu tiên để nhận biết mặt nhau.' },
                 'Thiên sứ': { icon: '👼', desc: 'Thắng ngay lập tức nếu bị Sói cắn vào đêm đầu tiên hoặc bị dân làng treo cổ vào sáng đầu tiên. Nếu sống sót qua vòng đầu, Thiên sứ sẽ mất chức năng và trở thành một dân làng bình thường.' },
-                'Thẩm phán lắp bắp': { icon: '⚖️', desc: 'Một lần duy nhất trong ván chơi, bằng dấu hiệu đã thống nhất với Quản trò từ đêm đầu, Thẩm phán có quyền quyết định tiến hành lần bỏ phiếu treo cổ thứ 2 trong cùng một buổi sáng.' },
+                'Thẩm phán lắp bắp': { icon: '⚖️', desc: 'Đêm đầu tiên, Thẩm Phán sẽ chỉ cho Quản Trò ám hiệu đặc biệt của mình. Một lần trong trò chơi, khi Thẩm Phán thực hiện ám hiệu, buổi sáng đó sẽ có 2 người bị treo cổ thay vì 1.' },
                 'Hiệp sĩ kiếm gỉ': { icon: '🗡️', desc: 'Nếu bị sói cắn, Hiệp sĩ sẽ chết, nhưng con Sói cắn hiệp sĩ sẽ bị thương và cũng sẽ chết sau 1 ngày đêm (Quản trò sẽ công bố Sói chết vào sáng hôm sau nữa).' },
                 'Hồ ly': { icon: '🦊', desc: 'Mỗi đêm chọn 3 người chơi, nếu trong đó có ít nhất 1 Ma Sói thì Hồ ly giữ nguyên năng lực. Nếu không có Ma Sói nào trong 3 người, Hồ ly sẽ mất đi năng lực này vĩnh viễn.' },
                 'Người thuần phục gấu': { icon: '🐻', desc: 'Quản trò sẽ ra dấu hiệu báo cho Người thuần phục gấu biết nếu một trong hai người ngồi ngay bên cạnh nhân vật này là Ma Sói.' },
@@ -86,7 +86,7 @@
                 'Cảnh sát': { icon: '👮', desc: 'Do Cảnh sát trưởng bổ nhiệm, phụ trách bốc và đọc các lá bài Sự kiện làm thông báo cho cả làng mỗi sáng. Cảnh sát trưởng có thể bãi chức và chọn Cảnh sát mới bất cứ lúc nào trước khi cả làng bỏ phiếu.' },
                 'Nguyệt Nữ': { icon: '🌙', desc: 'Mỗi đêm chọn 1 người để vô hiệu hóa kỹ năng của người đó trong suốt đêm. Nguyệt Nữ không thể vô hiệu hóa chức năng của Bảo vệ và các kỹ năng áp dụng vào ban ngày.' },
                 'Thầy thôi miên': { icon: '😵‍💫', desc: 'Mỗi đêm tỉnh dậy chọn mê hoặc 1 người (không được chọn 1 người liên tiếp 2 đêm). Nếu đêm đó Thầy thôi miên chết, người bị mê hoặc sẽ phải chết thay.' },
-                'Dược sĩ': { icon: '💊', desc: 'Sở hữu Bình Thuốc mê (cấm 1 người biểu quyết và nói chuyện trong 1 ngày) và Bình Hồi phục (cứu sống người bị Phù thủy giết). Mỗi bình chỉ được sử dụng một lần duy nhất trong ván.' },
+                'Dược sĩ': { icon: '💊', desc: 'Dược sĩ có 2 bình Mê Hồn Dược và Hồi Phục Dược. Mỗi đêm Dược sĩ sẽ được gọi dậy để sử dụng 2 bình (mỗi bình dùng 1 lần). Mê Hồn Dược làm 1 người mất quyền biểu quyết và không được nói chuyện 1 ngày. Hồi Phục Dược nếu quăng trúng Phù thủy thì sẽ được hồi bình cứu.' },
                 'Người múa rối': { icon: '🎎', desc: 'Một lần duy nhất trong suốt ván chơi, có thể ép bầy Sói phải cắn 1 người do mình chỉ định, thậm chí có thể ép Sói cắn chính đồng loại của mình.' },
                 'Sát thủ': { icon: '🥷', desc: 'Cứ mỗi 2 đêm, nếu số phiếu bầu treo cổ chỉ vào Sát thủ đạt đủ 4 phiếu, Sát thủ sẽ được quyền chỉ định giết chết 1 người.' },
                 'Kị sĩ': { icon: '🐎', desc: 'Duy nhất một lần vào ban ngày trước khi treo cổ, được lật bài lên và chỉ định 1 người. Nếu người đó là Sói, Sói chết và ngày kết thúc; nếu không phải, Kị sĩ tự chết và trò chơi tiếp tục.' },
@@ -133,6 +133,13 @@
             switchScreen(screenId) {
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById(screenId).classList.add('active');
+
+                // Tự động hiển thị nút Ghi chú nếu là Quản trò
+                const btnNote = document.getElementById('btn-note');
+                if (btnNote) {
+                    if (this.state.role === 'gm') btnNote.style.display = 'flex';
+                    else btnNote.style.display = 'none';
+                }
             },
 
             // =======================================================================
@@ -299,29 +306,57 @@
                 this.switchScreen('screen-lobby');
             },
 
+            realtimeChannel: null,
+
             startPolling() {
                 this.stopPolling();
-                this.state.isPolling = true; // Thêm cờ trạng thái
+                this.state.isPolling = true; 
+
+                // Lần đầu tự load state
                 this.pollLoop();
+
+                // Lắng nghe qua Supabase Realtime thay vì loop liên tục
+                if (!this.realtimeChannel && window.supabase) {
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    this.realtimeChannel = client.channel('room_' + this.state.roomCode)
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms', filter: 'room_code=eq.' + this.state.roomCode }, payload => {
+                            if (this.state.isPolling) this.pollLoop();
+                        })
+                        .on('postgres_changes', { event: '*', schema: 'public', table: 'players', filter: 'room_code=eq.' + this.state.roomCode }, payload => {
+                            if (this.state.isPolling) this.pollLoop();
+                        })
+                        .subscribe((status) => {
+                            if (status === 'SUBSCRIBED') {
+                                console.log("🟢 Băng tần thời gian thực (Realtime) đã được thiết lập thành công!");
+                            }
+                        });
+                }
             },
 
             stopPolling() {
                 this.state.isPolling = false;
-                if (this.pollingTimer) clearTimeout(this.pollingTimer);
+                if (this.pollingTimer) {
+                    clearTimeout(this.pollingTimer);
+                    this.pollingTimer = null;
+                }
+                if (this.realtimeChannel && window.supabase) {
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    client.removeChannel(this.realtimeChannel);
+                    this.realtimeChannel = null;
+                }
             },
 
             async pollLoop() {
                 if (!this.state.isPolling) return;
 
                 // 🔥 VAN ÁP SUẤT TỐI THƯỢNG (ANTI-DDOS LOCK)
-                // Nếu API trước đó chưa trả về, TUYỆT ĐỐI không bắn thêm request mới để chống nghẽn cổ chai.
-                // Thay vì spam, hệ thống sẽ nhấp nhả chờ 100ms rồi kiểm tra lại van.
                 if (this.isFetchingGameState) {
+                    // Nếu đang fetch, ta hẹn gọi lại sau 100ms để không bỏ sót tín hiệu từ Realtime
+                    if (this.pollingTimer) clearTimeout(this.pollingTimer);
                     this.pollingTimer = setTimeout(() => this.pollLoop(), 100);
                     return;
                 }
 
-                const startTime = Date.now();
                 this.isFetchingGameState = true; // Khóa van an toàn
 
                 try {
@@ -331,17 +366,8 @@
                 } finally {
                     this.isFetchingGameState = false; // Mở van khi đã nhận xong dữ liệu
                 }
-
-                // ⚡ THUẬT TOÁN ĐÀN HỒI ÉP XUNG (OVERCLOCKED ELASTIC SYNC)
-                if (this.state.isPolling) {
-                    const elapsed = Date.now() - startTime;
-
-                    // 🔥 LÕI ÉP XUNG VŨ TRỤ (HYPER-DRIVE OVERCLOCK): Mục tiêu 350ms mỗi nhịp!
-                    // Lõi RAM Backend đã kích hoạt, ta xé toạc giới hạn 1 giây cũ, đẩy tốc độ quét thời gian thực lên gấp gần 3 lần!
-                    const nextTick = Math.max(50, 350 - elapsed);
-
-                    this.pollingTimer = setTimeout(() => this.pollLoop(), nextTick);
-                }
+                
+                // Đã loại bỏ thuật toán đàn hồi ép xung (350ms loop)
             },
 
             async fetchGameState() {
@@ -1637,7 +1663,10 @@
                         if (allRolesInGame.includes('Ảnh tử')) manualHtml += `<button style="background: #34495e" onclick="app.setPendingAction('${targetId}', 'SHADOW_MARK', '👤 Bị Cướp Bài')">👤 Cướp bài (Ảnh tử)</button>`;
                         if (allRolesInGame.includes('Đứa trẻ hoang dã')) manualHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Làm Thần Tượng')">👶 Thần tượng (Đứa trẻ hoang dã)</button>`;
                         if (allRolesInGame.includes('Nguyệt Nữ')) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Bị Câm Lặng')">🌙 Câm lặng (Nguyệt Nữ)</button>`;
-                        if (allRolesInGame.includes('Dược sĩ')) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê')">💊 Thuốc mê (Dược sĩ)</button>`;
+                        if (allRolesInGame.includes('Dược sĩ')) {
+                            if (!flags.usedPharmaSleep) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê')">💊 Thuốc mê (Dược sĩ)</button>`;
+                            else manualHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình mê hồn</button>`;
+                        }
                         if (allRolesInGame.includes('Con quạ')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Bị Nguyền Rủa')">🐦‍⬛ Nguyền rủa (Con Quạ)</button>`;
                         if (allRolesInGame.includes('Kẻ báo thù')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Trả Thù')">🩸 Trả thù (Kẻ Báo Thù)</button>`;
                         if (allRolesInGame.includes('Thợ săn')) manualHtml += `<button style="background: #e67e22" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Thợ Săn Ngắm')">🏹 Ngắm bắn (Thợ săn)</button>`;
@@ -1979,6 +2008,29 @@
                     }
                 });
                 this.renderCodexList(filtered);
+            },
+
+            // ================= SỔ TAY GHI CHÚ QUẢN TRÒ =================
+            openNoteModal() {
+                if (this.state.role !== 'gm') return;
+                const noteInput = document.getElementById('note-textarea');
+                // Nạp từ localStorage
+                const saved = localStorage.getItem('gmNotes_' + this.state.roomCode);
+                if (saved) noteInput.value = saved;
+                else noteInput.value = '';
+                document.getElementById('modal-note').classList.add('active');
+            },
+
+            closeNoteModal() {
+                document.getElementById('modal-note').classList.remove('active');
+            },
+
+            clearNote() {
+                if (confirm('Bạn có chắc chắn muốn xóa toàn bộ ghi chú của phòng này?')) {
+                    localStorage.removeItem('gmNotes_' + this.state.roomCode);
+                    document.getElementById('note-textarea').value = '';
+                    this.showToast('Đã xóa ghi chú!', 'success');
+                }
             }
         };
 
@@ -2074,3 +2126,90 @@
             requestAnimationFrame(fixMobileViewport);
         });
         // =======================================================================
+        
+        // =======================================================================
+        // 🔥 HỆ THỐNG KÉO THẢ (DRAGGABLE) CHO NÚT GHI CHÚ VÀ TỪ ĐIỂN
+        // =======================================================================
+        function makeDraggable(elementId) {
+            const elmnt = document.getElementById(elementId);
+            if (!elmnt) return;
+            
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            // Xử lý Touch (Mobile)
+            elmnt.addEventListener('touchstart', dragTouchStart, { passive: false });
+            // Xử lý Mouse (PC)
+            elmnt.onmousedown = dragMouseDown;
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+
+            function dragTouchStart(e) {
+                // Không preventDefault ở đây để tránh chặn sự kiện click
+                pos3 = e.touches[0].clientX;
+                pos4 = e.touches[0].clientY;
+                document.ontouchend = closeDragElement;
+                document.ontouchmove = elementTouchDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                updatePosition();
+            }
+
+            function elementTouchDrag(e) {
+                e.preventDefault(); // Ngăn cuộn trang khi đang kéo
+                pos1 = pos3 - e.touches[0].clientX;
+                pos2 = pos4 - e.touches[0].clientY;
+                pos3 = e.touches[0].clientX;
+                pos4 = e.touches[0].clientY;
+                updatePosition();
+            }
+            
+            function updatePosition() {
+                // Giới hạn trong màn hình
+                let newTop = elmnt.offsetTop - pos2;
+                let newLeft = elmnt.offsetLeft - pos1;
+                
+                const maxTop = window.innerHeight - elmnt.offsetHeight;
+                const maxLeft = window.innerWidth - elmnt.offsetWidth;
+                
+                newTop = Math.max(0, Math.min(newTop, maxTop));
+                newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+                
+                elmnt.style.top = newTop + "px";
+                elmnt.style.left = newLeft + "px";
+                elmnt.style.bottom = "auto";
+                elmnt.style.right = "auto";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                document.ontouchend = null;
+                document.ontouchmove = null;
+            }
+        }
+        
+        // Kích hoạt kéo thả cho 2 nút
+        makeDraggable('btn-codex');
+        makeDraggable('btn-note');
+
+        // Lắng nghe sự kiện lưu Ghi chú tự động
+        document.getElementById('note-textarea').addEventListener('input', function(e) {
+            if (app.state.role === 'gm' && app.state.roomCode) {
+                localStorage.setItem('gmNotes_' + app.state.roomCode, e.target.value);
+            }
+        });
+
