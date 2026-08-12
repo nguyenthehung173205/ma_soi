@@ -1727,7 +1727,9 @@
                         // ================= NHÓM 2: BẢO VỆ =================
                         let defHtml = '';
                         if (livingRoles.includes('Phù Thủy')) {
-                            if (!flags.usedWitchHeal) defHtml += `<button class="btn-success" onclick="app.setPendingAction('${targetId}', 'WITCH_HEAL', '🧪 Phù Thủy Cứu')">🧪 Phù Thủy: Cứu</button>`;
+                            // Cấp cứu: Nếu Dược sĩ đang dùng Phục Hồi Dược lên Phù Thủy trong cùng đêm, mở ngay quyền cứu cho Phù Thủy!
+                            let isWitchHealedByPharmaNow = this.state.players.some(p => p.role === 'Phù Thủy' && p.pendingActions && p.pendingActions.find(a => a.action === 'PHARMA_HEAL'));
+                            if (!flags.usedWitchHeal || isWitchHealedByPharmaNow) defHtml += `<button class="btn-success" onclick="app.setPendingAction('${targetId}', 'WITCH_HEAL', '🧪 Phù Thủy Cứu')">🧪 Phù Thủy: Cứu</button>`;
                             else defHtml += `<button disabled style="background: #555;">🧪 Phù Thủy: Đã hết bình cứu</button>`;
                         }
 
@@ -1777,7 +1779,7 @@
                             else spcHtml += `<button disabled style="background: #555;">🎎 Người Múa Rối: Đứt dây rối</button>`;
                         }
                         if (livingRoles.includes('Dược sĩ')) {
-                            if (!flags.usedPharmaSleep) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Bị Đánh Thuốc Mê')">💊 Dược Sĩ: Đánh Thuốc Mê</button>`;
+                            if (!flags.usedPharmaSleep) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê')">💊 Thuốc mê (Dược sĩ)</button>`;
                             else spcHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình mê hồn</button>`;
                         }
 
@@ -2222,8 +2224,8 @@
         }
         
         // Kích hoạt kéo thả cho 2 nút
-        makeDraggable('btn-codex');
-        makeDraggable('btn-note');
+        // makeDraggable('btn-codex');
+        // makeDraggable('btn-note');
 
         // Lắng nghe sự kiện lưu Ghi chú tự động
         document.getElementById('note-textarea').addEventListener('input', function(e) {
