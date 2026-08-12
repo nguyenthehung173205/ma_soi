@@ -86,7 +86,7 @@
                 'Cảnh sát': { icon: '👮', desc: 'Do Cảnh sát trưởng bổ nhiệm, phụ trách bốc và đọc các lá bài Sự kiện làm thông báo cho cả làng mỗi sáng. Cảnh sát trưởng có thể bãi chức và chọn Cảnh sát mới bất cứ lúc nào trước khi cả làng bỏ phiếu.' },
                 'Nguyệt Nữ': { icon: '🌙', desc: 'Mỗi đêm chọn 1 người để vô hiệu hóa kỹ năng của người đó trong suốt đêm. Nguyệt Nữ không thể vô hiệu hóa chức năng của Bảo vệ và các kỹ năng áp dụng vào ban ngày.' },
                 'Thầy thôi miên': { icon: '😵‍💫', desc: 'Mỗi đêm tỉnh dậy chọn mê hoặc 1 người (không được chọn 1 người liên tiếp 2 đêm). Nếu đêm đó Thầy thôi miên chết, người bị mê hoặc sẽ phải chết thay.' },
-                'Dược sĩ': { icon: '💊', desc: 'Dược sĩ có 2 bình Mê Hồn Dược và Hồi Phục Dược (mỗi bình dùng 1 lần). Mê Hồn Dược làm 1 người mất quyền biểu quyết vào sáng hôm sau. Phục Hồi Dược không thể tự cứu sống, nhưng nếu quăng trúng Phù thủy thì sẽ giúp Phù thủy được hồi lại bình cứu mạng.' },
+                'Dược sĩ': { icon: '💊', desc: 'Dược sĩ có 2 bình Mê Hồn Dược và Hồi Phục Dược. Mỗi đêm Dược sĩ sẽ được gọi dậy để sử dụng 2 bình (mỗi bình dùng 1 lần). Mê Hồn Dược làm 1 người mất quyền biểu quyết và không được nói chuyện 1 ngày. Hồi Phục Dược nếu quăng trúng Phù thủy thì sẽ được hồi bình cứu.' },
                 'Người múa rối': { icon: '🎎', desc: 'Một lần duy nhất trong suốt ván chơi, có thể ép bầy Sói phải cắn 1 người do mình chỉ định, thậm chí có thể ép Sói cắn chính đồng loại của mình.' },
                 'Sát thủ': { icon: '🥷', desc: 'Cứ mỗi 2 đêm, nếu số phiếu bầu treo cổ chỉ vào Sát thủ đạt đủ 4 phiếu, Sát thủ sẽ được quyền chỉ định giết chết 1 người.' },
                 'Kị sĩ': { icon: '🐎', desc: 'Duy nhất một lần vào ban ngày trước khi treo cổ, được lật bài lên và chỉ định 1 người. Nếu người đó là Sói, Sói chết và ngày kết thúc; nếu không phải, Kị sĩ tự chết và trò chơi tiếp tục.' },
@@ -539,6 +539,26 @@
                             this.applyTimeTheme(res.time);
                         }
 
+                        // KIỂM TRA ĐỔI QUẢN TRÒ (GM)
+                        if (this.state.role === 'player' && res.gameFlags && res.gameFlags.newGM === this.state.playerId) {
+                            alert("👑 BẠN ĐÃ ĐƯỢC NHƯỜNG QUYỀN QUẢN TRÒ!");
+                            this.state.role = 'gm';
+                            this.state.playerId = null;
+                            localStorage.setItem('werewolf_session', JSON.stringify({
+                                roomCode: this.state.roomCode,
+                                role: 'gm'
+                            }));
+                            document.getElementById('gm-room-id').innerText = this.state.roomCode;
+                            this.switchScreen('screen-gm');
+                            return;
+                        }
+
+                        // KIỂM TRA ĐIỀU KIỆN THẮNG
+                        if (res.gameFlags && res.gameFlags.winner && this.state.winnerDisplayed !== res.gameFlags.winner) {
+                            this.state.winnerDisplayed = res.gameFlags.winner;
+                            this.showWinScreen(res.gameFlags.winner);
+                        }
+
                         this.handleVoteUI(res.voteState);
                         
                         if (this.state.role === 'gm' && res.gameFlags && res.gameFlags.gmAlerts) {
@@ -645,6 +665,40 @@
                     alert("Lỗi kết nối khi dùng kỹ năng!");
                 }
 
+                this.unlockBtn(btn, lockState);
+                this.state.isSyncing = false;
+                this.fetchGameState();
+            },
+
+            async transferGMRole(targetId, btn = null) {
+                const newName = prompt('Nhập tên hiển thị mới của bạn (bạn sẽ chơi thế chỗ người này):');
+                if (!newName) return;
+                
+                if (!(await this.confirmAction(`Bạn có chắc muốn nhường vị trí Quản Trò cho người này và tham gia làm người chơi [${newName}]?`))) return;
+                
+                const lockState = this.lockBtn(btn, "⏳ ĐANG CHUYỂN GIAO...");
+                this.state.isSyncing = true;
+                
+                try {
+                    const res = await callMatrix('transferGM', { roomCode: this.state.roomCode, targetId: targetId, newName: newName });
+                    alert(res.message);
+                    this.closeGMActionMenu();
+                    
+                    // Cập nhật local của Quản trò cũ
+                    this.state.role = 'player';
+                    this.state.playerId = targetId;
+                    this.state.playerName = newName;
+                    localStorage.setItem('werewolf_session', JSON.stringify({
+                        roomCode: this.state.roomCode,
+                        role: 'player',
+                        playerId: targetId,
+                        playerName: newName
+                    }));
+                    document.getElementById('player-room-info').innerText = `Mã phòng: ${this.state.roomCode} | Tên: ${newName}`;
+                    this.switchScreen('screen-player');
+
+                } catch (e) { alert("Lỗi kết nối khi nhường quyền!"); }
+                
                 this.unlockBtn(btn, lockState);
                 this.state.isSyncing = false;
                 this.fetchGameState();
@@ -888,6 +942,44 @@
                 let visionText = visionEnabled ? "ĐƯỢC XEM BÀI" : "BỊ BỊT MẮT";
                 document.getElementById('gm-room-id').innerText = this.state.roomCode + " (HỒN MA - " + visionText + ")";
                 this.renderGMGrid();
+            },
+
+            showWinScreen(winner) {
+                let overlay = document.getElementById('win-screen-overlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.id = 'win-screen-overlay';
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
+                    overlay.style.width = '100vw';
+                    overlay.style.height = '100vh';
+                    overlay.style.zIndex = '999999';
+                    overlay.style.display = 'flex';
+                    overlay.style.flexDirection = 'column';
+                    overlay.style.justifyContent = 'center';
+                    overlay.style.alignItems = 'center';
+                    overlay.style.color = 'white';
+                    overlay.style.fontFamily = "'Cinzel', 'Arial', sans-serif";
+                    overlay.style.textShadow = "0 0 20px rgba(0,0,0,0.8)";
+                    document.body.appendChild(overlay);
+                }
+
+                if (winner === 'VILLAGE') {
+                    overlay.style.background = 'radial-gradient(circle, #2980b9, #2c3e50)';
+                    overlay.innerHTML = \`
+                        <h1 style="font-size: 3rem; text-shadow: 0 0 30px #f1c40f, 0 0 10px #f1c40f; color: #f1c40f; text-align: center;">✨ PHE DÂN CHIẾN THẮNG ✨</h1>
+                        <p style="font-size: 1.5rem; margin-top: 10px; text-align: center;">Toàn bộ Sói đã bị tiêu diệt!</p>
+                        <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; background: #f39c12; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
+                    \`;
+                } else if (winner === 'WOLF') {
+                    overlay.style.background = 'radial-gradient(circle, #c0392b, #2c3e50)';
+                    overlay.innerHTML = \`
+                        <h1 style="font-size: 3rem; text-shadow: 0 0 30px #ff0000, 0 0 10px #ff0000; color: #ff4757; text-align: center;">🐺 PHE SÓI CHIẾN THẮNG 🐺</h1>
+                        <p style="font-size: 1.5rem; margin-top: 10px; text-align: center;">Số lượng Sói đã áp đảo Dân Làng!</p>
+                        <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
+                    \`;
+                }
             },
 
             revealCard() {
@@ -1838,6 +1930,7 @@
                 // 🔥 NÚT BẤM CỦA BẠO CHÚA (XUẤT HIỆN CẢ NGÀY LẪN ĐÊM)
                 actionList.innerHTML += `
             <div style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                <button class="btn-primary" style="background: #34495e; box-shadow: 0 4px 15px rgba(52, 73, 94, 0.6); margin-bottom: 10px;" onclick="app.transferGMRole('${targetId}', this)">👑 Nhường quyền Quản Trò</button>
                 <button class="btn-danger" style="background: #7f0000; box-shadow: 0 4px 15px rgba(127,0,0,0.6);" onclick="app.kickPlayer('${targetId}', this)">🚷 ĐUỔI KHỎI PHÒNG (KICK)</button>
             </div>
         `;
