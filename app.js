@@ -1656,6 +1656,7 @@
                         `;
 
                         // Dấu ấn nhân vật
+                        // Dấu ấn nhân vật
                         manualHtml += `<div style="font-size: 12px; color: #95a5a6; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">DẤU ẤN NHÂN VẬT</div>`;
                         
                         if (allRolesInGame.includes('Cupid (Thần tình yêu)')) manualHtml += `<button style="background: #e74c3c" onclick="app.setPendingAction('${targetId}', 'CUPID_LINK', '💘 Cupid Ghép Đôi')">💘 Ghép đôi (Cupid)</button>`;
@@ -2186,9 +2187,10 @@
             }
             
             function updatePosition() {
-                // Giới hạn trong màn hình
-                let newTop = elmnt.offsetTop - pos2;
-                let newLeft = elmnt.offsetLeft - pos1;
+                // Lấy tọa độ thực tế trên màn hình thay vì offsetTop (tránh lỗi cộng dồn thanh cuộn)
+                const rect = elmnt.getBoundingClientRect();
+                let newTop = rect.top - pos2;
+                let newLeft = rect.left - pos1;
                 
                 const maxTop = window.innerHeight - elmnt.offsetHeight;
                 const maxLeft = window.innerWidth - elmnt.offsetWidth;
