@@ -554,9 +554,13 @@
                         }
 
                         // KIỂM TRA ĐIỀU KIỆN THẮNG
-                        if (res.gameFlags && res.gameFlags.winner && this.state.winnerDisplayed !== res.gameFlags.winner) {
-                            this.state.winnerDisplayed = res.gameFlags.winner;
-                            this.showWinScreen(res.gameFlags.winner);
+                        if (res.gameFlags && res.gameFlags.winner) {
+                            if (this.state.winnerDisplayed !== res.gameFlags.winner) {
+                                this.state.winnerDisplayed = res.gameFlags.winner;
+                                this.showWinScreen(res.gameFlags.winner);
+                            }
+                        } else {
+                            this.state.winnerDisplayed = null; // Khởi tạo lại trạng thái thắng khi phát bài ván mới
                         }
 
                         this.handleVoteUI(res.voteState);
