@@ -2140,6 +2140,7 @@
             if (!elmnt) return;
             
             let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            let currentTop = null, currentLeft = null;
             
             // Xử lý Touch (Mobile)
             elmnt.addEventListener('touchstart', dragTouchStart, { passive: false });
@@ -2149,59 +2150,65 @@
             function dragMouseDown(e) {
                 e = e || window.event;
                 e.preventDefault();
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                elmnt.style.transition = 'none'; // Tắt hiệu ứng để kéo mượt
+                initDrag(e.clientX, e.clientY);
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
             }
 
             function dragTouchStart(e) {
                 // Không preventDefault ở đây để tránh chặn sự kiện click
-                pos3 = e.touches[0].clientX;
-                pos4 = e.touches[0].clientY;
-                elmnt.style.transition = 'none'; // Tắt hiệu ứng để kéo mượt
-                
+                initDrag(e.touches[0].clientX, e.touches[0].clientY);
                 // Dùng addEventListener để có thể truyền passive: false cho touchmove!
                 document.addEventListener('touchmove', elementTouchDrag, { passive: false });
                 document.addEventListener('touchend', closeDragElement);
             }
 
+            function initDrag(clientX, clientY) {
+                pos3 = clientX;
+                pos4 = clientY;
+                elmnt.style.transition = 'none'; // Tắt hiệu ứng để kéo mượt
+                
+                // Khởi tạo tọa độ tuyệt đối MỘT LẦN DUY NHẤT khi bắt đầu kéo
+                const rect = elmnt.getBoundingClientRect();
+                currentTop = rect.top;
+                currentLeft = rect.left;
+                
+                // Ngắt neo bottom/right ngay lập tức
+                elmnt.style.top = currentTop + "px";
+                elmnt.style.left = currentLeft + "px";
+                elmnt.style.bottom = "auto";
+                elmnt.style.right = "auto";
+            }
+
             function elementDrag(e) {
                 e = e || window.event;
                 e.preventDefault();
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
-                pos3 = e.clientX;
-                pos4 = e.clientY;
-                updatePosition();
+                doDrag(e.clientX, e.clientY);
             }
 
             function elementTouchDrag(e) {
                 if (e.cancelable) e.preventDefault(); // CHẶN LĂN TRANG TUYỆT ĐỐI
-                pos1 = pos3 - e.touches[0].clientX;
-                pos2 = pos4 - e.touches[0].clientY;
-                pos3 = e.touches[0].clientX;
-                pos4 = e.touches[0].clientY;
-                updatePosition();
+                doDrag(e.touches[0].clientX, e.touches[0].clientY);
             }
             
-            function updatePosition() {
-                // Lấy tọa độ thực tế trên màn hình thay vì offsetTop (tránh lỗi cộng dồn thanh cuộn)
-                const rect = elmnt.getBoundingClientRect();
-                let newTop = rect.top - pos2;
-                let newLeft = rect.left - pos1;
+            function doDrag(clientX, clientY) {
+                pos1 = pos3 - clientX;
+                pos2 = pos4 - clientY;
+                pos3 = clientX;
+                pos4 = clientY;
+                
+                // Tính toán dựa trên biến nội bộ thay vì liên tục đọc layout của trình duyệt (tránh reflow)
+                currentTop = currentTop - pos2;
+                currentLeft = currentLeft - pos1;
                 
                 const maxTop = window.innerHeight - elmnt.offsetHeight;
                 const maxLeft = window.innerWidth - elmnt.offsetWidth;
                 
-                newTop = Math.max(0, Math.min(newTop, maxTop));
-                newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+                currentTop = Math.max(0, Math.min(currentTop, maxTop));
+                currentLeft = Math.max(0, Math.min(currentLeft, maxLeft));
                 
-                elmnt.style.top = newTop + "px";
-                elmnt.style.left = newLeft + "px";
-                elmnt.style.bottom = "auto";
-                elmnt.style.right = "auto";
+                elmnt.style.top = currentTop + "px";
+                elmnt.style.left = currentLeft + "px";
             }
 
             function closeDragElement() {
