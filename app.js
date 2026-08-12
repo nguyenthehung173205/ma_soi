@@ -2160,8 +2160,10 @@
                 pos3 = e.touches[0].clientX;
                 pos4 = e.touches[0].clientY;
                 elmnt.style.transition = 'none'; // Tắt hiệu ứng để kéo mượt
-                document.ontouchend = closeDragElement;
-                document.ontouchmove = elementTouchDrag;
+                
+                // Dùng addEventListener để có thể truyền passive: false cho touchmove!
+                document.addEventListener('touchmove', elementTouchDrag, { passive: false });
+                document.addEventListener('touchend', closeDragElement);
             }
 
             function elementDrag(e) {
@@ -2175,7 +2177,7 @@
             }
 
             function elementTouchDrag(e) {
-                if (e.cancelable) e.preventDefault(); // Ngăn cuộn trang khi đang kéo
+                if (e.cancelable) e.preventDefault(); // CHẶN LĂN TRANG TUYỆT ĐỐI
                 pos1 = pos3 - e.touches[0].clientX;
                 pos2 = pos4 - e.touches[0].clientY;
                 pos3 = e.touches[0].clientX;
@@ -2204,8 +2206,9 @@
                 elmnt.style.transition = ''; // Bật lại hiệu ứng mặc định
                 document.onmouseup = null;
                 document.onmousemove = null;
-                document.ontouchend = null;
-                document.ontouchmove = null;
+                
+                document.removeEventListener('touchmove', elementTouchDrag, { passive: false });
+                document.removeEventListener('touchend', closeDragElement);
             }
         }
         
