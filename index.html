@@ -32,10 +32,7 @@
 <body class="theme-day" id="app-body">
 
     <!-- 🔥 NÚT TRA CỨU NHÂN VẬT GÓC MÀN HÌNH (FLOATING WIKI BUTTON) -->
-    <button id="btn-codex" class="fab-wiki" onclick="app.openCodexModal()">📖</button>
-    <!-- 🔥 NÚT GHI CHÚ QUẢN TRÒ -->
-    <button id="btn-note" class="fab-wiki" onclick="app.openNoteModal()" style="bottom: max(145px, env(safe-area-inset-bottom) + 125px); background: #f39c12; display: none;">📝</button>
-    
+    <button class="fab-wiki" onclick="app.openCodexModal()">📖</button>
     <!-- 🔥 HỆ THỐNG THÔNG BÁO VÀ XÁC NHẬN (CUSTOM UI) -->
     <div id="toast-container"></div>
     <div id="custom-confirm">
@@ -46,6 +43,17 @@
                 <button id="btn-confirm-yes" class="btn-danger"
                     style="flex: 1; box-shadow: 0 4px 15px rgba(231,76,60,0.4);">CHẤP NHẬN</button>
                 <button id="btn-confirm-no" class="btn-secondary" style="flex: 1;">HỦY BỎ</button>
+            </div>
+        </div>
+    </div>
+    <div id="custom-prompt">
+        <div class="confirm-box" style="border: 2px solid var(--primary); box-shadow: 0 0 30px rgba(52, 152, 219, 0.4);">
+            <h3 style="color: var(--primary); margin-top: 0; letter-spacing: 1px;">📝 NHẬP THÔNG TIN</h3>
+            <p id="prompt-message" class="confirm-message" style="margin-bottom: 20px;">Vui lòng nhập:</p>
+            <input type="text" id="prompt-input" style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; font-size: 16px; outline: none; box-sizing: border-box;" autocomplete="off">
+            <div class="confirm-actions">
+                <button id="btn-prompt-yes" class="btn-primary" style="flex: 1; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);">XÁC NHẬN</button>
+                <button id="btn-prompt-no" class="btn-secondary" style="flex: 1;">HỦY BỎ</button>
             </div>
         </div>
     </div>
@@ -67,6 +75,19 @@
         </div>
     </div>
 
+    <!-- 🔥 MODAL NHẬP LIỆU (CUSTOM PROMPT) -->
+    <div id="custom-prompt" class="modal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="color: var(--primary); margin-top: 0;">📝 NHẬP THÔNG TIN</h3>
+            <p id="prompt-message" style="font-size: 16px; margin-bottom: 20px;"></p>
+            <input type="text" id="prompt-input" style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; font-size: 16px; box-sizing: border-box;" />
+            <div style="display: flex; gap: 15px;">
+                <button id="btn-prompt-submit" class="btn-success" style="flex: 1;">XÁC NHẬN</button>
+                <button id="btn-prompt-cancel" class="btn-secondary" style="flex: 1;">HỦY</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 🔥 MODAL TRA CỨU TỪ ĐIỂN NHÂN VẬT -->
     <div id="modal-codex" class="modal">
         <div class="modal-content" style="text-align: left; max-height: 85vh;">
@@ -82,20 +103,6 @@
                 style="display: flex; flex-direction: column; gap: 10px; max-height: 55vh; overflow-y: auto; padding-right: 5px;">
                 <!-- Dữ liệu nhân vật sẽ được nạp động tại đây -->
             </div>
-        </div>
-    </div>
-
-    <!-- 🔥 MODAL SỔ TAY GHI CHÚ QUẢN TRÒ -->
-    <div id="modal-note" class="modal">
-        <div class="modal-content" style="text-align: left; max-height: 85vh;">
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px;">
-                <h3 style="margin: 0; color: #f39c12;">📝 SỔ TAY GHI CHÚ</h3>
-                <button class="btn-secondary" style="width: auto; padding: 6px 12px; margin: 0;"
-                    onclick="app.closeNoteModal()">✕ Đóng</button>
-            </div>
-            <textarea id="note-textarea" placeholder="Nhập ghi chú của bạn vào đây... Sẽ tự động lưu lại." style="width: 100%; height: 50vh; padding: 10px; font-size: 14px; background: rgba(0,0,0,0.3); color: white; border: 1px solid #444; border-radius: 8px; resize: none; box-sizing: border-box;"></textarea>
-            <button class="btn-danger" style="margin-top: 15px; width: 100%; padding: 12px;" onclick="app.clearNote()">🗑️ Xóa sạch ghi chú</button>
         </div>
     </div>
 
