@@ -576,7 +576,7 @@
                                 alert("👑 BẠN ĐÃ ĐƯỢC NHƯỜNG QUYỀN QUẢN TRÒ!");
                                 this.state.role = 'gm';
                                 this.state.playerId = null;
-                                localStorage.setItem('werewolf_session', JSON.stringify({
+                                sessionStorage.setItem('werewolf_session', JSON.stringify({
                                     roomCode: this.state.roomCode,
                                     role: 'gm'
                                 }));
@@ -732,11 +732,12 @@
                     this.state.role = 'player';
                     this.state.playerId = targetId;
                     this.state.playerName = newName;
-                    localStorage.setItem('werewolf_session', JSON.stringify({
+                    sessionStorage.setItem('werewolf_session', JSON.stringify({
                         roomCode: this.state.roomCode,
                         role: 'player',
                         playerId: targetId,
-                        playerName: newName
+                        playerName: newName,
+                        ignoreGMTransfer: targetId
                     }));
                     document.getElementById('player-room-info').innerText = `Mã phòng: ${this.state.roomCode} | Tên: ${newName}`;
                     this.switchScreen('screen-player');
@@ -2241,6 +2242,9 @@
                     app.state.role = 'player';
                     app.state.playerId = session.playerId;
                     app.state.roomCode = session.roomCode;
+                    if (session.ignoreGMTransfer) {
+                        app.state.ignoreGMTransfer = session.ignoreGMTransfer;
+                    }
                     document.getElementById('player-room-info').innerText = `Mã phòng: ${session.roomCode} | Tên: ${session.playerName}`;
                     app.switchScreen('screen-player');
                     app.startPolling();
