@@ -1223,7 +1223,7 @@
 
                         // 3. Bầy Sói (Thấy đồng loại & BIẾT CHÍNH XÁC LOẠI SÓI GÌ)
                         if (me.role.toLowerCase().includes('sói') && me.role !== 'Chó sói (Bán Sói / Sói Lai)' && me.role !== 'Nửa người nửa sói') {
-                            let wolves = this.state.players.filter(p => p.role.toLowerCase().includes('sói') && p.id !== me.id && p.role !== 'Chó sói (Bán Sói / Sói Lai)' && p.role !== 'Nửa người nửa sói');
+                            let wolves = this.state.players.filter(p => p.role.toLowerCase().includes('sói') && p.id !== me.id && p.role !== 'Chó sói (Bán Sói / Sói Lai)' && p.role !== 'Nửa người nửa sói' && p.role !== 'Sói trắng');
                             if (wolves.length > 0) secretMsgs.push(`🐺 Bầy Sói của bạn gồm: <b>${wolves.map(s => `${s.name} <span style="color: #e67e22; font-size: 12px;">(${s.role})</span>`).join(', ')}</b>`);
                         }
 
