@@ -589,6 +589,16 @@
                                 return;
                             }
                         }
+                        else if (this.state.role === 'player' && this.state.ignoreGMTransfer) {
+                            if (!res.gameFlags || res.gameFlags.newGM !== this.state.playerId) {
+                                this.state.ignoreGMTransfer = null;
+                                let session = JSON.parse(sessionStorage.getItem('werewolf_session'));
+                                if (session) {
+                                    delete session.ignoreGMTransfer;
+                                    sessionStorage.setItem('werewolf_session', JSON.stringify(session));
+                                }
+                            }
+                        }
 
                         // KIỂM TRA ĐIỀU KIỆN THẮNG
                         if (res.gameFlags && res.gameFlags.winner) {
