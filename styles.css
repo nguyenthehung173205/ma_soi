@@ -619,7 +619,7 @@ input {
 }
 
 /* Custom Confirm Modal */
-#custom-confirm {
+#custom-confirm, #custom-prompt {
     display: none;
     position: fixed;
     z-index: 10000;
@@ -633,7 +633,7 @@ input {
     align-items: center;
 }
 
-#custom-confirm.active {
+#custom-confirm.active, #custom-prompt.active {
     display: flex;
     animation: fadeIn 0.2s ease-out;
 }
