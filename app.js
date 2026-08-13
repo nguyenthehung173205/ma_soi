@@ -123,6 +123,35 @@
                 });
             },
 
+            promptAction(message, defaultValue = "") {
+                return new Promise((resolve) => {
+                    const modal = document.getElementById('custom-prompt');
+                    document.getElementById('prompt-message').innerHTML = message.replace(/\n/g, '<br>');
+                    const inputEl = document.getElementById('prompt-input');
+                    inputEl.value = defaultValue;
+                    modal.classList.add('active');
+                    inputEl.focus();
+
+                    const btnYes = document.getElementById('btn-prompt-yes');
+                    const btnNo = document.getElementById('btn-prompt-no');
+
+                    const cleanup = () => {
+                        modal.classList.remove('active');
+                        btnYes.removeEventListener('click', onYes);
+                        btnNo.removeEventListener('click', onNo);
+                        inputEl.removeEventListener('keyup', onEnter);
+                    };
+
+                    const onYes = () => { cleanup(); resolve(inputEl.value); };
+                    const onNo = () => { cleanup(); resolve(null); };
+                    const onEnter = (e) => { if (e.key === 'Enter') onYes(); };
+
+                    btnYes.addEventListener('click', onYes);
+                    btnNo.addEventListener('click', onNo);
+                    inputEl.addEventListener('keyup', onEnter);
+                });
+            },
+
             // 🔥 LÕI CÁO THỊ TỐI THƯỢNG: ĐÓNG BĂNG NHẬN THỨC, TỪ CHỐI TỰ HỦY
             showAnnouncement(title, message) {
                 document.getElementById('announce-title').innerHTML = title;
@@ -541,16 +570,24 @@
 
                         // KIỂM TRA ĐỔI QUẢN TRÒ (GM)
                         if (this.state.role === 'player' && res.gameFlags && res.gameFlags.newGM === this.state.playerId) {
-                            alert("👑 BẠN ĐÃ ĐƯỢC NHƯỜNG QUYỀN QUẢN TRÒ!");
-                            this.state.role = 'gm';
-                            this.state.playerId = null;
-                            localStorage.setItem('werewolf_session', JSON.stringify({
-                                roomCode: this.state.roomCode,
-                                role: 'gm'
-                            }));
-                            document.getElementById('gm-room-id').innerText = this.state.roomCode;
-                            this.switchScreen('screen-gm');
-                            return;
+                            if (this.state.ignoreGMTransfer === this.state.playerId) {
+                                // Nếu ta là người vừa nhường quyền, bỏ qua việc nhận vơ quyền
+                            } else {
+                                alert("👑 BẠN ĐÃ ĐƯỢC NHƯỜNG QUYỀN QUẢN TRÒ!");
+                                this.state.role = 'gm';
+                                this.state.playerId = null;
+                                localStorage.setItem('werewolf_session', JSON.stringify({
+                                    roomCode: this.state.roomCode,
+                                    role: 'gm'
+                                }));
+                                document.getElementById('gm-room-id').innerText = this.state.roomCode;
+                                this.switchScreen('screen-gm');
+                                this.renderGMGrid(); // Vẽ lại giao diện Quản trò ngay lập tức
+                                
+                                // Gửi lệnh xóa cờ newGM
+                                callMatrix('clearNewGMFlag', { roomCode: this.state.roomCode }).catch(console.error);
+                                return;
+                            }
                         }
 
                         // KIỂM TRA ĐIỀU KIỆN THẮNG
@@ -675,13 +712,16 @@
             },
 
             async transferGMRole(targetId, btn = null) {
-                const newName = prompt('Nhập tên hiển thị mới của bạn (bạn sẽ chơi thế chỗ người này):');
-                if (!newName) return;
+                const newName = await this.promptAction('Nhập tên hiển thị mới của bạn (bạn sẽ chơi thế chỗ người này):');
+                if (!newName || newName.trim() === "") return;
                 
                 if (!(await this.confirmAction(`Bạn có chắc muốn nhường vị trí Quản Trò cho người này và tham gia làm người chơi [${newName}]?`))) return;
                 
                 const lockState = this.lockBtn(btn, "⏳ ĐANG CHUYỂN GIAO...");
                 this.state.isSyncing = true;
+                
+                // Đánh dấu để Quản trò cũ không tự động lấy lại quyền khi hàm pollGameState chạy
+                this.state.ignoreGMTransfer = targetId;
                 
                 try {
                     const res = await callMatrix('transferGM', { roomCode: this.state.roomCode, targetId: targetId, newName: newName });
@@ -974,14 +1014,14 @@
                     overlay.innerHTML = `
                         <h1 style="font-size: 3rem; text-shadow: 0 0 30px #f1c40f, 0 0 10px #f1c40f; color: #f1c40f; text-align: center;">✨ PHE DÂN CHIẾN THẮNG ✨</h1>
                         <p style="font-size: 1.5rem; margin-top: 10px; text-align: center;">Toàn bộ Sói đã bị tiêu diệt!</p>
-                        <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; background: #f39c12; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
+                        <button style="margin-top: 30px; padding: 10px 20px; width: 100%; max-width: 200px; box-sizing: border-box; font-size: 1.2rem; background: #f39c12; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
                     `;
                 } else if (winner === 'WOLF') {
                     overlay.style.background = 'radial-gradient(circle, #c0392b, #2c3e50)';
                     overlay.innerHTML = `
                         <h1 style="font-size: 3rem; text-shadow: 0 0 30px #ff0000, 0 0 10px #ff0000; color: #ff4757; text-align: center;">🐺 PHE SÓI CHIẾN THẮNG 🐺</h1>
                         <p style="font-size: 1.5rem; margin-top: 10px; text-align: center;">Số lượng Sói đã áp đảo Dân Làng!</p>
-                        <button style="margin-top: 30px; padding: 15px 30px; font-size: 1.2rem; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
+                        <button style="margin-top: 30px; padding: 10px 20px; width: 100%; max-width: 200px; box-sizing: border-box; font-size: 1.2rem; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
                     `;
                 }
             },
@@ -2129,8 +2169,8 @@
                 document.getElementById('modal-note').classList.remove('active');
             },
 
-            clearNote() {
-                if (confirm('Bạn có chắc chắn muốn xóa toàn bộ ghi chú của phòng này?')) {
+            async clearNote() {
+                if (await this.confirmAction('Bạn có chắc chắn muốn xóa toàn bộ ghi chú của phòng này?')) {
                     localStorage.removeItem('gmNotes_' + this.state.roomCode);
                     document.getElementById('note-textarea').value = '';
                     this.showToast('Đã xóa ghi chú!', 'success');
