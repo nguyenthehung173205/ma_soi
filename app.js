@@ -163,11 +163,16 @@
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById(screenId).classList.add('active');
 
-                // Tự động hiển thị nút Ghi chú nếu là Quản trò
+                // Tự động hiển thị nút Ghi chú và Tuyên bố chiến thắng nếu là Quản trò
                 const btnNote = document.getElementById('btn-note');
+                const btnWin = document.getElementById('btn-declare-win');
                 if (btnNote) {
                     if (this.state.role === 'gm') btnNote.style.display = 'flex';
                     else btnNote.style.display = 'none';
+                }
+                if (btnWin) {
+                    if (this.state.role === 'gm' && screenId === 'screen-game') btnWin.style.display = 'flex';
+                    else btnWin.style.display = 'none';
                 }
             },
 
@@ -1035,6 +1040,13 @@
                         <h1 style="font-size: clamp(1.8rem, 8vw, 3rem); text-shadow: 0 0 30px #ff0000, 0 0 10px #ff0000; color: #ff4757; text-align: center; margin: 0;">🐺 PHE SÓI CHIẾN THẮNG 🐺</h1>
                         <p style="font-size: clamp(1.1rem, 5vw, 1.5rem); margin-top: 15px; text-align: center;">Số lượng Sói đã áp đảo Dân Làng!</p>
                         <button style="margin-top: 30px; padding: 10px 20px; width: 100%; max-width: 200px; box-sizing: border-box; font-size: 1.2rem; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
+                    `;
+                } else if (winner === 'THIRD_PARTY') {
+                    overlay.style.background = 'radial-gradient(circle, #8e44ad, #2c3e50)';
+                    overlay.innerHTML = `
+                        <h1 style="font-size: clamp(1.8rem, 8vw, 3rem); text-shadow: 0 0 30px #9b59b6, 0 0 10px #9b59b6; color: #e056fd; text-align: center; margin: 0;">🔮 PHE THỨ 3 CHIẾN THẮNG 🔮</h1>
+                        <p style="font-size: clamp(1.1rem, 5vw, 1.5rem); margin-top: 15px; text-align: center;">Thế lực bóng tối đã thao túng tất cả!</p>
+                        <button style="margin-top: 30px; padding: 10px 20px; width: 100%; max-width: 200px; box-sizing: border-box; font-size: 1.2rem; background: #9b59b6; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.5);" onclick="document.getElementById('win-screen-overlay').remove()">Đóng</button>
                     `;
                 }
             },
@@ -2165,6 +2177,28 @@
                     }
                 });
                 this.renderCodexList(filtered);
+            },
+
+            // ================= QUYỀN PHÁN QUYẾT CHIẾN THẮNG =================
+            openWinDeclareModal() {
+                if (this.state.role !== 'gm') return;
+                document.getElementById('modal-win-declare').classList.add('active');
+            },
+            closeWinDeclareModal() {
+                document.getElementById('modal-win-declare').classList.remove('active');
+            },
+            async declareWinner(winner) {
+                if (!(await this.confirmAction("Bạn có chắc chắn muốn kết thúc game và tuyên bố chiến thắng? Thao tác này sẽ hiển thị lên máy tất cả người chơi."))) return;
+                this.closeWinDeclareModal();
+                let flags = this.state.roomData.game_flags || {};
+                flags.winner = winner;
+                try {
+                    await window.supabase.from('rooms').update({ game_flags: flags }).eq('room_code', this.state.roomCode);
+                    window.alert("Đã kết thúc game thành công!");
+                } catch (e) {
+                    console.error("Lỗi khi kết thúc game:", e);
+                    window.alert("Có lỗi xảy ra khi kết thúc game.");
+                }
             },
 
             // ================= SỔ TAY GHI CHÚ QUẢN TRÒ =================
