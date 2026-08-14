@@ -1836,8 +1836,8 @@
                         if (allRolesInGame.includes('Người thổi sáo')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thổi Sáo')">🪈 Thôi miên (Người thổi sáo)</button>`;
                         if (allRolesInGame.includes('Người múa rối')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối')">🎎 Ép Sói cắn (Người múa rối)</button>`;
                         if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
-                            if (!flags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Kỵ Sĩ: Nhiễm độc kiếm gỉ</button>`;
-                            else manualHtml += `<button disabled style="background: #555;">🗡️ Kỵ Sĩ: Đã nhiễm độc (Đã khóa)</button>`;
+                            if (!flags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Hiệp Sĩ: Nhiễm độc kiếm gỉ</button>`;
+                            else manualHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ: Đã nhiễm độc</button>`;
                         }
 
                         actionList.innerHTML += manualHtml;
@@ -1889,7 +1889,7 @@
 
                         if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
                             if (!flags.usedRustyKnightInfect) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Kỵ Sĩ: Nhiễm độc kiếm gỉ</button>`;
-                            else atkHtml += `<button disabled style="background: #555;">🗡️ Kỵ Sĩ: Đã nhiễm độc (Đã khóa)</button>`;
+                            else atkHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ: Đã nhiễm độc</button>`;
                         }
 
                         if (atkHtml) actionList.innerHTML += `<div style="font-size: 12px; color: var(--danger); font-weight: bold; margin-top: 10px;">⚔️ NHÓM TẤN CÔNG</div>` + atkHtml;
@@ -2202,7 +2202,8 @@
                 let flags = this.state.gameFlags || {};
                 flags.winner = winner;
                 try {
-                    await window.supabase.from('rooms').update({ game_flags: flags }).eq('room_code', this.state.roomCode);
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    await client.from('rooms').update({ game_flags: flags }).eq('room_code', this.state.roomCode);
                     window.alert("Đã kết thúc game thành công!");
                 } catch (e) {
                     console.error("Lỗi khi kết thúc game:", e);
