@@ -171,7 +171,7 @@
                     else btnNote.style.display = 'none';
                 }
                 if (btnWin) {
-                    if (this.state.role === 'gm' && screenId === 'screen-game') btnWin.style.display = 'flex';
+                    if (this.state.role === 'gm' && screenId === 'screen-gm') btnWin.style.display = 'flex';
                     else btnWin.style.display = 'none';
                 }
             },
