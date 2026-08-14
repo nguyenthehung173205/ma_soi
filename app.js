@@ -1393,7 +1393,7 @@
                             relationTags += `<div style="color: #1abc9c; font-size: 11px; font-weight: bold; margin-top: 4px;">😵‍💫 Bị Thầy Thôi Miên bắt chết thay</div>`;
                         }
                         if (p.state.infectedByKnight) {
-                            relationTags += `<div style="color: #e67e22; font-size: 11px; font-weight: bold; margin-top: 4px;">🗡️ Nhiễm độc kiếm gỉ</div>`;
+                            relationTags += `<div style="color: #e67e22; font-size: 11px; font-weight: bold; margin-top: 4px;">🗡️ Đang Nhiễm Độc</div>`;
                         }
                     }
 
@@ -1835,6 +1835,10 @@
                         if (allRolesInGame.includes('Kẻ đốt nhà')) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PYRO_BURN', '🧨 Đốt Nhà')">🧨 Đốt nhà (Kẻ đốt nhà)</button>`;
                         if (allRolesInGame.includes('Người thổi sáo')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thổi Sáo')">🪈 Thôi miên (Người thổi sáo)</button>`;
                         if (allRolesInGame.includes('Người múa rối')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối')">🎎 Ép Sói cắn (Người múa rối)</button>`;
+                        if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
+                            if (!flags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Kỵ Sĩ: Nhiễm độc kiếm gỉ</button>`;
+                            else manualHtml += `<button disabled style="background: #555;">🗡️ Kỵ Sĩ: Đã nhiễm độc (Đã khóa)</button>`;
+                        }
 
                         actionList.innerHTML += manualHtml;
                         actionList.innerHTML += `<div style="margin-top: 15px;"><button class="btn-secondary" onclick="app.clearPendingAction('${targetId}')">🔄 Hủy bỏ mọi thao tác trên người này</button></div>`;
@@ -1881,6 +1885,11 @@
                             } else {
                                 atkHtml += `<button disabled style="background: #555;">🥷 Sát thủ: Đang mài dao</button>`;
                             }
+                        }
+
+                        if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
+                            if (!flags.usedRustyKnightInfect) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Kỵ Sĩ: Nhiễm độc kiếm gỉ</button>`;
+                            else atkHtml += `<button disabled style="background: #555;">🗡️ Kỵ Sĩ: Đã nhiễm độc (Đã khóa)</button>`;
                         }
 
                         if (atkHtml) actionList.innerHTML += `<div style="font-size: 12px; color: var(--danger); font-weight: bold; margin-top: 10px;">⚔️ NHÓM TẤN CÔNG</div>` + atkHtml;
@@ -2190,7 +2199,7 @@
             async declareWinner(winner) {
                 if (!(await this.confirmAction("Bạn có chắc chắn muốn kết thúc game và tuyên bố chiến thắng? Thao tác này sẽ hiển thị lên máy tất cả người chơi."))) return;
                 this.closeWinDeclareModal();
-                let flags = this.state.roomData.game_flags || {};
+                let flags = this.state.gameFlags || {};
                 flags.winner = winner;
                 try {
                     await window.supabase.from('rooms').update({ game_flags: flags }).eq('room_code', this.state.roomCode);
