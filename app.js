@@ -1798,10 +1798,55 @@
                 actionList.style.paddingRight = '5px';
                 actionList.innerHTML = '<style>#gm-action-list > * { flex-shrink: 0 !important; }</style>';
 
+                const allRolesInGame = this.state.players.map(p => p.role);
                 if (this.state.time === 'night') {
-                    let atkHtml = '';
-                    let defHtml = '';
-                    let spcHtml = '';
+                    if (gameFlags.isManualMode) {
+                        let manualHtml = `
+                            <div style="font-size: 12px; color: #f39c12; font-weight: bold; margin-bottom: 10px;">⚙️ CHẾ ĐỘ THỦ CÔNG</div>
+                            <button class="btn-danger" onclick="app.setPendingAction('${targetId}', 'MANUAL_KILL', '🔪 Đánh Dấu CHẾT')">🔪 Đánh dấu CHẾT</button>
+                            <button class="btn-success" onclick="app.setPendingAction('${targetId}', 'MANUAL_SAVE', '🛡️ Đánh Dấu CỨU')">🛡️ Đánh dấu CỨU</button>
+                        `;
+                        
+                        // Thay đổi bài đêm
+                        manualHtml += `
+                            <div style="margin-top: 15px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                                <p style="font-size: 12px; margin: 0 0 5px 0; color: #f1c40f;">🛠️ Thay đổi lá bài/vai trò (Tác dụng ngay):</p>
+                                <select id="gm-new-role-${targetId}" style="width:100%; padding: 8px; margin-bottom: 8px; border-radius: 6px; font-size:14px; color: black;">
+                                    ${Object.keys(this.masterRoles).map(r => `<option value="${r}" ${r === target.role ? 'selected' : ''}>${r}</option>`).join('')}
+                                </select>
+                                <button class="btn-primary" style="padding: 8px; font-size: 14px;" onclick="app.gmChangeRole('${targetId}', this)">💾 Cập Nhật</button>
+                            </div>
+                        `;
+
+                        // Dấu ấn nhân vật
+                        manualHtml += `<div style="font-size: 12px; color: #95a5a6; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">DẤU ẤN NHÂN VẬT</div>`;
+                        
+                        if (allRolesInGame.includes('Cupid (Thần tình yêu)')) manualHtml += `<button style="background: #e74c3c" onclick="app.setPendingAction('${targetId}', 'CUPID_LINK', '💘 Cupid Ghép Đôi')">💘 Ghép đôi (Cupid)</button>`;
+                        if (allRolesInGame.includes('Thầy thôi miên')) manualHtml += `<button style="background: #2980b9" onclick="app.setPendingAction('${targetId}', 'HYPNOTIST_CHARM', '😵‍💫 Bị Thôi Miên')">😵‍💫 Thôi miên (Thầy thôi miên)</button>`;
+                        if (allRolesInGame.includes('Ảnh tử')) manualHtml += `<button style="background: #34495e" onclick="app.setPendingAction('${targetId}', 'SHADOW_MARK', '👤 Bị Cướp Bài')">👤 Cướp bài (Ảnh tử)</button>`;
+                        if (allRolesInGame.includes('Đứa trẻ hoang dã')) manualHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Làm Thần Tượng')">👶 Thần tượng (Đứa trẻ hoang dã)</button>`;
+                        if (allRolesInGame.includes('Nguyệt Nữ')) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Bị Câm Lặng')">🌙 Câm lặng (Nguyệt Nữ)</button>`;
+                        if (allRolesInGame.includes('Dược sĩ')) {
+                            if (!gameFlags.usedPharmaSleep) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê')">💊 Thuốc mê (Dược sĩ)</button>`;
+                            else manualHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình mê hồn</button>`;
+                        }
+                        if (allRolesInGame.includes('Con quạ')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Bị Nguyền Rủa')">🐦‍⬛ Nguyền rủa (Con Quạ)</button>`;
+                        if (allRolesInGame.includes('Kẻ báo thù')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Trả Thù')">🩸 Trả thù (Kẻ Báo Thù)</button>`;
+                        if (allRolesInGame.includes('Thợ săn')) manualHtml += `<button style="background: #e67e22" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Thợ Săn Ngắm')">🏹 Ngắm bắn (Thợ săn)</button>`;
+                        if (allRolesInGame.includes('Kẻ đốt nhà')) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PYRO_BURN', '🧨 Đốt Nhà')">🧨 Đốt nhà (Kẻ đốt nhà)</button>`;
+                        if (allRolesInGame.includes('Người thổi sáo')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thổi Sáo')">🪈 Thôi miên (Người thổi sáo)</button>`;
+                        if (allRolesInGame.includes('Người múa rối')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối')">🎎 Ép Sói cắn (Người múa rối)</button>`;
+                        if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
+                            if (!gameFlags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Hiệp Sĩ: Nhiễm độc kiếm gỉ</button>`;
+                            else manualHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ: Đã nhiễm độc</button>`;
+                        }
+
+                        actionList.innerHTML += manualHtml;
+                        actionList.innerHTML += `<div style="margin-top: 15px;"><button class="btn-secondary" onclick="app.clearPendingAction('${targetId}')">🔄 Hủy bỏ mọi thao tác trên người này</button></div>`;
+                    } else {
+                        let atkHtml = '';
+                        let defHtml = '';
+                        let spcHtml = '';
                         
                         if (hasWolf) {
                             atkHtml += `<button class="btn-danger" onclick="app.setPendingAction('${targetId}', 'WOLF_BITE', '🐺 Bị Sói Cắn')">🐺 Bầy Sói: Cắn giết</button>`;
@@ -1913,6 +1958,7 @@
                         if (spcHtml) actionList.innerHTML += `<div style="font-size: 12px; color: #f39c12; font-weight: bold; margin-top: 10px;">🔮 KỸ NĂNG & ĐÁNH DẤU</div>` + spcHtml;
 
                         actionList.innerHTML += `<div style="margin-top: 15px;"><button class="btn-secondary" onclick="app.clearPendingAction('${targetId}')">🔄 Hủy bỏ mọi thao tác trên người này</button></div>`;
+                    }
                 } else {
                     // ☀️ BAN NGÀY: TOÀN QUYỀN ĐIỀU HÀNH CHO QUẢN TRÒ
                     actionList.innerHTML += `<button class="btn-secondary" style="background:#e67e22" onclick="app.startVote('${targetId}', this)">⚖️ Đưa lên giàn Treo Cổ</button>`;
