@@ -1462,26 +1462,34 @@
             },
 
             async commitNightActions() {
-                // 🔥 TRẠM GÁC LOGIC TỐI THƯỢNG: Quét sâu vào mảng đa nhiệm pendingActions
-                let cupidCount = this.state.players.filter(p => p.pendingActions && p.pendingActions.some(a => a.action === 'CUPID_LINK')).length;
-                let numCupids = this.state.players.filter(p => p.role === 'Cupid (Thần tình yêu)' && p.status !== 'Dead').length;
-                if (numCupids === 0) numCupids = 1;
+                // 🔥 TRẠM GÁC LOGIC TỐI THƯỢNG: Đếm độc lập theo từng Caster
+                let cupidValid = true;
+                let piperValid = true;
                 
-                if (cupidCount > 0 && cupidCount % 2 !== 0) {
-                    alert("❌ LỖI LOGIC: Cupid BẮT BUỘC phải ghép đúng theo cặp (Số người phải là chẵn: 2, 4...). Vui lòng kiểm tra lại thao tác!");
-                    return;
-                }
-                if (cupidCount > numCupids * 2) {
-                    alert(`❌ LỖI LOGIC: Chỉ có ${numCupids} Cupid, không thể ghép quá ${numCupids * 2} người!`);
-                    return;
-                }
-
-                // 🪈 TRẠM GÁC NGƯỜI THỔI SÁO
-                let piperCount = this.state.players.filter(p => p.pendingActions && p.pendingActions.some(a => a.action === 'PIPER_CHARM')).length;
-                let numPipers = this.state.players.filter(p => p.role === 'Người thổi sáo' && p.status !== 'Dead').length;
-                if (numPipers === 0) numPipers = 1;
-                if (piperCount > numPipers * 2) {
-                    alert(`❌ LỖI LOGIC: Người Thổi Sáo không được thôi miên vượt quá ${numPipers * 2} người!`);
+                let groupedCupids = {};
+                let groupedPipers = {};
+                
+                this.state.players.forEach(p => {
+                    if (p.pendingActions) {
+                        p.pendingActions.forEach(act => {
+                            if (act.action === 'CUPID_LINK') {
+                                let sid = act.sourceId || 'GM';
+                                groupedCupids[sid] = (groupedCupids[sid] || 0) + 1;
+                            }
+                            if (act.action === 'PIPER_CHARM') {
+                                let sid = act.sourceId || 'GM';
+                                groupedPipers[sid] = (groupedPipers[sid] || 0) + 1;
+                            }
+                        });
+                    }
+                });
+                
+                Object.values(groupedCupids).forEach(count => {
+                    if (count > 0 && count % 2 !== 0) cupidValid = false;
+                });
+                
+                if (!cupidValid) {
+                    alert("❌ LỖI LOGIC: Cupid BẮT BUỘC phải ghép đúng theo cặp. Mỗi Cupid phải chọn đủ 2 người (Hoặc hủy chọn hoàn toàn)!");
                     return;
                 }
 
@@ -1831,7 +1839,7 @@
                             if (c.role === 'Đứa trẻ hoang dã') manualHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Làm Thần Tượng', '${c.id}')">👶 Thần tượng (Trẻ hoang dã ${c.name})</button>`;
                             if (c.role === 'Nguyệt Nữ') manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Bị Câm Lặng', '${c.id}')">🌙 Câm lặng (Nguyệt Nữ ${c.name})</button>`;
                             if (c.role === 'Dược sĩ') {
-                                if (!gameFlags.usedPharmaSleep) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê', '${c.id}')">💊 Thuốc mê (Dược sĩ ${c.name})</button>`;
+                                if (!(c.state || {}).usedPharmaSleep) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê', '${c.id}')">💊 Thuốc mê (Dược sĩ ${c.name})</button>`;
                                 else manualHtml += `<button disabled style="background: #555;">💊 Dược Sĩ ${c.name}: Đã hết bình mê hồn</button>`;
                             }
                             if (c.role === 'Con quạ') manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Bị Nguyền Rủa', '${c.id}')">🐦‍⬛ Nguyền rủa (Con Quạ ${c.name})</button>`;
@@ -1841,7 +1849,7 @@
                             if (c.role === 'Người thổi sáo') manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thổi Sáo', '${c.id}')">🪈 Thôi miên (Thổi sáo ${c.name})</button>`;
                             if (c.role === 'Người múa rối') manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối', '${c.id}')">🎎 Ép Sói cắn (Múa rối ${c.name})</button>`;
                             if (c.role === 'Hiệp sĩ kiếm gỉ') {
-                                if (!gameFlags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc', '${c.id}')">🗡️ Nhiễm độc (Kiếm Gỉ ${c.name})</button>`;
+                                if (!(c.state || {}).usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc', '${c.id}')">🗡️ Nhiễm độc (Kiếm Gỉ ${c.name})</button>`;
                                 else manualHtml += `<button disabled style="background: #555;">🗡️ Kiếm Gỉ ${c.name}: Đã nhiễm độc</button>`;
                             }
                         });
@@ -2006,41 +2014,45 @@
             },
 
             setPendingAction(targetId, actionCode, actionText, sourceId = null) {
-                // ĐIỀU HƯỚNG CUPID KIỂM TRA ĐA NHIỆM
+                // ĐIỀU HƯỚNG CUPID KIỂM TRA ĐA NHIỆM (Đếm theo Caster)
                 if (actionCode === 'CUPID_LINK') {
-                    let numCupids = this.state.players.filter(p => p.role === 'Cupid (Thần tình yêu)' && p.status !== 'Dead').length;
-                    if (numCupids === 0) numCupids = 1;
-                    
-                    let cupidCount = 0;
+                    let sourceCupids = 0;
                     this.state.players.forEach(pl => {
-                        if (pl.pendingActions && pl.pendingActions.find(a => a.action === 'CUPID_LINK')) cupidCount++;
+                        if (pl.pendingActions && pl.pendingActions.find(a => a.action === 'CUPID_LINK' && a.sourceId === sourceId)) sourceCupids++;
                     });
-                    if (cupidCount >= numCupids * 2) {
-                        alert(`❌ LỖI: Cần ${numCupids * 2} người cho ${numCupids} Cupid. Quá giới hạn! Xóa thao tác cũ để chọn lại.`);
+                    if (sourceCupids >= 2) {
+                        alert(`❌ LỖI: Cupid này đã chọn đủ 2 người! Hãy hủy thao tác cũ trước khi chọn lại.`);
                         return;
                     }
                 }
 
-                // 🔥 ĐIỀU HƯỚNG THÔI MIÊN: NGĂN CHẶN CHỌN QUÁ GIỚI HẠN
+                // 🔥 ĐIỀU HƯỚNG THÔI MIÊN: NGĂN CHẶN CHỌN QUÁ GIỚI HẠN (Đếm theo Caster)
                 if (actionCode === 'PIPER_CHARM') {
-                    let numPipers = this.state.players.filter(p => p.role === 'Người thổi sáo' && p.status !== 'Dead').length;
-                    if (numPipers === 0) numPipers = 1;
-                    
-                    let piperCount = 0;
+                    let sourcePipers = 0;
                     this.state.players.forEach(pl => {
-                        if (pl.pendingActions && pl.pendingActions.find(a => a.action === 'PIPER_CHARM')) piperCount++;
+                        if (pl.pendingActions && pl.pendingActions.find(a => a.action === 'PIPER_CHARM' && a.sourceId === sourceId)) sourcePipers++;
                     });
-                    if (piperCount >= numPipers * 2) {
-                        alert(`❌ LỖI LOGIC: Có ${numPipers} Thổi Sáo, chỉ được thôi miên TỐI ĐA ${numPipers * 2} NGƯỜI mỗi đêm! Hãy hủy thao tác cũ trước khi chọn người mới.`);
+                    if (sourcePipers >= 2) {
+                        alert(`❌ LỖI LOGIC: Người thổi sáo này đã chọn đủ 2 người mỗi đêm! Hãy hủy thao tác cũ trước.`);
                         return;
                     }
+                }
+
+                // Hủy target cũ nếu là kỹ năng đơn mục tiêu
+                const multiTargetSkills = ['CUPID_LINK', 'PIPER_CHARM', 'WOLF_BITE', 'MANUAL_KILL', 'MANUAL_SAVE'];
+                if (sourceId && !multiTargetSkills.includes(actionCode)) {
+                    this.state.players.forEach(pl => {
+                        if (pl.pendingActions) {
+                            pl.pendingActions = pl.pendingActions.filter(a => !(a.action === actionCode && a.sourceId === sourceId));
+                        }
+                    });
                 }
 
                 const p = this.state.players.find(x => x.id === targetId);
                 if (p) {
                     if (!p.pendingActions) p.pendingActions = [];
                     // Chống bấm đúp trùng 1 lệnh
-                    if (!p.pendingActions.find(a => a.action === actionCode)) {
+                    if (!p.pendingActions.find(a => a.action === actionCode && a.sourceId === sourceId)) {
                         p.pendingActions.push({ action: actionCode, text: actionText, sourceId: sourceId, ts: Date.now() });
                     }
                 }
