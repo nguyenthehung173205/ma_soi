@@ -1821,25 +1821,30 @@
                         // Dấu ấn nhân vật
                         manualHtml += `<div style="font-size: 12px; color: #95a5a6; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">DẤU ẤN NHÂN VẬT</div>`;
                         
-                        if (allRolesInGame.includes('Cupid (Thần tình yêu)')) manualHtml += `<button style="background: #e74c3c" onclick="app.setPendingAction('${targetId}', 'CUPID_LINK', '💘 Cupid Ghép Đôi')">💘 Ghép đôi (Cupid)</button>`;
-                        if (allRolesInGame.includes('Thầy thôi miên')) manualHtml += `<button style="background: #2980b9" onclick="app.setPendingAction('${targetId}', 'HYPNOTIST_CHARM', '😵‍💫 Bị Thôi Miên')">😵‍💫 Thôi miên (Thầy thôi miên)</button>`;
-                        if (allRolesInGame.includes('Ảnh tử')) manualHtml += `<button style="background: #34495e" onclick="app.setPendingAction('${targetId}', 'SHADOW_MARK', '👤 Bị Cướp Bài')">👤 Cướp bài (Ảnh tử)</button>`;
-                        if (allRolesInGame.includes('Đứa trẻ hoang dã')) manualHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Làm Thần Tượng')">👶 Thần tượng (Đứa trẻ hoang dã)</button>`;
-                        if (allRolesInGame.includes('Nguyệt Nữ')) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Bị Câm Lặng')">🌙 Câm lặng (Nguyệt Nữ)</button>`;
-                        if (allRolesInGame.includes('Dược sĩ')) {
-                            if (!gameFlags.usedPharmaSleep) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê')">💊 Thuốc mê (Dược sĩ)</button>`;
-                            else manualHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình mê hồn</button>`;
-                        }
-                        if (allRolesInGame.includes('Con quạ')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Bị Nguyền Rủa')">🐦‍⬛ Nguyền rủa (Con Quạ)</button>`;
-                        if (allRolesInGame.includes('Kẻ báo thù')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Trả Thù')">🩸 Trả thù (Kẻ Báo Thù)</button>`;
-                        if (allRolesInGame.includes('Thợ săn')) manualHtml += `<button style="background: #e67e22" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Thợ Săn Ngắm')">🏹 Ngắm bắn (Thợ săn)</button>`;
-                        if (allRolesInGame.includes('Kẻ đốt nhà')) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PYRO_BURN', '🧨 Đốt Nhà')">🧨 Đốt nhà (Kẻ đốt nhà)</button>`;
-                        if (allRolesInGame.includes('Người thổi sáo')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thổi Sáo')">🪈 Thôi miên (Người thổi sáo)</button>`;
-                        if (allRolesInGame.includes('Người múa rối')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối')">🎎 Ép Sói cắn (Người múa rối)</button>`;
-                        if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
-                            if (!gameFlags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Hiệp Sĩ: Nhiễm độc kiếm gỉ</button>`;
-                            else manualHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ: Đã nhiễm độc</button>`;
-                        }
+                        let allCasters = [...this.state.players];
+                        allCasters.sort((a, b) => { if (a.role && b.role) return a.role.localeCompare(b.role); return 0; });
+                        
+                        allCasters.forEach(c => {
+                            if (c.role === 'Cupid (Thần tình yêu)') manualHtml += `<button style="background: #e74c3c" onclick="app.setPendingAction('${targetId}', 'CUPID_LINK', '💘 Cupid Ghép Đôi', '${c.id}')">💘 Ghép đôi (Cupid ${c.name})</button>`;
+                            if (c.role === 'Thầy thôi miên') manualHtml += `<button style="background: #2980b9" onclick="app.setPendingAction('${targetId}', 'HYPNOTIST_CHARM', '😵‍💫 Bị Thôi Miên', '${c.id}')">😵‍💫 Thôi miên (Thầy Thôi Miên ${c.name})</button>`;
+                            if (c.role === 'Ảnh tử') manualHtml += `<button style="background: #34495e" onclick="app.setPendingAction('${targetId}', 'SHADOW_MARK', '👤 Bị Cướp Bài', '${c.id}')">👤 Cướp bài (Ảnh tử ${c.name})</button>`;
+                            if (c.role === 'Đứa trẻ hoang dã') manualHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Làm Thần Tượng', '${c.id}')">👶 Thần tượng (Trẻ hoang dã ${c.name})</button>`;
+                            if (c.role === 'Nguyệt Nữ') manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Bị Câm Lặng', '${c.id}')">🌙 Câm lặng (Nguyệt Nữ ${c.name})</button>`;
+                            if (c.role === 'Dược sĩ') {
+                                if (!gameFlags.usedPharmaSleep) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê', '${c.id}')">💊 Thuốc mê (Dược sĩ ${c.name})</button>`;
+                                else manualHtml += `<button disabled style="background: #555;">💊 Dược Sĩ ${c.name}: Đã hết bình mê hồn</button>`;
+                            }
+                            if (c.role === 'Con quạ') manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Bị Nguyền Rủa', '${c.id}')">🐦‍⬛ Nguyền rủa (Con Quạ ${c.name})</button>`;
+                            if (c.role === 'Kẻ báo thù') manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Trả Thù', '${c.id}')">🩸 Trả thù (Kẻ Báo Thù ${c.name})</button>`;
+                            if (c.role === 'Thợ săn') manualHtml += `<button style="background: #e67e22" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Thợ Săn Ngắm', '${c.id}')">🏹 Ngắm bắn (Thợ săn ${c.name})</button>`;
+                            if (c.role === 'Kẻ đốt nhà') manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PYRO_BURN', '🧨 Đốt Nhà', '${c.id}')">🧨 Đốt nhà (Kẻ đốt nhà ${c.name})</button>`;
+                            if (c.role === 'Người thổi sáo') manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thổi Sáo', '${c.id}')">🪈 Thôi miên (Thổi sáo ${c.name})</button>`;
+                            if (c.role === 'Người múa rối') manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối', '${c.id}')">🎎 Ép Sói cắn (Múa rối ${c.name})</button>`;
+                            if (c.role === 'Hiệp sĩ kiếm gỉ') {
+                                if (!gameFlags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc', '${c.id}')">🗡️ Nhiễm độc (Kiếm Gỉ ${c.name})</button>`;
+                                else manualHtml += `<button disabled style="background: #555;">🗡️ Kiếm Gỉ ${c.name}: Đã nhiễm độc</button>`;
+                            }
+                        });
 
                         actionList.innerHTML += manualHtml;
                         actionList.innerHTML += `<div style="margin-top: 15px;"><button class="btn-secondary" onclick="app.clearPendingAction('${targetId}')">🔄 Hủy bỏ mọi thao tác trên người này</button></div>`;
