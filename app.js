@@ -1789,9 +1789,7 @@
                 pRole.innerText = `Vai trò thực tế: ${target.role} | Trạng thái: ${target.status}`;
                 actionList.innerHTML = '';
 
-                modal.style.display = 'flex';
-
-                if (this.state.roomPhase === 'Night') {
+                if (this.state.time === 'night') {
                     let atkHtml = '';
                     let defHtml = '';
                     let spcHtml = '';
