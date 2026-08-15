@@ -1787,6 +1787,10 @@
 
                 pName.innerText = `Mục tiêu: ${target.name}`;
                 pRole.innerText = `Vai trò thực tế: ${target.role} | Trạng thái: ${target.status}`;
+                
+                actionList.style.maxHeight = '55vh';
+                actionList.style.overflowY = 'auto';
+                actionList.style.paddingRight = '5px';
                 actionList.innerHTML = '';
 
                 if (this.state.time === 'night') {
