@@ -1493,7 +1493,7 @@
                 // VÁ LỖI NHÂN BẢN: Chỉ dùng đúng 1 vòng lặp để gom mã lệnh Đa Nhiệm
                 this.state.players.forEach(p => {
                     if (p.pendingActions) {
-                        p.pendingActions.forEach(act => nightActions.push({ id: p.id, action: act.action, ts: act.ts || Date.now() }));
+                        p.pendingActions.forEach(act => nightActions.push({ id: p.id, action: act.action, sourceId: act.sourceId, ts: act.ts || Date.now() }));
                     }
                     delete p.pendingActions;
                 });
@@ -1763,224 +1763,147 @@
                     } else {
                         alert(res.message || "Phát bài thất bại.");
                     }
-                } catch (err) {
-                    alert("Không thể kết nối server để phát bài.");
+                } catch (e) {
+                    console.error("Lỗi khi phát bài:", e);
+                    alert("Có lỗi xảy ra khi phát bài.");
                 } finally {
-                    // 🟢 MỞ KHÓA VÀ ÉP LẤY DỮ LIỆU TƯƠI MỚI NHẤT TỪ MÁY CHỦ
-                    this.unlockBtn(btn, lockState);
                     this.state.isSyncing = false;
-                    this.fetchGameState();
+                    if(btn) this.unlockBtn(btn, lockState);
                 }
             },
 
-            // ==========================================
-            // 🔥 HỆ THỐNG ĐIỀU HÀNH SỰ KIỆN NHÂN VẬT (CONTEXT MENU - BẢN FULL 40+ SKILL)
-            // ==========================================
             openGMActionMenu(targetId) {
-                const target = this.state.players.find(p => p.id === targetId);
+                const target = this.state.players.find(x => x.id === targetId);
                 if (!target) return;
+                const night = this.state.gameFlags?.nightCount || 1;
+                const hasWolf = this.state.players.some(p => p.status !== 'Dead' && p.role.toLowerCase().includes('sói') && p.role !== 'Nửa người nửa sói' && p.role !== 'Chó sói (Bán Sói / Sói Lai)');
+                const livingRoles = this.state.players.filter(p => p.status !== 'Dead').map(p => p.role);
+                const gameFlags = this.state.gameFlags || {};
 
-                document.getElementById('gm-action-target-name').innerText = target.name;
-                document.getElementById('gm-action-target-role').innerText = `Vai trò: ${target.role}`;
-
+                const modal = document.getElementById('modal-gm-action');
+                const pName = document.getElementById('gm-action-target-name');
+                const pRole = document.getElementById('gm-action-target-role');
                 const actionList = document.getElementById('gm-action-list');
-                actionList.style.maxHeight = '55vh';
-                actionList.style.overflowY = 'auto';
-                actionList.style.paddingRight = '5px';
+
+                pName.innerText = `Mục tiêu: ${target.name}`;
+                pRole.innerText = `Vai trò thực tế: ${target.role} | Trạng thái: ${target.status}`;
                 actionList.innerHTML = '';
 
-                // LẤY DỮ LIỆU ĐỂ LỌC (FILTER DATA)
-                const livingRoles = this.state.players.filter(p => p.status !== 'Dead').map(p => p.role);
-                const allRolesInGame = this.state.players.map(p => p.role);
-                const flags = this.state.gameFlags || {};
-                const night = this.state.nightCount || 1;
+                modal.style.display = 'flex';
 
-                let hasWolf = livingRoles.some(r => ['Ma Sói', 'Sói con', 'Sói trắng', 'Sói trùm', 'Sói quỷ', 'Sói lửa', 'Anh Em Sói', 'Nửa người nửa sói', 'Đứa trẻ hoang dã'].includes(r));
-
-                if (this.state.time === 'night') {
-                    if (flags.isManualMode) {
-                        let manualHtml = `
-                            <div style="font-size: 12px; color: #f39c12; font-weight: bold; margin-bottom: 10px;">⚙️ CHẾ ĐỘ THỦ CÔNG</div>
-                            <button class="btn-danger" onclick="app.setPendingAction('${targetId}', 'MANUAL_KILL', '🔪 Đánh Dấu CHẾT')">🔪 Đánh dấu CHẾT</button>
-                            <button class="btn-success" onclick="app.setPendingAction('${targetId}', 'MANUAL_SAVE', '🛡️ Đánh Dấu CỨU')">🛡️ Đánh dấu CỨU</button>
-                        `;
+                if (this.state.roomPhase === 'Night') {
+                    let atkHtml = '';
+                    let defHtml = '';
+                    let spcHtml = '';
                         
-                        // Thay đổi bài đêm
-                        manualHtml += `
-                            <div style="margin-top: 15px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                                <p style="font-size: 12px; margin: 0 0 5px 0; color: #f1c40f;">🛠️ Thay đổi lá bài/vai trò (Tác dụng ngay):</p>
-                                <select id="gm-new-role-${targetId}" style="width:100%; padding: 8px; margin-bottom: 8px; border-radius: 6px; font-size:14px; color: black;">
-                                    ${Object.keys(this.masterRoles).map(r => `<option value="${r}" ${r === target.role ? 'selected' : ''}>${r}</option>`).join('')}
-                                </select>
-                                <button class="btn-primary" style="padding: 8px; font-size: 14px;" onclick="app.gmChangeRole('${targetId}', this)">💾 Cập Nhật</button>
-                            </div>
-                        `;
-
-                        // Dấu ấn nhân vật
-                        // Dấu ấn nhân vật
-                        manualHtml += `<div style="font-size: 12px; color: #95a5a6; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">DẤU ẤN NHÂN VẬT</div>`;
-                        
-                        if (allRolesInGame.includes('Cupid (Thần tình yêu)')) manualHtml += `<button style="background: #e74c3c" onclick="app.setPendingAction('${targetId}', 'CUPID_LINK', '💘 Cupid Ghép Đôi')">💘 Ghép đôi (Cupid)</button>`;
-                        if (allRolesInGame.includes('Thầy thôi miên')) manualHtml += `<button style="background: #2980b9" onclick="app.setPendingAction('${targetId}', 'HYPNOTIST_CHARM', '😵‍💫 Bị Thôi Miên')">😵‍💫 Thôi miên (Thầy thôi miên)</button>`;
-                        if (allRolesInGame.includes('Ảnh tử')) manualHtml += `<button style="background: #34495e" onclick="app.setPendingAction('${targetId}', 'SHADOW_MARK', '👤 Bị Cướp Bài')">👤 Cướp bài (Ảnh tử)</button>`;
-                        if (allRolesInGame.includes('Đứa trẻ hoang dã')) manualHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Làm Thần Tượng')">👶 Thần tượng (Đứa trẻ hoang dã)</button>`;
-                        if (allRolesInGame.includes('Nguyệt Nữ')) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Bị Câm Lặng')">🌙 Câm lặng (Nguyệt Nữ)</button>`;
-                        if (allRolesInGame.includes('Dược sĩ')) {
-                            if (!flags.usedPharmaSleep) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê')">💊 Thuốc mê (Dược sĩ)</button>`;
-                            else manualHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình mê hồn</button>`;
-                        }
-                        if (allRolesInGame.includes('Con quạ')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Bị Nguyền Rủa')">🐦‍⬛ Nguyền rủa (Con Quạ)</button>`;
-                        if (allRolesInGame.includes('Kẻ báo thù')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Trả Thù')">🩸 Trả thù (Kẻ Báo Thù)</button>`;
-                        if (allRolesInGame.includes('Thợ săn')) manualHtml += `<button style="background: #e67e22" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Thợ Săn Ngắm')">🏹 Ngắm bắn (Thợ săn)</button>`;
-                        if (allRolesInGame.includes('Kẻ đốt nhà')) manualHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PYRO_BURN', '🧨 Đốt Nhà')">🧨 Đốt nhà (Kẻ đốt nhà)</button>`;
-                        if (allRolesInGame.includes('Người thổi sáo')) manualHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thổi Sáo')">🪈 Thôi miên (Người thổi sáo)</button>`;
-                        if (allRolesInGame.includes('Người múa rối')) manualHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối')">🎎 Ép Sói cắn (Người múa rối)</button>`;
-                        if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
-                            if (!flags.usedRustyKnightInfect) manualHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Hiệp Sĩ: Nhiễm độc kiếm gỉ</button>`;
-                            else manualHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ: Đã nhiễm độc</button>`;
-                        }
-
-                        actionList.innerHTML += manualHtml;
-                        actionList.innerHTML += `<div style="margin-top: 15px;"><button class="btn-secondary" onclick="app.clearPendingAction('${targetId}')">🔄 Hủy bỏ mọi thao tác trên người này</button></div>`;
-                    } else {
-                        // ================= NHÓM 1: SÁT THƯƠNG =================
-                        let atkHtml = '';
                         if (hasWolf) {
                             atkHtml += `<button class="btn-danger" onclick="app.setPendingAction('${targetId}', 'WOLF_BITE', '🐺 Bị Sói Cắn')">🐺 Bầy Sói: Cắn giết</button>`;
                         }
 
-                        if (livingRoles.includes('Sói trắng')) {
-                            if (!flags.lastWhiteWolfNight || (night - flags.lastWhiteWolfNight >= 2)) {
-                                atkHtml += `<button class="btn-danger" onclick="app.setPendingAction('${targetId}', 'WHITE_WOLF_BITE', '🐺 Sói Trắng Cắn')">🐺 Sói Trắng: Giết Sói</button>`;
-                            } else {
-                                atkHtml += `<button disabled style="background: #555;">🐺 Sói Trắng: Đang hồi sức</button>`;
+                        this.state.players.filter(p => p.status !== 'Dead').forEach(c => {
+                            const cState = c.state || {};
+                            
+                            // --- TẤN CÔNG ---
+                            if (c.role === 'Sói trắng') {
+                                if (!cState.lastWhiteWolfNight || (night - cState.lastWhiteWolfNight >= 2)) atkHtml += `<button class="btn-danger" onclick="app.setPendingAction('${targetId}', 'WHITE_WOLF_BITE', '🐺 Sói Trắng Cắn', '${c.id}')">🐺 Sói Trắng ${c.name}: Giết Sói</button>`;
+                                else atkHtml += `<button disabled style="background: #555;">🐺 Sói Trắng ${c.name}: Đang hồi sức</button>`;
                             }
-                        }
-
-                        if (livingRoles.includes('Sói trùm')) {
-                            let anyWolfDied = this.state.players.some(p => p.status === 'Dead' && p.role.toLowerCase().includes('sói') && p.role !== 'Nửa người nửa sói' && p.role !== 'Chó sói (Bán Sói / Sói Lai)');
-                            if (!anyWolfDied) {
-                                atkHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'BIG_BAD_WOLF_BITE', '👹 Sói Trùm Cắn')">👹 Sói Trùm: Cắn thêm người</button>`;
-                            } else {
-                                atkHtml += `<button disabled style="background: #555;">👹 Sói Trùm: Đồng minh đã chết</button>`;
+                            if (c.role === 'Sói trùm') {
+                                let anyWolfDied = this.state.players.some(p => p.status === 'Dead' && p.role.toLowerCase().includes('sói') && p.role !== 'Nửa người nửa sói' && p.role !== 'Chó sói (Bán Sói / Sói Lai)');
+                                if (!anyWolfDied) atkHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'BIG_BAD_WOLF_BITE', '👹 Sói Trùm Cắn', '${c.id}')">👹 Sói Trùm ${c.name}: Cắn thêm</button>`;
+                                else atkHtml += `<button disabled style="background: #555;">👹 Sói Trùm ${c.name}: Đồng minh đã chết</button>`;
                             }
-                        }
-
-                        if (livingRoles.includes('Sói quỷ')) {
-                            if (!flags.usedWolfFather) {
-                                atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'WOLF_FATHER_CONVERT', '👑 Sói Quỷ Cảm Hóa')">👑 Sói quỷ: Biến thành Sói</button>`;
-                            } else {
-                                atkHtml += `<button disabled style="background: #555;">👑 Sói quỷ: Đã dùng quyền năng</button>`;
+                            if (c.role === 'Sói quỷ') {
+                                if (!cState.usedWolfFather) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'WOLF_FATHER_CONVERT', '👑 Sói Quỷ Cảm Hóa', '${c.id}')">👑 Sói quỷ ${c.name}: Cảm hóa</button>`;
+                                else atkHtml += `<button disabled style="background: #555;">👑 Sói quỷ ${c.name}: Đã dùng</button>`;
                             }
-                        }
-
-                        if (livingRoles.includes('Phù Thủy')) {
-                            if (!flags.usedWitchPoison) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'WITCH_POISON', '🧪 Phù Thủy Độc')">🧪 Phù Thủy: Đầu độc</button>`;
-                            else atkHtml += `<button disabled style="background: #555;">🧪 Phù Thủy: Đã hết bình độc</button>`;
-                        }
-
-                        if (livingRoles.includes('Sát thủ')) {
-                            if (!flags.lastAssassinNight || (night - flags.lastAssassinNight >= 2)) {
-                                atkHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'ASSASSIN_KILL', '🥷 Sát Thủ Giết')">🥷 Sát thủ: Ám sát</button>`;
-                            } else {
-                                atkHtml += `<button disabled style="background: #555;">🥷 Sát thủ: Đang mài dao</button>`;
+                            if (c.role === 'Phù Thủy') {
+                                if (!cState.usedWitchPoison) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'WITCH_POISON', '🧪 Phù Thủy Độc', '${c.id}')">🧪 Phù Thủy ${c.name}: Đầu độc</button>`;
+                                else atkHtml += `<button disabled style="background: #555;">🧪 Phù Thủy ${c.name}: Hết độc</button>`;
                             }
-                        }
+                            if (c.role === 'Sát thủ') {
+                                if (!cState.lastAssassinNight || (night - cState.lastAssassinNight >= 2)) atkHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'ASSASSIN_KILL', '🥷 Sát Thủ Giết', '${c.id}')">🥷 Sát thủ ${c.name}: Ám sát</button>`;
+                                else atkHtml += `<button disabled style="background: #555;">🥷 Sát thủ ${c.name}: Đang mài dao</button>`;
+                            }
+                            if (c.role === 'Hiệp sĩ kiếm gỉ') {
+                                if (!cState.usedRustyKnightInfect) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc', '${c.id}')">🗡️ Kỵ Sĩ ${c.name}: Nhiễm độc</button>`;
+                                else atkHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ ${c.name}: Đã độc</button>`;
+                            }
 
-                        if (allRolesInGame.includes('Hiệp sĩ kiếm gỉ')) {
-                            if (!flags.usedRustyKnightInfect) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc')">🗡️ Kỵ Sĩ: Nhiễm độc kiếm gỉ</button>`;
-                            else atkHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ: Đã nhiễm độc</button>`;
+                            // --- BẢO VỆ ---
+                            if (c.role === 'Phù Thủy') {
+                                let isWitchHealedByPharmaNow = this.state.players.some(p => p.role === 'Phù Thủy' && p.pendingActions && p.pendingActions.find(a => a.action === 'PHARMA_HEAL'));
+                                if (!cState.usedWitchHeal || isWitchHealedByPharmaNow) defHtml += `<button class="btn-success" onclick="app.setPendingAction('${targetId}', 'WITCH_HEAL', '🧪 Phù Thủy Cứu', '${c.id}')">🧪 Phù Thủy ${c.name}: Cứu</button>`;
+                                else defHtml += `<button disabled style="background: #555;">🧪 Phù Thủy ${c.name}: Hết cứu</button>`;
+                            }
+                            if (c.role === 'Dược sĩ') {
+                                if (!cState.usedPharmaHeal) defHtml += `<button class="btn-success" onclick="app.setPendingAction('${targetId}', 'PHARMA_HEAL', '💊 Dược Sĩ Cứu', '${c.id}')">💊 Dược Sĩ ${c.name}: Cứu</button>`;
+                                else defHtml += `<button disabled style="background: #555;">💊 Dược Sĩ ${c.name}: Hết hồi phục</button>`;
+                            }
+                            if (c.role === 'Bảo vệ') {
+                                if (cState.lastGuardedId === targetId) defHtml += `<button disabled style="background: #555;">🛡️ Bảo Vệ ${c.name}: Vừa cứu đêm qua</button>`;
+                                else defHtml += `<button style="background: #27ae60" onclick="app.setPendingAction('${targetId}', 'GUARD_PROTECT', '🛡️ Bảo Vệ Cứu', '${c.id}')">🛡️ Bảo Vệ ${c.name}: Che chở</button>`;
+                            }
+
+                            // --- ĐẶC BIỆT ---
+                            if (night === 1) {
+                                if (c.role === 'Cupid (Thần tình yêu)') {
+                                    if (!cState.usedCupid) spcHtml += `<button style="background: #e74c3c" onclick="app.setPendingAction('${targetId}', 'CUPID_LINK', '💘 Cupid Ghép Đôi', '${c.id}')">💘 Cupid ${c.name}: Ghép đôi</button>`;
+                                }
+                                if (c.role === 'Ảnh tử') {
+                                    if (!cState.usedShadow) spcHtml += `<button style="background: #34495e" onclick="app.setPendingAction('${targetId}', 'SHADOW_MARK', '👤 Ảnh Tử Nhắm', '${c.id}')">👤 Ảnh Tử ${c.name}: Cướp bài</button>`;
+                                }
+                                if (c.role === 'Đứa trẻ hoang dã') {
+                                    if (!cState.usedWildChild) spcHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Trẻ Hoang Dã Chọn', '${c.id}')">👶 Trẻ Hoang Dã ${c.name}: Chọn Thần tượng</button>`;
+                                }
+                                if (c.role === 'Kẻ báo thù') {
+                                    if (!cState.usedAvenger) spcHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Kẻ Báo Thù Nhắm', '${c.id}')">🩸 Kẻ Báo Thù ${c.name}: Chọn Mục tiêu</button>`;
+                                }
+                            }
+                            if (c.role === 'Kẻ đốt nhà') {
+                                if (!cState.usedPyro) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PYRO_BURN', '🧨 Bị Đốt Nhà', '${c.id}')">🧨 Đốt Nhà ${c.name}: Đốt</button>`;
+                                else spcHtml += `<button disabled style="background: #555;">🧨 Đốt Nhà ${c.name}: Hết bom</button>`;
+                            }
+                            if (c.role === 'Người múa rối') {
+                                if (!cState.usedPuppeteer) spcHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối Điều Khiển', '${c.id}')">🎎 Múa Rối ${c.name}: Ép Sói Cắn</button>`;
+                                else spcHtml += `<button disabled style="background: #555;">🎎 Múa Rối ${c.name}: Đứt dây</button>`;
+                            }
+                            if (c.role === 'Dược sĩ') {
+                                if (!cState.usedPharmaSleep) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê', '${c.id}')">💊 Dược Sĩ ${c.name}: Thuốc mê</button>`;
+                                else spcHtml += `<button disabled style="background: #555;">💊 Dược Sĩ ${c.name}: Hết mê hồn</button>`;
+                            }
+                            if (c.role === 'Thợ săn') spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Đích ngắm Thợ Săn', '${c.id}')">🏹 Thợ Săn ${c.name}: Chọn Chết Thay</button>`;
+                            if (c.role === 'Nguyệt Nữ') spcHtml += `<button style="background: #2980b9" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Nguyệt Nữ Khóa', '${c.id}')">🌙 Nguyệt Nữ ${c.name}: Khóa kỹ năng</button>`;
+                            if (c.role === 'Con quạ') {
+                                if (cState.lastRavenCurseId === targetId) {
+                                    spcHtml += `<button class="btn-disabled" disabled>🐦‍⬛ Con Quạ ${c.name}: Đã nguyền đêm qua</button>`;
+                                } else {
+                                    spcHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Con Quạ: Nguyền (2 Vote)', '${c.id}')">🐦‍⬛ Con Quạ ${c.name}: Nguyền</button>`;
+                                }
+                            }
+                            if (c.role === 'Người thổi sáo') {
+                                const targetState = target.state || {};
+                                if (targetState.piperCharmed) spcHtml += `<button disabled style="background: #555;">🪈 Thổi Sáo ${c.name}: Đã bị thôi miên</button>`;
+                                else spcHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thôi Miên', '${c.id}')">🪈 Thổi Sáo ${c.name}: Thôi miên</button>`;
+                            }
+                            if (c.role === 'Thầy thôi miên') {
+                                if (cState.lastHypnotizedId === targetId) spcHtml += `<button disabled style="background: #555;">😵‍💫 Thầy Thôi Miên ${c.name}: Vừa chọn đêm qua</button>`;
+                                else spcHtml += `<button style="background: #1abc9c" onclick="app.setPendingAction('${targetId}', 'HYPNOTIST_CHARM', '😵‍💫 Thầy Thôi Miên', '${c.id}')">😵‍💫 Thầy Thôi Miên ${c.name}: Bắt Chết Thay</button>`;
+                            }
+                        });
+
+                        if (night > 1) {
+                            if (livingRoles.includes('Cupid (Thần tình yêu)')) spcHtml += `<button disabled style="background: #555;">💘 Cupid: Chỉ tác dụng Đêm 1</button>`;
+                            if (livingRoles.includes('Ảnh tử')) spcHtml += `<button disabled style="background: #555;">👤 Ảnh Tử: Đã qua Đêm 1</button>`;
+                            if (livingRoles.includes('Đứa trẻ hoang dã')) spcHtml += `<button disabled style="background: #555;">👶 Trẻ Hoang Dã: Đã qua Đêm 1</button>`;
+                            if (livingRoles.includes('Kẻ báo thù')) spcHtml += `<button disabled style="background: #555;">🩸 Kẻ Báo Thù: Đã qua Đêm 1</button>`;
                         }
 
                         if (atkHtml) actionList.innerHTML += `<div style="font-size: 12px; color: var(--danger); font-weight: bold; margin-top: 10px;">⚔️ NHÓM TẤN CÔNG</div>` + atkHtml;
-
-                        // ================= NHÓM 2: BẢO VỆ =================
-                        let defHtml = '';
-                        if (livingRoles.includes('Phù Thủy')) {
-                            // Cấp cứu: Nếu Dược sĩ đang dùng Phục Hồi Dược lên Phù Thủy trong cùng đêm, mở ngay quyền cứu cho Phù Thủy!
-                            let isWitchHealedByPharmaNow = this.state.players.some(p => p.role === 'Phù Thủy' && p.pendingActions && p.pendingActions.find(a => a.action === 'PHARMA_HEAL'));
-                            if (!flags.usedWitchHeal || isWitchHealedByPharmaNow) defHtml += `<button class="btn-success" onclick="app.setPendingAction('${targetId}', 'WITCH_HEAL', '🧪 Phù Thủy Cứu')">🧪 Phù Thủy: Cứu</button>`;
-                            else defHtml += `<button disabled style="background: #555;">🧪 Phù Thủy: Đã hết bình cứu</button>`;
-                        }
-
-                        if (livingRoles.includes('Dược sĩ')) {
-                            if (!flags.usedPharmaHeal) defHtml += `<button class="btn-success" onclick="app.setPendingAction('${targetId}', 'PHARMA_HEAL', '💊 Dược Sĩ Cứu')">💊 Dược Sĩ: Cứu</button>`;
-                            else defHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình hồi phục</button>`;
-                        }
-
-                        // 🔥 LÕI CẤM MỤC TIÊU KÉP CỦA BẢO VỆ
-                        if (livingRoles.includes('Bảo vệ')) {
-                            if (flags.lastGuardedId === targetId) {
-                                defHtml += `<button disabled style="background: #555;">🛡️ Bảo Vệ: Vừa cứu đêm qua (Cấm 2 đêm)</button>`;
-                            } else {
-                                defHtml += `<button style="background: #27ae60" onclick="app.setPendingAction('${targetId}', 'GUARD_PROTECT', '🛡️ Bảo Vệ Cứu')">🛡️ Bảo Vệ: Che chở</button>`;
-                            }
-                        }
-
                         if (defHtml) actionList.innerHTML += `<div style="font-size: 12px; color: var(--success); font-weight: bold; margin-top: 10px;">🛡️ NHÓM BẢO VỆ</div>` + defHtml;
-
-                        // ================= NHÓM 3: KỸ NĂNG ĐẶC BIỆT & ĐÊM 1 =================
-                        let spcHtml = '';
-
-                        // --- CHỈ ĐÊM 1 ---
-                        if (night === 1) {
-                            if (livingRoles.includes('Cupid (Thần tình yêu)') && !flags.usedCupid)
-                                spcHtml += `<button style="background: #e74c3c" onclick="app.setPendingAction('${targetId}', 'CUPID_LINK', '💘 Cupid Ghép Đôi')">💘 Cupid: Ghép đôi (Chọn 2)</button>`;
-                            if (livingRoles.includes('Ảnh tử') && !flags.usedShadow)
-                                spcHtml += `<button style="background: #34495e" onclick="app.setPendingAction('${targetId}', 'SHADOW_MARK', '👤 Ảnh Tử Nhắm')">👤 Ảnh Tử: Đánh dấu cướp bài</button>`;
-                            if (livingRoles.includes('Đứa trẻ hoang dã') && !flags.usedWildChild)
-                                spcHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Trẻ Hoang Dã Chọn')">👶 Trẻ Hoang Dã: Chọn Thần tượng</button>`;
-                            if (livingRoles.includes('Kẻ báo thù') && !flags.usedAvenger)
-                                spcHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Kẻ Báo Thù Nhắm')">🩸 Kẻ Báo Thù: Chọn Mục tiêu</button>`;
-                        } else {
-                            if (livingRoles.includes('Cupid (Thần tình yêu)')) spcHtml += `<button disabled style="background: #555;">💘 Cupid: Chỉ tác dụng Đêm 1</button>`;
-                            if (livingRoles.includes('Ảnh tử')) spcHtml += `<button disabled style="background: #555;">👤 Ảnh Tử: Đã qua thời khắc định mệnh</button>`;
-                            if (livingRoles.includes('Đứa trẻ hoang dã')) spcHtml += `<button disabled style="background: #555;">👶 Trẻ Hoang Dã: Đã có thần tượng</button>`;
-                            if (livingRoles.includes('Kẻ báo thù')) spcHtml += `<button disabled style="background: #555;">🩸 Kẻ Báo Thù: Đã chọn mục tiêu</button>`;
-                        }
-
-                        // --- KỸ NĂNG 1 LẦN / KHÁC ---
-                        if (livingRoles.includes('Kẻ đốt nhà')) {
-                            if (!flags.usedPyro) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PYRO_BURN', '🧨 Bị Đốt Nhà')">🧨 Kẻ Đốt Nhà: Đốt nhà</button>`;
-                            else spcHtml += `<button disabled style="background: #555;">🧨 Kẻ Đốt Nhà: Hết bom lửa</button>`;
-                        }
-                        if (livingRoles.includes('Người múa rối')) {
-                            if (!flags.usedPuppeteer) spcHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'PUPPETEER_CONTROL', '🎎 Múa Rối Điều Khiển')">🎎 Người Múa Rối: Ép Sói Cắn</button>`;
-                            else spcHtml += `<button disabled style="background: #555;">🎎 Người Múa Rối: Đứt dây rối</button>`;
-                        }
-                        if (livingRoles.includes('Dược sĩ')) {
-                            if (!flags.usedPharmaSleep) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê')">💊 Thuốc mê (Dược sĩ)</button>`;
-                            else spcHtml += `<button disabled style="background: #555;">💊 Dược Sĩ: Đã hết bình mê hồn</button>`;
-                        }
-
-                        // --- KỸ NĂNG MỌI ĐÊM ---
-                        if (livingRoles.includes('Thợ săn')) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Đích ngắm Thợ Săn')">🏹 Thợ Săn: Chọn Mục Tiêu Chết Thay</button>`;
-                        if (livingRoles.includes('Nguyệt Nữ')) spcHtml += `<button style="background: #2980b9" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Nguyệt Nữ Khóa')">🌙 Nguyệt Nữ: Khóa kỹ năng</button>`;
-                        if (livingRoles.includes('Con quạ')) spcHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'RAVEN_CURSE', '🐦‍⬛ Con Quạ: Nguyền (2 Vote)</button>`;
-
-                        // 🔥 NGĂN CHẶN THÔI MIÊN TRÙNG LẶP
-                        if (livingRoles.includes('Người thổi sáo')) {
-                            const targetState = target.state || {};
-                            if (targetState.piperCharmed) {
-                                spcHtml += `<button disabled style="background: #555;">🪈 Người Thổi Sáo: Hắn đã bị thôi miên</button>`;
-                            } else {
-                                spcHtml += `<button style="background: #2c3e50" onclick="app.setPendingAction('${targetId}', 'PIPER_CHARM', '🪈 Bị Thôi Miên')">🪈 Người Thổi Sáo: Thôi miên</button>`;
-                            }
-                        }
-
-                        // 🔥 LÕI CẤM MỤC TIÊU KÉP CỦA THẦY THÔI MIÊN
-                        if (livingRoles.includes('Thầy thôi miên')) {
-                            if (flags.lastHypnotizedId === targetId) {
-                                spcHtml += `<button disabled style="background: #555;">😵‍💫 Thầy Thôi Miên: Vừa chọn đêm qua</button>`;
-                            } else {
-                                spcHtml += `<button style="background: #1abc9c" onclick="app.setPendingAction('${targetId}', 'HYPNOTIST_CHARM', '😵‍💫 Thầy Thôi Miên')">😵‍💫 Thầy Thôi Miên: Bắt Chết Thay</button>`;
-                            }
-                        }
-
                         if (spcHtml) actionList.innerHTML += `<div style="font-size: 12px; color: #f39c12; font-weight: bold; margin-top: 10px;">🔮 KỸ NĂNG & ĐÁNH DẤU</div>` + spcHtml;
 
                         actionList.innerHTML += `<div style="margin-top: 15px;"><button class="btn-secondary" onclick="app.clearPendingAction('${targetId}')">🔄 Hủy bỏ mọi thao tác trên người này</button></div>`;
-                    }
                 } else {
                     // ☀️ BAN NGÀY: TOÀN QUYỀN ĐIỀU HÀNH CHO QUẢN TRÒ
                     actionList.innerHTML += `<button class="btn-secondary" style="background:#e67e22" onclick="app.startVote('${targetId}', this)">⚖️ Đưa lên giàn Treo Cổ</button>`;
@@ -2022,7 +1945,7 @@
                 document.body.style.overflow = '';
             },
 
-            setPendingAction(targetId, actionCode, actionText) {
+            setPendingAction(targetId, actionCode, actionText, sourceId = null) {
                 // ĐIỀU HƯỚNG CUPID KIỂM TRA ĐA NHIỆM
                 if (actionCode === 'CUPID_LINK') {
                     let numCupids = this.state.players.filter(p => p.role === 'Cupid (Thần tình yêu)' && p.status !== 'Dead').length;
@@ -2058,7 +1981,7 @@
                     if (!p.pendingActions) p.pendingActions = [];
                     // Chống bấm đúp trùng 1 lệnh
                     if (!p.pendingActions.find(a => a.action === actionCode)) {
-                        p.pendingActions.push({ action: actionCode, text: actionText, ts: Date.now() });
+                        p.pendingActions.push({ action: actionCode, text: actionText, sourceId: sourceId, ts: Date.now() });
                     }
                 }
                 this.closeGMActionMenu();
