@@ -1791,7 +1791,7 @@
                 actionList.style.maxHeight = '55vh';
                 actionList.style.overflowY = 'auto';
                 actionList.style.paddingRight = '5px';
-                actionList.innerHTML = '';
+                actionList.innerHTML = '<style>#gm-action-list > * { flex-shrink: 0 !important; }</style>';
 
                 if (this.state.time === 'night') {
                     let atkHtml = '';
