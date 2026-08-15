@@ -1331,7 +1331,12 @@
                         if (p.state && p.state.piperCharmed) return 3;
                         return 99;
                     };
-                    return getGroupId(a) - getGroupId(b);
+                    const groupDiff = getGroupId(a) - getGroupId(b);
+                    if (groupDiff !== 0) return groupDiff;
+                    
+                    // Nhóm các nhân vật cùng vai trò lại gần nhau để quản trò dễ nhìn
+                    if (a.role && b.role) return a.role.localeCompare(b.role);
+                    return 0;
                 });
 
                 sortedPlayers.forEach(p => {
@@ -1802,7 +1807,9 @@
                             atkHtml += `<button class="btn-danger" onclick="app.setPendingAction('${targetId}', 'WOLF_BITE', '🐺 Bị Sói Cắn')">🐺 Bầy Sói: Cắn giết</button>`;
                         }
 
-                        this.state.players.filter(p => p.status !== 'Dead').forEach(c => {
+                        let activeCasters = this.state.players.filter(p => p.status !== 'Dead');
+                        activeCasters.sort((a, b) => { if (a.role && b.role) return a.role.localeCompare(b.role); return 0; });
+                        activeCasters.forEach(c => {
                             const cState = c.state || {};
                             
                             // --- TẤN CÔNG ---
