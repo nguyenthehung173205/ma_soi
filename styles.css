@@ -85,6 +85,7 @@ button {
     transition: transform 0.1s, filter 0.2s;
     width: 100%;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 button:active {
