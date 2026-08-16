@@ -29,12 +29,23 @@
 <body>
 <body class="theme-day" id="app-body">
 
-    <!-- 🔥 NÚT TRA CỨU NHÂN VẬT GÓC MÀN HÌNH (FLOATING WIKI BUTTON) -->
-    <button id="btn-codex" class="fab-wiki" onclick="app.openCodexModal()">📖</button>
-    <!-- 🔥 NÚT GHI CHÚ QUẢN TRÒ -->
-    <button id="btn-note" class="fab-wiki" onclick="app.openNoteModal()" style="bottom: max(145px, env(safe-area-inset-bottom) + 125px); background: #f39c12; display: none;">📝</button>
-    <!-- 🔥 NÚT PHÁN QUYẾT CHIẾN THẮNG QUẢN TRÒ -->
-    <button id="btn-declare-win" class="fab-wiki" onclick="app.openWinDeclareModal()" style="bottom: max(205px, env(safe-area-inset-bottom) + 185px); background: #8e44ad; display: none;">🏆</button>
+    <!-- 🔥 HỆ THỐNG MENU NỔI (FLOATING MENU) -->
+    <div id="floating-menu-container" class="floating-menu-container">
+        <button id="btn-floating-main" class="fab-main" onclick="app.toggleFloatingMenu()">
+            <span class="fab-icon">☰</span>
+        </button>
+        <div id="floating-menu-options" class="floating-menu-options">
+            <button class="fab-option" onclick="app.openCodexModal(); app.toggleFloatingMenu()">
+                <span class="fab-opt-icon">📖</span> <span class="fab-opt-text">Từ Điển Nhân Vật</span>
+            </button>
+            <button id="btn-menu-note" class="fab-option gm-only" onclick="app.openNoteModal(); app.toggleFloatingMenu()" style="display: none;">
+                <span class="fab-opt-icon">📝</span> <span class="fab-opt-text">Sổ Tay Ghi Chú</span>
+            </button>
+            <button id="btn-menu-declare-win" class="fab-option gm-only" onclick="app.openWinDeclareModal(); app.toggleFloatingMenu()" style="display: none;">
+                <span class="fab-opt-icon" style="color: #f1c40f;">🏆</span> <span class="fab-opt-text" style="color: #f1c40f; font-weight: bold;">Phán Quyết</span>
+            </button>
+        </div>
+    </div>
     
     <!-- 🔥 HỆ THỐNG THÔNG BÁO VÀ XÁC NHẬN (CUSTOM UI) -->
     <div id="toast-container"></div>
@@ -198,8 +209,8 @@
                 <button onclick="app.toggleTime('day', this)">🌤️ BAN NGÀY</button>
                 <button style="background: #2c3e50;" onclick="app.toggleTime('night', this)">🌙 BAN ĐÊM</button>
                 <button id="btn-ghost-vision" style="background: #9b59b6;" onclick="app.toggleGhostVision(this)">👁️ HỒN MA: ĐƯỢC XEM BÀI</button>
-                <button style="background: #e67e22;" onclick="document.getElementById('modal-gm-guide').classList.add('active')">📖 HƯỚNG DẪN</button>
-                <button class="btn-success" onclick="app.openRoleModal()">🃏 PHÁT BÀI</button>
+                <button style="background: #e67e22;" onclick="document.getElementById('modal-gm-guide').classList.add('active')">📖 HƯỚNG DẪN QUẢN TRÒ</button>
+                <button class="btn-success" onclick="app.openRoleModal()">🃏 PHÁT BÀI MỚI</button>
                 <button class="btn-danger" onclick="app.endGame()">🚨 HỦY PHÒNG</button>
             </div>
             <button id="btn-ghost-leave" class="btn-secondary" style="display: none; margin-top: 10px;" onclick="app.confirmLeaveRoom()">🚪 THOÁT PHÒNG</button>
