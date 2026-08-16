@@ -154,6 +154,10 @@ input {
     height: 380px;
     margin: 30px auto;
     perspective: 1000px;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .card-inner {
@@ -662,19 +666,23 @@ input {
     justify-content: center;
 }
 
-/* 🔥 NÚT WIKI (THUMB ZONE - CHUẨN THÁI CÔNG HỌC) */
-.fab-wiki {
+/* 🔥 HỆ THỐNG MENU NỔI (FLOATING MENU) */
+.floating-menu-container {
     position: fixed;
-    /* Đẩy lên 85px để KHÔNG đè lên nút "Chốt Kết Quả Đêm" hay "Thoát Phòng" */
     bottom: max(85px, env(safe-area-inset-bottom) + 65px);
     right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.fab-main {
     width: 52px;
     height: 52px;
     border-radius: 50%;
     padding: 0;
     font-size: 24px;
-    z-index: 9999;
-    /* Luôn nổi trên mọi thứ */
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
@@ -683,19 +691,64 @@ input {
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.2);
     cursor: pointer;
-    /* Hiệu ứng nảy vật lý mượt mà */
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.3s, box-shadow 0.3s;
 }
 
-.fab-wiki:active {
+.fab-main:active {
     transform: scale(0.85);
 }
 
-/* Khi trời tối, Nút Wiki tự động phát sáng để dễ bấm */
-.theme-night .fab-wiki {
-    background: #f39c12;
-    box-shadow: 0 0 20px rgba(243, 156, 18, 0.4);
-    border: 2px solid #fff;
+.theme-night .fab-main {
+    background: #34495e;
+    box-shadow: 0 0 20px rgba(52, 73, 94, 0.6);
+}
+
+.floating-menu-options {
+    position: absolute;
+    bottom: 65px;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.floating-menu-options.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.fab-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.fab-option:active {
+    transform: scale(0.95);
+    background: rgba(50, 50, 50, 0.95);
+}
+
+.fab-opt-icon {
+    font-size: 20px;
+}
+.fab-opt-text {
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .secret-info-container {
