@@ -163,9 +163,9 @@
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
                 document.getElementById(screenId).classList.add('active');
 
-                // Tự động hiển thị nút Ghi chú và Tuyên bố chiến thắng nếu là Quản trò
-                const btnNote = document.getElementById('btn-note');
-                const btnWin = document.getElementById('btn-declare-win');
+                // Tự động hiển thị nút Ghi chú và Tuyên bố chiến thắng trong menu thả xuống nếu là Quản trò
+                const btnNote = document.getElementById('btn-menu-note');
+                const btnWin = document.getElementById('btn-menu-declare-win');
                 if (btnNote) {
                     if (this.state.role === 'gm') btnNote.style.display = 'flex';
                     else btnNote.style.display = 'none';
@@ -2135,6 +2135,16 @@
             },
 
             // ==========================================
+            // 🔥 HỆ THỐNG MENU NỔI (FLOATING MENU)
+            // ==========================================
+            toggleFloatingMenu() {
+                const menu = document.getElementById('floating-menu-options');
+                if (menu) {
+                    menu.classList.toggle('active');
+                }
+            },
+
+            // ==========================================
             // 🔥 HỆ THỐNG TRA CỨU TỪ ĐIỂN NHÂN VẬT (CODEX)
             // ==========================================
             openCodexModal() {
@@ -2415,9 +2425,16 @@
             }
         }
         
-        // Kích hoạt kéo thả cho 2 nút
-        // makeDraggable('btn-codex');
-        // makeDraggable('btn-note');
+        // Đóng menu thả xuống khi nhấp ra ngoài
+        document.addEventListener('click', function(event) {
+            const container = document.getElementById('floating-menu-container');
+            const menu = document.getElementById('floating-menu-options');
+            if (container && menu && menu.classList.contains('active')) {
+                if (!container.contains(event.target)) {
+                    menu.classList.remove('active');
+                }
+            }
+        });
 
         // Lắng nghe sự kiện lưu Ghi chú tự động
         document.getElementById('note-textarea').addEventListener('input', function(e) {
