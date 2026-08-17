@@ -72,7 +72,7 @@
                 'Ba anh em': { icon: '👨‍👦‍👦', desc: 'Thuộc phe dân làng, không có chức năng đặc biệt ngoài việc ba người thức dậy vào đêm đầu tiên để nhận biết mặt nhau.' },
                 'Thiên sứ': { icon: '👼', desc: 'Thắng ngay lập tức nếu bị Sói cắn vào đêm đầu tiên hoặc bị dân làng treo cổ vào sáng đầu tiên. Nếu sống sót qua vòng đầu, Thiên sứ sẽ mất chức năng và trở thành một dân làng bình thường.' },
                 'Thẩm phán lắp bắp': { icon: '⚖️', desc: 'Đêm đầu tiên, Thẩm Phán sẽ chỉ cho Quản Trò ám hiệu đặc biệt của mình. Một lần trong trò chơi, khi Thẩm Phán thực hiện ám hiệu, buổi sáng đó sẽ có 2 người bị treo cổ thay vì 1.' },
-                'Hiệp sĩ kiếm gỉ': { icon: '🗡️', desc: 'Nếu bị sói cắn, Hiệp sĩ sẽ chết, nhưng con Sói cắn hiệp sĩ sẽ bị thương và cũng sẽ chết sau 1 ngày đêm (Quản trò sẽ công bố Sói chết vào sáng hôm sau nữa).' },
+                'Hiệp sĩ kiếm gỉ': { icon: '🗡️', desc: 'Nếu bị sói cắn, Hiệp sĩ sẽ chết, nhưng con Sói gần nhất bên trái của hiệp sĩ sẽ bị thương và cũng sẽ chết sau 1 ngày đêm (Quản trò sẽ công bố Sói chết vào sáng hôm sau nữa).' },
                 'Hồ ly': { icon: '🦊', desc: 'Mỗi đêm chọn 3 người chơi, nếu trong đó có ít nhất 1 Ma Sói thì Hồ ly giữ nguyên năng lực. Nếu không có Ma Sói nào trong 3 người, Hồ ly sẽ mất đi năng lực này vĩnh viễn.' },
                 'Người thuần phục gấu': { icon: '🐻', desc: 'Quản trò sẽ ra dấu hiệu báo cho Người thuần phục gấu biết nếu một trong hai người ngồi ngay bên cạnh nhân vật này là Ma Sói.' },
                 'Diễn viên': { icon: '🎭', desc: 'Quản trò sẽ lựa ra 3 lá chức năng. Mỗi đêm, Diễn viên có thể chọn ngẫu nhiên 1 trong 3 lá để thực hiện chức năng. Mỗi lá chỉ được chọn 1 lần trong trò chơi.' },
