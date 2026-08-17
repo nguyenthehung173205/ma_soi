@@ -212,7 +212,7 @@
                     if (res.status === 'success') {
                         this.state.role = 'gm';
                         this.state.roomCode = res.roomCode;
-                        sessionStorage.setItem('werewolf_session', JSON.stringify({ role: 'gm', roomCode: res.roomCode }));
+                        localStorage.setItem('werewolf_session', JSON.stringify({ role: 'gm', roomCode: res.roomCode, last_activity: Date.now() }));
                         document.getElementById('gm-room-id').innerText = res.roomCode;
                         this.switchScreen('screen-gm');
                         this.startPolling();
@@ -239,7 +239,7 @@
                         this.state.role = 'player';
                         this.state.playerId = res.playerId;
                         this.state.roomCode = res.roomCode;
-                        sessionStorage.setItem('werewolf_session', JSON.stringify({ role: 'player', playerId: res.playerId, roomCode: res.roomCode, playerName: name }));
+                        localStorage.setItem('werewolf_session', JSON.stringify({ role: 'player', playerId: res.playerId, roomCode: res.roomCode, playerName: name, last_activity: Date.now() }));
                         document.getElementById('player-room-info').innerText = `Mã phòng: ${res.roomCode} | Tên: ${name}`;
                         this.switchScreen('screen-player');
                         this.startPolling();
@@ -319,7 +319,12 @@
 
             leaveRoom() {
                 this.stopPolling();
-                sessionStorage.removeItem('werewolf_session');
+                const currentRoom = this.state.roomCode;
+                localStorage.removeItem('werewolf_session');
+                localStorage.removeItem('werewolf_selected_roles');
+                if (currentRoom) {
+                    localStorage.removeItem('gmNotes_' + currentRoom);
+                }
 
                 // 🔥 BẮN NGƯ LÔI BÁO TỬ (Sử dụng .catch để không bị văng Unhandled Promise)
                 if (this.state.roomCode) {
@@ -581,9 +586,10 @@
                                 alert("👑 BẠN ĐÃ ĐƯỢC NHƯỜNG QUYỀN QUẢN TRÒ!");
                                 this.state.role = 'gm';
                                 this.state.playerId = null;
-                                sessionStorage.setItem('werewolf_session', JSON.stringify({
+                                localStorage.setItem('werewolf_session', JSON.stringify({
                                     roomCode: this.state.roomCode,
-                                    role: 'gm'
+                                    role: 'gm',
+                                    last_activity: Date.now()
                                 }));
                                 document.getElementById('gm-room-id').innerText = this.state.roomCode;
                                 this.switchScreen('screen-gm');
@@ -597,10 +603,11 @@
                         else if (this.state.role === 'player' && this.state.ignoreGMTransfer) {
                             if (!res.gameFlags || res.gameFlags.newGM !== this.state.playerId) {
                                 this.state.ignoreGMTransfer = null;
-                                let session = JSON.parse(sessionStorage.getItem('werewolf_session'));
+                                let session = JSON.parse(localStorage.getItem('werewolf_session'));
                                 if (session) {
                                     delete session.ignoreGMTransfer;
-                                    sessionStorage.setItem('werewolf_session', JSON.stringify(session));
+                                    session.last_activity = Date.now();
+                                    localStorage.setItem('werewolf_session', JSON.stringify(session));
                                 }
                             }
                         }
@@ -628,6 +635,15 @@
                                 this.updatePlayerView();
                             }
                         }
+
+                        // 🔥 DUY TRÌ SỰ SỐNG (Bơm máu last_activity liên tục)
+                        try {
+                            let session = JSON.parse(localStorage.getItem('werewolf_session'));
+                            if (session) {
+                                session.last_activity = Date.now();
+                                localStorage.setItem('werewolf_session', JSON.stringify(session));
+                            }
+                        } catch (e) {}
                     }
                 } catch (err) {
                     console.error("Lỗi cập nhật trạng thái:", err);
@@ -747,12 +763,13 @@
                     this.state.role = 'player';
                     this.state.playerId = targetId;
                     this.state.playerName = newName;
-                    sessionStorage.setItem('werewolf_session', JSON.stringify({
+                    localStorage.setItem('werewolf_session', JSON.stringify({
                         roomCode: this.state.roomCode,
                         role: 'player',
                         playerId: targetId,
                         playerName: newName,
-                        ignoreGMTransfer: targetId
+                        ignoreGMTransfer: targetId,
+                        last_activity: Date.now()
                     }));
                     document.getElementById('player-room-info').innerText = `Mã phòng: ${this.state.roomCode} | Tên: ${newName}`;
                     this.switchScreen('screen-player');
@@ -2287,12 +2304,22 @@
         };
 
         // =======================================================================
-        // 🔥 AUTO REJOIN SESSION LOGIC
+        // 🔥 AUTO REJOIN SESSION LOGIC (LOCAL STORAGE + THỜI GIAN SỐNG 2 TIẾNG)
         // =======================================================================
-        const savedSession = sessionStorage.getItem('werewolf_session');
+        const savedSession = localStorage.getItem('werewolf_session');
         if (savedSession) {
             try {
                 const session = JSON.parse(savedSession);
+                const now = Date.now();
+                // Hạn sử dụng: 2 tiếng (7,200,000 mili-giây)
+                if (session.last_activity && (now - session.last_activity > 7200000)) {
+                    console.log('Phiên làm việc đã hết hạn 2 tiếng. Tiến hành dọn dẹp bộ nhớ.');
+                    localStorage.removeItem('werewolf_session');
+                    localStorage.removeItem('werewolf_selected_roles');
+                    if (session.roomCode) localStorage.removeItem('gmNotes_' + session.roomCode);
+                    throw new Error('Expired session'); // Ép văng xuống block catch
+                }
+
                 if (session.role === 'gm') {
                     app.state.role = 'gm';
                     app.state.roomCode = session.roomCode;
@@ -2312,8 +2339,32 @@
                 }
             } catch (e) {
                 console.error("Lỗi phục hồi phiên:", e);
-                sessionStorage.removeItem('werewolf_session');
+                localStorage.removeItem('werewolf_session');
             }
+        }
+
+        // =======================================================================
+        // 🧹 MÁY HÚT RÁC TỰ ĐỘNG (GARBAGE COLLECTOR)
+        // =======================================================================
+        try {
+            const activeRoomCode = app.state.roomCode; // Nếu session hợp lệ, biến này đã có giá trị
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('gmNotes_')) {
+                    const noteRoomCode = key.replace('gmNotes_', '');
+                    // Nếu tệp ghi chú này KHÔNG thuộc về phòng đang chơi hiện tại, XÓA NGAY!
+                    if (noteRoomCode !== activeRoomCode) {
+                        keysToRemove.push(key);
+                    }
+                }
+            }
+            keysToRemove.forEach(key => {
+                console.log('Garbage Collector: Đã tiêu hủy rác mồ côi -', key);
+                localStorage.removeItem(key);
+            });
+        } catch (err) {
+            console.error('Lỗi Garbage Collector:', err);
         }
 
         // =======================================================================
