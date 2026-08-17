@@ -1708,7 +1708,7 @@
                     const rData = this.masterRoles[role];
                     const icon = rData ? rData.icon : '❓';
                     const desc = rData ? rData.desc : '';
-                    html += `<div style="display: flex; align-items: flex-start; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 24px; margin-right: 15px; min-width: 30px; text-align: center;">${icon}</div><div><div style="font-weight: bold; font-size: 16px; color: var(--primary); margin-bottom: 5px;">${role} <span style="color: var(--danger);">x${count}</span></div><div style="font-size: 13px; opacity: 0.8;">${desc}</div></div></div>`;
+                    html += `<div style="display: flex; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);"><div style="font-size: 24px; margin-right: 15px; min-width: 30px; text-align: center;">${icon}</div><div style="font-weight: bold; font-size: 16px; color: var(--primary);">${role} <span style="color: var(--danger); margin-left: 10px;">x${count}</span></div></div>`;
                 }
                 const messageHtml = `<div style="max-height: 50vh; overflow-y: auto; padding-right: 5px; text-align: left;">${html}</div>`;
                 this.showAnnouncement('📋 DANH SÁCH BÀI ĐÃ CHỌN', messageHtml);
