@@ -60,7 +60,7 @@
                 'Ma Sói': { icon: '🐺', desc: 'Mỗi đêm, những người mang lá bài này thức dậy cùng nhau và chọn cắn chết 1 người. Sói có thể chọn không cắn ai hoặc tự tàn sát lẫn nhau.' },
                 'Sói con': { icon: '🐾', desc: 'Chức năng giống hệt Ma Sói, nhưng khi Sói con chết, đêm hôm sau bầy Sói sẽ được quyền cắn hai người liên tục.' },
                 'Sói trắng': { icon: '🐺❄️', desc: 'Thức dậy chung với Ma Sói để cắn người, nhưng cứ hai đêm một lần có quyền giết 1 con Ma Sói khác. Nhiệm vụ của Sói trắng là trở thành người duy nhất còn sống trên bàn chơi.' },
-                'Nửa người nửa sói': { icon: '🌓', desc: 'Ban đầu thuộc phe dân làng, nếu bị Sói cắn ban đêm sẽ không chết mà lập tức biến thành Sói.' },
+                'Kẻ bị nguyền': { icon: '🌓', desc: 'Ban đầu thuộc phe dân làng, nếu bị Sói cắn ban đêm sẽ không chết mà lập tức biến thành Sói.' },
                 'Ăn Trộm': { icon: '🗝️', desc: 'Đêm đầu tiên, Ăn trộm được nhìn và chọn 1 trong 2 lá bài chức năng dư ở ngoài làm vai trò của mình. Tuy nhiên, nếu ít nhất 1 trong 2 lá đó là Sói, Ăn trộm bắt buộc phải chọn Sói.' },
                 'Thằng ngốc': { icon: '🤡', desc: 'Nếu bị dân làng bầu treo cổ, Thằng ngốc lật lá bài lên để được tha thứ và tiếp tục sống nhưng sẽ mất vĩnh viễn quyền bầu chọn. Nếu là Cảnh sát trưởng thì phải chuyển quyền cho người khác, và vẫn sẽ chết nếu bị Sói cắn hoặc Thợ săn bắn.' },
                 'Già làng': { icon: '👴', desc: 'Có hai mạng khi bị Ma Sói cắn, nhưng sẽ chết ngay nếu bị treo cổ, bị Thợ săn bắn hoặc bị Phù Thủy giết. Khi Già Làng chết, tất cả các vai trò đặc biệt của phe Dân (trừ Thợ Săn) đều bị mất năng lực.' },
@@ -74,12 +74,12 @@
                 'Thẩm phán lắp bắp': { icon: '⚖️', desc: 'Đêm đầu tiên, Thẩm Phán sẽ chỉ cho Quản Trò ám hiệu đặc biệt của mình. Một lần trong trò chơi, khi Thẩm Phán thực hiện ám hiệu, buổi sáng đó sẽ có 2 người bị treo cổ thay vì 1.' },
                 'Hiệp sĩ kiếm gỉ': { icon: '🗡️', desc: 'Nếu bị sói cắn, Hiệp sĩ sẽ chết, nhưng con Sói gần nhất bên trái của hiệp sĩ sẽ bị thương và cũng sẽ chết sau 1 ngày đêm (Quản trò sẽ công bố Sói chết vào sáng hôm sau nữa).' },
                 'Hồ ly': { icon: '🦊', desc: 'Mỗi đêm chọn 3 người chơi, nếu trong đó có ít nhất 1 Ma Sói thì Hồ ly giữ nguyên năng lực. Nếu không có Ma Sói nào trong 3 người, Hồ ly sẽ mất đi năng lực này vĩnh viễn.' },
-                'Người thuần phục gấu': { icon: '🐻', desc: 'Quản trò sẽ ra dấu hiệu báo cho Người thuần phục gấu biết nếu một trong hai người ngồi ngay bên cạnh nhân vật này là Ma Sói.' },
+                'Thần gấu': { icon: '🐻', desc: 'Quản trò sẽ ra dấu hiệu báo cho Thần gấu biết nếu một trong hai người ngồi ngay bên cạnh nhân vật này là Ma Sói.' },
                 'Diễn viên': { icon: '🎭', desc: 'Quản trò sẽ lựa ra 3 lá chức năng. Mỗi đêm, Diễn viên có thể chọn ngẫu nhiên 1 trong 3 lá để thực hiện chức năng. Mỗi lá chỉ được chọn 1 lần trong trò chơi.' },
                 'Hầu gái': { icon: '🧹', desc: 'Bất cứ khi nào trong trò chơi, có thể trao đổi thẻ của mình với nạn nhân bị làng bỏ phiếu treo cổ và đóng vai nhân vật đó cho đến cuối trò chơi.' },
                 'Thành viên giáo phái': { icon: '✝️', desc: 'Thuộc 1 trong 2 phe được chia từ đầu ván (theo giới tính, tuổi tác...), chiến thắng khi dùng thành kiến lôi kéo dân làng loại bỏ được tất cả người chơi của phe đối địch.' },
                 'Đứa trẻ hoang dã': { icon: '👶', desc: 'Vào đầu trò chơi, chọn một người chơi làm thần tượng. Nếu thần tượng này chết trong quá trình chơi, Đứa trẻ hoang dã sẽ lập tức biến thành Ma Sói.' },
-                'Chó sói (Bán Sói / Sói Lai)': { icon: '🐕', desc: 'Khi bắt đầu trò chơi, nhân vật này được quyền tự lựa chọn muốn trở thành một Dân làng bình thường hay một Ma Sói.' },
+                'Bán sói (Sói lai)': { icon: '🐕', desc: 'Khi bắt đầu trò chơi, nhân vật này được quyền tự lựa chọn muốn trở thành một Dân làng bình thường hay một Ma Sói.' },
                 'Sói trùm': { icon: '👹', desc: 'Mỗi đêm sẽ được gọi để giết thêm 1 người cho đến khi có 1 con Sói trong đàn bị giết.' },
                 'Sói quỷ': { icon: '👑', desc: 'Thuộc phe sói, một lần duy nhất trong trò chơi có thể biến nạn nhân vừa bị bầy sói cắn thành một Ma Sói thay vì để người đó chết.' },
                 'Bà đồng': { icon: '🔮', desc: 'Tối đa 5 lần trong ván, được quyền chọn 1 trong 4 câu hỏi từ lá Gọi Hồn và chỉ định 1 người. Sáng hôm sau, người đó đọc to câu hỏi và người chết đầu tiên trong ván phải trả lời ngắn gọn "CÓ" hoặc "KHÔNG".' },
@@ -92,7 +92,8 @@
                 'Kị sĩ': { icon: '🐎', desc: 'Duy nhất một lần vào ban ngày trước khi treo cổ, được lật bài lên và chỉ định 1 người. Nếu người đó là Sói, Sói chết và ngày kết thúc; nếu không phải, Kị sĩ tự chết và trò chơi tiếp tục.' },
                 'Người gọi hồn': { icon: '👻', desc: 'Mỗi đêm, được Quản trò gọi dậy để hỏi người chết gần nhất hãy chỉ vào kẻ mình nghi ngờ nhất. Người chết sẽ chỉ điểm nhưng tuyệt đối không được nói lời nào.' },
                 'Sói lửa': { icon: '🔥', desc: 'Khi có ít nhất 1 Sói chết, đêm tiếp theo Sói lửa có thể tước năng lực vĩnh viễn của 1 người. Nếu có ít nhất 2 Sói chết, năng lực này được phép dùng thêm 1 lần nữa.' },
-                'Anh Em Sói': { icon: '🐺🐺', desc: 'Gồm Sói Anh và Sói Em nhận biết nhau đêm đầu. Sói Anh đi giết người cùng bầy, Sói Em không thức cùng bầy và không bị các phe dò xét phát hiện là Sói. Khi Sói Anh chết, Sói Em tức giận gia nhập bầy Sói đi cắn người.' },
+                'Sói Anh': { icon: '🐺🐺', desc: 'Đêm đầu tiên, bạn sẽ biết được Sói em là ai. Sau đó hằng đêm, Sói anh sẽ thức dậy cùng với đàn sói.' },
+                'Sói Em': { icon: '🐺🐾', desc: 'Đêm đầu tiên, bạn sẽ biết được Sói anh là ai. Sau đó hằng đêm, Sói em không được dậy. Khi Sói anh chết, đêm sau đó Sói em sẽ được kêu dậy để giết 1 người. Kể từ đó, hằng đêm Sói em sẽ thức dậy cùng đàn sói. Trước khi thức dậy, Sói em không tính là Sói nên không thể bị Tiên tri, Hồ ly hay Thần gấu nhận diện.' },
                 'Ảnh tử': { icon: '👤', desc: 'Vào đêm đầu tiên, Ảnh tử chọn một người. Trong đêm đó, nếu người được chọn còn sống, Ảnh tử sẽ có điều kiện thắng như Phe Dân Làng. Nếu người đó chết, Ảnh tử sẽ lấy lá bài của người đó và trở thành nhân vật đó.' },
                 'Kẻ báo thù': { icon: '🩸', desc: 'Vào đêm thứ nhất chọn theo Phe Sói hoặc Dân. Vào đêm Kẻ báo thù chết, được chọn 1 người: nếu người đó thuộc phe đối lập với phe Kẻ báo thù đã chọn thì người đó sẽ chết ngay lập tức.' }
             },
@@ -1137,7 +1138,7 @@
                     if (this.state.time === 'night' && this.state.nightCount === 0) {
 
                         // 🐺 ĐẶC QUYỀN CHÓ SÓI (BÁN SÓI): Lựa chọn bản ngã
-                        if (me.role === 'Chó sói (Bán Sói / Sói Lai)' && !me.state.hasChosenFaction && (!this.state.gameFlags || !this.state.gameFlags.isManualMode)) {
+                        if (me.role === 'Bán sói (Sói lai)' && !me.state.hasChosenFaction && (!this.state.gameFlags || !this.state.gameFlags.isManualMode)) {
                             skillArea.style.display = 'block';
                             skillArea.innerHTML += `
                     <div class="glass-panel" style="margin-top: 5px; border-color: #f39c12; background: rgba(0,0,0,0.85); padding: 20px; animation: pulse 2s infinite; border-width: 2px;">
@@ -1157,7 +1158,7 @@
                         let spares = this.state.spareCards || [];
                         if (spares.length === 2) {
                             // Logic Tàn Nhẫn: Cứ dính Sói hoặc các loại biến thể Sói là BẮT BUỘC phải lấy
-                            let wolfCard = spares.find(r => r.toLowerCase().includes('sói') || r === 'Nửa người nửa sói' || r === 'Đứa trẻ hoang dã');
+                            let wolfCard = spares.find(r => r.toLowerCase().includes('sói') || r === 'Kẻ bị nguyền' || r === 'Đứa trẻ hoang dã');
 
                             let btnHtml = '';
                             if (wolfCard) {
@@ -1263,9 +1264,19 @@
                             if (sibs.length > 0) secretMsgs.push(`👯‍♀️ Đồng bọn huyết thống: <b>${sibs.map(s => `${s.name} <span style="font-size: 12px; opacity: 0.8;">(${s.role})</span>`).join(', ')}</b>`);
                         }
 
+                        // 2.5 Sói Anh / Sói Em
+                        if (me.role === 'Sói Anh') {
+                            let em = this.state.players.find(p => p.role === 'Sói Em');
+                            if (em) secretMsgs.push('🐺🐾 Sói em của bạn là: <b> + em.name + </b> <span style="color: #e67e22; font-size: 12px;">(Sói Em)</span>');
+                        }
+                        if (me.role === 'Sói Em') {
+                            let anh = this.state.players.find(p => p.role === 'Sói Anh');
+                            if (anh) secretMsgs.push('🐺🐺 Sói anh của bạn là: <b> + anh.name + </b> <span style="color: #e67e22; font-size: 12px;">(Sói Anh)</span>');
+                        }
+
                         // 3. Bầy Sói (Thấy đồng loại & BIẾT CHÍNH XÁC LOẠI SÓI GÌ)
-                        if (me.role.toLowerCase().includes('sói') && me.role !== 'Chó sói (Bán Sói / Sói Lai)' && me.role !== 'Nửa người nửa sói') {
-                            let wolves = this.state.players.filter(p => p.role.toLowerCase().includes('sói') && p.id !== me.id && p.role !== 'Chó sói (Bán Sói / Sói Lai)' && p.role !== 'Nửa người nửa sói' && p.role !== 'Sói trắng');
+                        if (me.role.toLowerCase().includes('sói') && me.role !== 'Bán sói (Sói lai)' && me.role !== 'Kẻ bị nguyền') {
+                            let wolves = this.state.players.filter(p => p.role.toLowerCase().includes('sói') && p.id !== me.id && p.role !== 'Bán sói (Sói lai)' && p.role !== 'Kẻ bị nguyền' && p.role !== 'Sói trắng');
                             if (wolves.length > 0) secretMsgs.push(`🐺 Bầy Sói của bạn gồm: <b>${wolves.map(s => `${s.name} <span style="color: #e67e22; font-size: 12px;">(${s.role})</span>`).join(', ')}</b>`);
                         }
 
@@ -1343,7 +1354,7 @@
                     if (isDeadA !== isDeadB) return isDeadA ? 1 : -1;
                     
                     const getGroupId = (p) => {
-                        if (p.role && (p.role.toLowerCase().includes('sói') || p.role === 'Đứa trẻ hoang dã' || p.role === 'Nửa người nửa sói')) return 1;
+                        if (p.role && (p.role.toLowerCase().includes('sói') || p.role === 'Đứa trẻ hoang dã' || p.role === 'Kẻ bị nguyền')) return 1;
                         if (p.state && p.state.loverId) return 2;
                         if (p.state && p.state.piperCharmed) return 3;
                         return 99;
@@ -1366,15 +1377,15 @@
                     let relationTags = '';
 
                     // 🐻 [LÕI RADAR GẤU]: Tự động quét 2 bên vòng tròn
-                    if (p.role === 'Người thuần phục gấu' && !isDead) {
+                    if (p.role === 'Thần gấu' && !isDead) {
                         let pIndex = this.state.players.findIndex(x => x.id === p.id);
                         let total = this.state.players.length;
                         let leftIdx = (pIndex === 0) ? total - 1 : pIndex - 1;
                         let rightIdx = (pIndex === total - 1) ? 0 : pIndex + 1;
                         let pLeft = this.state.players[leftIdx];
                         let pRight = this.state.players[rightIdx];
-                        let isWolf = (r) => r.toLowerCase().includes('sói') && r !== 'Nửa người nửa sói' && r !== 'Chó sói (Bán Sói / Sói Lai)';
-                        if ((pLeft.status !== 'Dead' && isWolf(pLeft.role)) || (pRight.status !== 'Dead' && isWolf(pRight.role))) {
+                        let isWolf = (pCheck) => pCheck.role.toLowerCase().includes('sói') && pCheck.role !== 'Kẻ bị nguyền' && pCheck.role !== 'Bán sói (Sói lai)' && !(pCheck.role === 'Sói Em' && !(pCheck.state && pCheck.state.isAwakened));
+                        if ((pLeft.status !== 'Dead' && isWolf(pLeft)) || (pRight.status !== 'Dead' && isWolf(pRight))) {
                             relationTags += `<div style="color: #e67e22; font-size: 13px; font-weight: bold; margin-top: 6px; animation: pulse 1s infinite;">🐾 GẤU ĐANG GẦM! (Có Sói kề bên)</div>`;
                         } else {
                             relationTags += `<div style="color: #27ae60; font-size: 11px; margin-top: 4px;">🐻 Gấu ngủ yên</div>`;
@@ -1581,15 +1592,15 @@
                             'Dân làng', 'Tiên tri', 'Bảo vệ', 'Thợ săn', 'Phù Thủy', 'Cupid (Thần tình yêu)',
                             'Cảnh sát trưởng (Trưởng làng)', 'Cô Bé (Ti hí)', 'Thằng ngốc', 'Già làng', 'Người thế thân',
                             'Con quạ', 'Hai chị em', 'Ba anh em', 'Thẩm phán lắp bắp', 'Hiệp sĩ kiếm gỉ',
-                            'Hồ ly', 'Người thuần phục gấu', 'Diễn viên', 'Hầu gái', 'Bà đồng',
+                            'Hồ ly', 'Thần gấu', 'Diễn viên', 'Hầu gái', 'Bà đồng',
                             'Cảnh sát', 'Dược sĩ', 'Kị sĩ', 'Người gọi hồn'
                         ]
                     },
                     {
                         id: 'faction-soi', name: '🐺 PHE Ma Sói & ĐỒNG MINH', roles: [
-                            'Ma Sói', 'Sói con', 'Nửa người nửa sói', 'Đứa trẻ hoang dã',
-                            'Chó sói (Bán Sói / Sói Lai)', 'Sói trùm', 'Sói quỷ',
-                            'Sói lửa', 'Anh Em Sói'
+                            'Ma Sói', 'Sói con', 'Kẻ bị nguyền', 'Đứa trẻ hoang dã',
+                            'Bán sói (Sói lai)', 'Sói trùm', 'Sói quỷ',
+                            'Sói lửa', 'Sói Anh', 'Sói Em'
                         ]
                     },
                     {
@@ -1806,7 +1817,7 @@
                 const target = this.state.players.find(x => x.id === targetId);
                 if (!target) return;
                 const night = this.state.gameFlags?.nightCount || 1;
-                const hasWolf = this.state.players.some(p => p.status !== 'Dead' && p.role.toLowerCase().includes('sói') && p.role !== 'Nửa người nửa sói' && p.role !== 'Chó sói (Bán Sói / Sói Lai)');
+                const hasWolf = this.state.players.some(p => p.status !== 'Dead' && p.role.toLowerCase().includes('sói') && p.role !== 'Kẻ bị nguyền' && p.role !== 'Bán sói (Sói lai)');
                 const livingRoles = this.state.players.filter(p => p.status !== 'Dead').map(p => p.role);
                 const gameFlags = this.state.gameFlags || {};
 
@@ -1893,7 +1904,7 @@
                                 else atkHtml += `<button disabled style="background: #555;">🐺 Sói Trắng ${c.name}: Đang hồi sức</button>`;
                             }
                             if (c.role === 'Sói trùm') {
-                                let anyWolfDied = this.state.players.some(p => p.status === 'Dead' && p.role.toLowerCase().includes('sói') && p.role !== 'Nửa người nửa sói' && p.role !== 'Chó sói (Bán Sói / Sói Lai)');
+                                let anyWolfDied = this.state.players.some(p => p.status === 'Dead' && p.role.toLowerCase().includes('sói') && p.role !== 'Kẻ bị nguyền' && p.role !== 'Bán sói (Sói lai)');
                                 if (!anyWolfDied) atkHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'BIG_BAD_WOLF_BITE', '👹 Sói Trùm Cắn', '${c.id}')">👹 Sói Trùm ${c.name}: Cắn thêm</button>`;
                                 else atkHtml += `<button disabled style="background: #555;">👹 Sói Trùm ${c.name}: Đồng minh đã chết</button>`;
                             }
@@ -1912,6 +1923,11 @@
                             if (c.role === 'Hiệp sĩ kiếm gỉ') {
                                 if (!cState.usedRustyKnightInfect) atkHtml += `<button style="background: #8e44ad" onclick="app.setPendingAction('${targetId}', 'GM_INFECT_RUSTY', '🗡️ Nhiễm độc', '${c.id}')">🗡️ Kỵ Sĩ ${c.name}: Nhiễm độc</button>`;
                                 else atkHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ ${c.name}: Đã độc</button>`;
+                            }
+
+                                if (c.role === 'Sói Em') {
+                                if (cState.isAwakened && !cState.usedBrotherRevenge) atkHtml += <button style="background: #c0392b" onclick="app.setPendingAction(' + targetId + ', 'WOLF_BROTHER_REVENGE', '🐾 Sói Em Trả Thù', ' + c.id + ')">🐾 Sói Em  + c.name + : Cắn trả thù</button>;
+                                else if (cState.isAwakened && cState.usedBrotherRevenge) atkHtml += <button disabled style="background: #555;">🐾 Sói Em  + c.name + : Đã trả thù</button>;
                             }
 
                             // --- BẢO VỆ ---
@@ -2493,4 +2509,6 @@
                 localStorage.setItem('gmNotes_' + app.state.roomCode, e.target.value);
             }
         });
+
+
 
