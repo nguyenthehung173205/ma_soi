@@ -1151,6 +1151,21 @@
                     </div>
                     `;
                         }
+
+                        // 🩸 KẺ BÁO THÙ: Lựa chọn Phe
+                        if (me.role === 'Kẻ báo thù' && !me.state.avengerFaction && (!this.state.gameFlags || !this.state.gameFlags.isManualMode)) {
+                            skillArea.style.display = 'block';
+                            skillArea.innerHTML += `
+                    <div class="glass-panel" style="margin-top: 5px; border-color: #c0392b; background: rgba(0,0,0,0.85); padding: 20px; animation: pulse 2s infinite; border-width: 2px;">
+                        <h4 style="color: #c0392b; margin-top:0; font-size: 20px; letter-spacing: 1px;">⚔️ LỜI THỀ ĐỘC ĐỊA</h4>
+                        <p style="font-size: 14px; color: #ecf0f1; margin-bottom: 20px; line-height: 1.5;">Đêm nay, hãy thề độc trước các vị thần. Bạn sẽ chọn phe nào để trung thành? Và hãy nhớ, khi bạn ngã xuống, một kẻ thuộc phe ĐỐI LẬP bị ngắm trúng sẽ phải bỏ mạng theo bạn!</p>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn-success" style="box-shadow: 0 5px 15px rgba(46,204,113,0.4);" onclick="app.usePlayerSkill('AVENGER_HUMAN', this)">🧑 PHE DÂN</button>
+                            <button class="btn-danger" style="box-shadow: 0 5px 15px rgba(231,76,60,0.5);" onclick="app.usePlayerSkill('AVENGER_WOLF', this)">🐺 PHE SÓI</button>
+                        </div>
+                    </div>
+                    `;
+                        }
                     }
 
                     // 🗝️ ĐẶC QUYỀN ĂN TRỘM: NHÌN THẤU BÀI NỌC VÀ BỊ ÉP BUỘC
@@ -1385,6 +1400,11 @@
                         if (p.state.shadowTarget) {
                             let target = this.state.players.find(x => x.id === p.state.shadowTarget);
                             if (target) relationTags += `<div style="color: #8e44ad; font-size: 11px; font-weight: bold; margin-top: 4px;">👤 Cướp thẻ: ${target.name}</div>`;
+                        }
+                        if (p.role === 'Kẻ báo thù' && p.state.avengerFaction) {
+                            let fText = p.state.avengerFaction === 'WOLF' ? 'Phe Sói' : 'Phe Dân';
+                            let fColor = p.state.avengerFaction === 'WOLF' ? '#e74c3c' : '#3498db';
+                            relationTags += `<div style="color: ${fColor}; font-size: 11px; font-weight: bold; margin-top: 4px;">⚔️ Đã thề: ${fText}</div>`;
                         }
                         if (p.state.piperCharmed) {
                             // 🎨 Đã loại bỏ viền đỏ pulse, chuyển về dạng thẻ phẳng thanh lịch như Cupid
@@ -1941,7 +1961,7 @@
                                     if (!cState.usedWildChild) spcHtml += `<button style="background: #16a085" onclick="app.setPendingAction('${targetId}', 'WILD_CHILD_IDOL', '👶 Trẻ Hoang Dã Chọn', '${c.id}')">👶 Trẻ Hoang Dã ${c.name}: Chọn Thần tượng</button>`;
                                 }
                                 if (c.role === 'Kẻ báo thù') {
-                                    if (!cState.usedAvenger) spcHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Kẻ Báo Thù Nhắm', '${c.id}')">🩸 Kẻ Báo Thù ${c.name}: Chọn Mục tiêu</button>`;
+                                    spcHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'AVENGER_MARK', '🩸 Kẻ Báo Thù Nhắm', '${c.id}')">🩸 Kẻ Báo Thù ${c.name}: Chọn Mục tiêu</button>`;
                                 }
                             }
                             if (c.role === 'Kẻ đốt nhà') {
@@ -1980,7 +2000,6 @@
                             if (livingRoles.includes('Cupid (Thần tình yêu)')) spcHtml += `<button disabled style="background: #555;">💘 Cupid: Chỉ tác dụng Đêm 1</button>`;
                             if (livingRoles.includes('Ảnh tử')) spcHtml += `<button disabled style="background: #555;">👤 Ảnh Tử: Đã qua Đêm 1</button>`;
                             if (livingRoles.includes('Đứa trẻ hoang dã')) spcHtml += `<button disabled style="background: #555;">👶 Trẻ Hoang Dã: Đã qua Đêm 1</button>`;
-                            if (livingRoles.includes('Kẻ báo thù')) spcHtml += `<button disabled style="background: #555;">🩸 Kẻ Báo Thù: Đã qua Đêm 1</button>`;
                         }
 
                         if (atkHtml) actionList.innerHTML += `<div style="font-size: 12px; color: var(--danger); font-weight: bold; margin-top: 10px;">⚔️ NHÓM TẤN CÔNG</div>` + atkHtml;
