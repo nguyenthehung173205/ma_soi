@@ -95,7 +95,7 @@
                 'Sói Anh': { icon: '🐺🐺', desc: 'Đêm đầu tiên, bạn sẽ biết được Sói em là ai. Sau đó hằng đêm, Sói anh sẽ thức dậy cùng với đàn sói.' },
                 'Sói Em': { icon: '🐺🐾', desc: 'Đêm đầu tiên, bạn sẽ biết được Sói anh là ai. Sau đó hằng đêm, Sói em không được dậy. Khi Sói anh chết, đêm sau đó Sói em sẽ được kêu dậy để giết 1 người. Kể từ đó, hằng đêm Sói em sẽ thức dậy cùng đàn sói. Trước khi thức dậy, Sói em không tính là Sói nên không thể bị Tiên tri, Hồ ly hay Thần gấu nhận diện.' },
                 'Ảnh tử': { icon: '👤', desc: 'Vào đêm đầu tiên, Ảnh tử chọn một người. Trong đêm đó, nếu người được chọn còn sống, Ảnh tử sẽ có điều kiện thắng như Phe Dân Làng. Nếu người đó chết, Ảnh tử sẽ lấy lá bài của người đó và trở thành nhân vật đó.' },
-                'Kẻ báo thù': { icon: '🩸', desc: 'Vào đêm thứ nhất chọn theo Phe Sói hoặc Dân. Vào đêm Kẻ báo thù chết, được chọn 1 người: nếu người đó thuộc phe đối lập với phe Kẻ báo thù đã chọn thì người đó sẽ chết ngay lập tức.' }
+                'Kẻ báo thù': { icon: '🩸', desc: 'Đêm đầu tiên, bạn sẽ chọn trở thành Sói hoặc Dân. Khi bạn chết, chọn 1 người bất kì, nếu người đó là Sói (nếu bạn chọn làm Dân) hoặc Dân (nếu bạn chọn làm Sói) thì người đó cũng sẽ chết theo (người bạn chọn khác phe với bạn sẽ chết cùng bạn).' }
             },
 
             // =======================================================================
