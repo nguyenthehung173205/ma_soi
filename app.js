@@ -1264,14 +1264,14 @@
                             if (sibs.length > 0) secretMsgs.push(`👯‍♀️ Đồng bọn huyết thống: <b>${sibs.map(s => `${s.name} <span style="font-size: 12px; opacity: 0.8;">(${s.role})</span>`).join(', ')}</b>`);
                         }
 
-                        // 2.5 Sói Anh / Sói Em
+                                                // 2.5 Sói Anh / Sói Em
                         if (me.role === 'Sói Anh') {
                             let em = this.state.players.find(p => p.role === 'Sói Em');
-                            if (em) secretMsgs.push(`🐺🐾 Sói em của bạn là: <b>${em.name}</b> <span style="color: #e67e22; font-size: 12px;">(Sói Em)</span>`);
+                            if (em) secretMsgs.push(`🐺🐾 Sói em của bạn là: <b>` + em.name + `</b> <span style="color: #e67e22; font-size: 12px;">(Sói Em)</span>`);
                         }
                         if (me.role === 'Sói Em') {
                             let anh = this.state.players.find(p => p.role === 'Sói Anh');
-                            if (anh) secretMsgs.push(`🐺🐺 Sói anh của bạn là: <b>${anh.name}</b> <span style="color: #e67e22; font-size: 12px;">(Sói Anh)</span>`);
+                            if (anh) secretMsgs.push(`🐺🐺 Sói anh của bạn là: <b>` + anh.name + `</b> <span style="color: #e67e22; font-size: 12px;">(Sói Anh)</span>`);
                         }
 
                         // 3. Bầy Sói (Thấy đồng loại & BIẾT CHÍNH XÁC LOẠI SÓI GÌ)
@@ -1925,9 +1925,9 @@
                                 else atkHtml += `<button disabled style="background: #555;">🗡️ Hiệp Sĩ ${c.name}: Đã độc</button>`;
                             }
 
-                                if (c.role === 'Sói Em') {
-                                if (cState.isAwakened && !cState.usedBrotherRevenge) atkHtml += <button style="background: #c0392b" onclick="app.setPendingAction(' + targetId + ', 'WOLF_BROTHER_REVENGE', '🐾 Sói Em Trả Thù', ' + c.id + ')">🐾 Sói Em  + c.name + : Cắn trả thù</button>;
-                                else if (cState.isAwakened && cState.usedBrotherRevenge) atkHtml += <button disabled style="background: #555;">🐾 Sói Em  + c.name + : Đã trả thù</button>;
+                            if (c.role === 'Sói Em') {
+                                if (cState.isAwakened && !cState.usedBrotherRevenge) atkHtml += '<button style="background: #c0392b" onclick="app.setPendingAction(\'' + targetId + '\', \'WOLF_BROTHER_REVENGE\', \'🐾 Sói Em Trả Thù\', \'' + c.id + '\')">🐾 Sói Em ' + c.name + ': Cắn trả thù</button>';
+                                else if (cState.isAwakened && cState.usedBrotherRevenge) atkHtml += '<button disabled style="background: #555;">🐾 Sói Em ' + c.name + ': Đã trả thù</button>';
                             }
 
                             // --- BẢO VỆ ---
@@ -2509,6 +2509,3 @@
                 localStorage.setItem('gmNotes_' + app.state.roomCode, e.target.value);
             }
         });
-
-
-
