@@ -1376,22 +1376,6 @@
 
                     let relationTags = '';
 
-                    // 🐻 [LÕI RADAR GẤU]: Tự động quét 2 bên vòng tròn
-                    if (p.role === 'Thần gấu' && !isDead) {
-                        let pIndex = this.state.players.findIndex(x => x.id === p.id);
-                        let total = this.state.players.length;
-                        let leftIdx = (pIndex === 0) ? total - 1 : pIndex - 1;
-                        let rightIdx = (pIndex === total - 1) ? 0 : pIndex + 1;
-                        let pLeft = this.state.players[leftIdx];
-                        let pRight = this.state.players[rightIdx];
-                        let isWolf = (pCheck) => pCheck.role.toLowerCase().includes('sói') && pCheck.role !== 'Kẻ bị nguyền' && pCheck.role !== 'Bán sói (Sói lai)' && !(pCheck.role === 'Sói Em' && !(pCheck.state && pCheck.state.isAwakened));
-                        if ((pLeft.status !== 'Dead' && isWolf(pLeft)) || (pRight.status !== 'Dead' && isWolf(pRight))) {
-                            relationTags += `<div style="color: #e67e22; font-size: 13px; font-weight: bold; margin-top: 6px; animation: pulse 1s infinite;">🐾 GẤU ĐANG GẦM! (Có Sói kề bên)</div>`;
-                        } else {
-                            relationTags += `<div style="color: #27ae60; font-size: 11px; margin-top: 4px;">🐻 Gấu ngủ yên</div>`;
-                        }
-                    }
-
                     // 🔥 TÌNH BÁO TOÀN DIỆN CHO QUẢN TRÒ (MỌI TRẠNG THÁI & LIÊN KẾT)
                     if (p.state) {
                         if (p.state.loverId) {
