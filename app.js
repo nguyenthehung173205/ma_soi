@@ -1267,11 +1267,11 @@
                         // 2.5 Sói Anh / Sói Em
                         if (me.role === 'Sói Anh') {
                             let em = this.state.players.find(p => p.role === 'Sói Em');
-                            if (em) secretMsgs.push('🐺🐾 Sói em của bạn là: <b> + em.name + </b> <span style="color: #e67e22; font-size: 12px;">(Sói Em)</span>');
+                            if (em) secretMsgs.push(`🐺🐾 Sói em của bạn là: <b>${em.name}</b> <span style="color: #e67e22; font-size: 12px;">(Sói Em)</span>`);
                         }
                         if (me.role === 'Sói Em') {
                             let anh = this.state.players.find(p => p.role === 'Sói Anh');
-                            if (anh) secretMsgs.push('🐺🐺 Sói anh của bạn là: <b> + anh.name + </b> <span style="color: #e67e22; font-size: 12px;">(Sói Anh)</span>');
+                            if (anh) secretMsgs.push(`🐺🐺 Sói anh của bạn là: <b>${anh.name}</b> <span style="color: #e67e22; font-size: 12px;">(Sói Anh)</span>`);
                         }
 
                         // 3. Bầy Sói (Thấy đồng loại & BIẾT CHÍNH XÁC LOẠI SÓI GÌ)
