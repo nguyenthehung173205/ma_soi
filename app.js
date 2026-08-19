@@ -773,6 +773,19 @@
                         last_activity: Date.now()
                     }));
                     document.getElementById('player-room-info').innerText = `Mã phòng: ${this.state.roomCode} | Tên: ${newName}`;
+                    
+                    // === BỘ LỌC TẨY RỬA DỮ LIỆU QUẢN TRÒ CŨ ===
+                    localStorage.removeItem('gmNotes_' + this.state.roomCode);
+                    localStorage.removeItem('werewolf_selected_roles');
+                    this.state.selectedRolesPool = [];
+                    const gmPlayerGrid = document.getElementById('gm-player-grid');
+                    if (gmPlayerGrid) gmPlayerGrid.innerHTML = '';
+                    const gmActionList = document.getElementById('gm-action-list');
+                    if (gmActionList) gmActionList.innerHTML = '';
+                    const alertModal = document.getElementById('modal-gm-alert');
+                    if (alertModal) alertModal.classList.remove('active');
+                    // ==========================================
+
                     this.switchScreen('screen-player');
 
                 } catch (e) { alert("Lỗi kết nối khi nhường quyền!"); }
