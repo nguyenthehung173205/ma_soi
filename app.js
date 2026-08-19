@@ -52,7 +52,7 @@
                 'Dân làng': { icon: '🌾', desc: 'Dân làng chiếm đại đa số, nhiệm vụ là tìm ra Ma Sói đội lốt người để đem đi treo cổ. Họ có thời gian ban ngày để đưa ra suy luận, phán đoán và sẽ chết nếu bị Ma Sói cắn trúng vào ban đêm.' },
                 'Tiên tri': { icon: '👁️', desc: 'Buổi tối, Tiên tri được quản trò gọi dậy và có quyền đoán 1 người là Ma Sói, quản trò sẽ gật/giơ tay nếu đúng và lắc đầu nếu sai. Nhiệm vụ của Tiên tri là ra mặt đúng lúc, dùng lập luận hướng dân làng tìm Ma Sói và sẽ chết nếu bị Sói cắn.' },
                 'Bảo vệ': { icon: '🛡️', desc: 'Mỗi đêm, Bảo vệ chọn cứu 1 người (có thể tự cứu mình) để người đó sống sót nếu bị Sói cắn. Bảo vệ không được cứu 1 người liên tiếp 2 đêm và người được bảo vệ vẫn có thể chết do bị Phù Thủy đầu độc.' },
-                'Thợ săn': { icon: '🏹', desc: 'Mỗi đêm, Thợ săn chọn trước 1 người chơi. Nếu Thợ săn bị Ma Sói cắn chết ban đêm, người được chọn sẽ chết theo, nhưng nếu người được chọn chết thì Thợ săn không chết. Nếu bị treo cổ ban ngày, Thợ săn có quyền chọn kéo 1 người bị treo cổ chung với mình.' },
+                'Thợ săn': { icon: '🏹', desc: 'Mỗi đêm, Thợ săn chọn trước 1 người chơi. Nếu Thợ săn bị giết vào ban đêm, người được chọn sẽ chết theo, nhưng nếu người được chọn chết thì Thợ săn không chết. Nếu bị treo cổ ban ngày, Thợ săn có quyền chọn kéo 1 người bị treo cổ chung với mình.' },
                 'Phù Thủy': { icon: '🧪', desc: 'Sở hữu 2 lọ thuốc (1 cứu người, 1 giết người). Ban đêm, Phù Thủy biết ai bị Sói cắn và có quyền chọn cứu người đó, hoặc dùng thuốc độc giết người mình nghi là Ma Sói (có thể dùng cả 2 lọ cùng lúc). Dùng xong bình sẽ mất chức năng tương ứng nhưng vẫn được gọi dậy mỗi đêm để biết ai chết.' },
                 'Cupid (Thần tình yêu)': { icon: '💘', desc: 'Đầu ván chơi, Cupid ghép đôi 2 người bất kỳ (có thể tự ghép cho mình) để họ biết mặt và vai trò của nhau. Nếu họ khác phe, họ thành phe thứ 3 với nhiệm vụ là 2 người cuối cùng sống sót; nếu 1 trong 2 người chết, người kia cũng bắt buộc phải chết theo.' },
                 'Cảnh sát trưởng (Trưởng làng)': { icon: '🎖️', desc: 'Là lá bài chức danh bầu chọn ban ngày dành cho bất kỳ ai. Phiếu bầu treo cổ của Cảnh sát trưởng được tính là 2 phiếu, khi chết có quyền chuyển chức danh này cho bất kỳ ai.' },
@@ -1419,6 +1419,10 @@
                             let fColor = p.state.avengerFaction === 'WOLF' ? '#e74c3c' : '#3498db';
                             relationTags += `<div style="color: ${fColor}; font-size: 11px; font-weight: bold; margin-top: 4px;">⚔️ Đã thề: ${fText}</div>`;
                         }
+                        if (p.role === 'Kẻ báo thù' && p.state.avengerMark) {
+                            let target = this.state.players.find(x => x.id === p.state.avengerMark);
+                            if (target) relationTags += `<div style="color: #c0392b; font-size: 11px; font-weight: bold; margin-top: 4px;">🩸 Nhắm: ${target.name}</div>`;
+                        }
                         if (p.state.piperCharmed) {
                             // 🎨 Đã loại bỏ viền đỏ pulse, chuyển về dạng thẻ phẳng thanh lịch như Cupid
                             relationTags += `<div style="color: #9b59b6; font-size: 11px; font-weight: bold; margin-top: 4px;">🪈 Bị thôi miên</div>`;
@@ -1989,7 +1993,7 @@
                                 if (!cState.usedPharmaSleep) spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'PHARMA_SLEEP', '💊 Đánh Thuốc Mê', '${c.id}')">💊 Dược Sĩ ${c.name}: Thuốc mê</button>`;
                                 else spcHtml += `<button disabled style="background: #555;">💊 Dược Sĩ ${c.name}: Hết mê hồn</button>`;
                             }
-                            if (c.role === 'Thợ săn') spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Đích ngắm Thợ Săn', '${c.id}')">🏹 Thợ Săn ${c.name}: Chọn Chết Thay</button>`;
+                            if (c.role === 'Thợ săn') spcHtml += `<button style="background: #d35400" onclick="app.setPendingAction('${targetId}', 'HUNTER_MARK', '🏹 Đích ngắm Thợ Săn', '${c.id}')">🏹 Thợ Săn ${c.name}: Chọn Chết Theo</button>`;
                             if (c.role === 'Nguyệt Nữ') spcHtml += `<button style="background: #2980b9" onclick="app.setPendingAction('${targetId}', 'MOON_SILENCE', '🌙 Nguyệt Nữ Khóa', '${c.id}')">🌙 Nguyệt Nữ ${c.name}: Khóa kỹ năng</button>`;
                             if (c.role === 'Con quạ') {
                                 if (cState.lastRavenCurseId === targetId) {
