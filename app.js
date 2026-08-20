@@ -46,6 +46,7 @@
                 nightCount: 0
             },
             pollingTimer: null,
+            reconnectTimeout: null, // Timeout an toàn chống kẹt loading
             isFetchingGameState: false, // Van khóa chống DDoS
 
             masterRoles: {
@@ -648,6 +649,12 @@
                     }
                 } catch (err) {
                     console.error("Lỗi cập nhật trạng thái:", err);
+                } finally {
+                    const reconnectOverlay = document.getElementById('reconnect-overlay');
+                    if (reconnectOverlay && !document.hidden) {
+                        reconnectOverlay.style.display = 'none'; 
+                        if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout); 
+                    }
                 }
             },
 
@@ -2527,5 +2534,45 @@
         document.getElementById('note-textarea').addEventListener('input', function(e) {
             if (app.state.role === 'gm' && app.state.roomCode) {
                 localStorage.setItem('gmNotes_' + app.state.roomCode, e.target.value);
+            }
+        });
+
+        // ==========================================
+        // 🔥 CƠ CHẾ RECONNECT KHI QUAY LẠI TAB / APP
+        // ==========================================
+        document.addEventListener('visibilitychange', () => {
+            // Bỏ qua nếu người dùng chưa vào phòng
+            if (!app.state || !app.state.roomCode) return;
+
+            if (document.hidden) {
+                // Tắt màn hình: Tạm dừng poll dữ liệu (tiết kiệm pin & mạng)
+                if (app.pollingTimer) clearTimeout(app.pollingTimer);
+            } else {
+                // Mở lại màn hình: Bật Overlay và ép fetch data
+                const overlay = document.getElementById('reconnect-overlay');
+                const btnReload = document.getElementById('btn-reconnect-reload');
+                const title = document.getElementById('reconnect-title');
+
+                if (overlay) {
+                    overlay.style.display = 'flex'; 
+                    if (btnReload) btnReload.style.display = 'none'; 
+                    if (title) {
+                        title.innerText = '⏳ Đang kết nối lại...';
+                        title.style.color = '#f1c40f';
+                    }
+                    
+                    // Timeout an toàn (Sau 10 giây vẫn lỗi thì cho Tải lại trang)
+                    if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout);
+                    app.reconnectTimeout = setTimeout(() => {
+                        if (title) {
+                            title.innerText = '⚠️ Mạng quá yếu hoặc mất kết nối';
+                            title.style.color = '#e74c3c'; 
+                        }
+                        if (btnReload) btnReload.style.display = 'inline-block'; 
+                    }, 10000); // 10s timeout
+                }
+
+                // Lập tức lấy dữ liệu mới nhất
+                app.fetchGameState(); 
             }
         });
