@@ -361,6 +361,19 @@
         </div>
     </div>
 
+    <!-- BẮT ĐẦU: Màn hình chờ khi quay lại Tab -->
+    <div id="reconnect-overlay" class="reconnect-overlay" style="display: none;">
+        <div class="reconnect-content">
+            <div class="spinner"></div>
+            <h3 id="reconnect-title" style="color: #f1c40f; margin-top: 0;">⏳ Đang kết nối lại...</h3>
+            <p id="reconnect-desc" style="color: #ecf0f1; font-size: 14px;">Vui lòng đợi hệ thống đồng bộ dữ liệu với máy chủ.</p>
+            
+            <!-- NÚT TẢI LẠI SẼ HIỆN RA SAU 10 GIÂY -->
+            <button id="btn-reconnect-reload" class="btn-primary" style="display: none; margin-top: 15px; width: 100%; background-color: #e74c3c;" onclick="window.location.reload()">🔄 Tải Lại Trang</button>
+        </div>
+    </div>
+    <!-- KẾT THÚC: Màn hình chờ khi quay lại Tab -->
+
     <!-- =========================================
          JAVASCRIPT: REST API CONSUMER (NHÚNG GẦN NGOẠI)
          ========================================= -->
