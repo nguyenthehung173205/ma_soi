@@ -2569,7 +2569,7 @@
                             title.style.color = '#e74c3c'; 
                         }
                         if (btnReload) btnReload.style.display = 'inline-block'; 
-                    }, 10000); // 10s timeout
+                    }, 20000); // 20s timeout
                 }
 
                 // Lập tức lấy dữ liệu mới nhất
