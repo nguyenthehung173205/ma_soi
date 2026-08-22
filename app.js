@@ -1,4 +1,4 @@
-        const SUPABASE_URL = 'https://qsamdvtztkldyqlifjbb.supabase.co/rest/v1/werewolf-engine';
+        const SUPABASE_URL = 'https://qsamdvtztkldyqlifjbb.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzYW1kdnR6dGtsZHlxbGlmamJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDEzMjYsImV4cCI6MjEwMjk3NzMyNn0.1nvO8J9nv4jj3ibZo575JwP2zcQPd6RK5QYWI8xPMnc';
 
         async function callMatrix(action, payload = {}, signal = null) {
