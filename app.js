@@ -349,6 +349,19 @@
 
             realtimeChannel: null,
 
+            showNetworkError(msg) {
+                const overlay = document.getElementById('reconnect-overlay');
+                const title = document.getElementById('reconnect-title');
+                const btnReload = document.getElementById('btn-reconnect-reload');
+                
+                if (overlay && title) {
+                    overlay.style.display = 'flex';
+                    title.innerText = msg;
+                    title.style.color = '#e74c3c'; 
+                    if (btnReload) btnReload.style.display = 'inline-block';
+                }
+            },
+
             startPolling() {
                 this.stopPolling();
                 this.state.isPolling = true; 
@@ -369,6 +382,15 @@
                         .subscribe((status) => {
                             if (status === 'SUBSCRIBED') {
                                 console.log("🟢 Băng tần thời gian thực (Realtime) đã được thiết lập thành công!");
+                                // Tuyến phòng thủ 1: Ẩn Overlay nếu vừa phục hồi và lấy bù dữ liệu
+                                const overlay = document.getElementById('reconnect-overlay');
+                                if (overlay && overlay.style.display !== 'none') {
+                                    overlay.style.display = 'none';
+                                    app.fetchGameState(); 
+                                }
+                            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                                console.warn("⚠️ Supabase báo mất kết nối:", status);
+                                app.showNetworkError("Đường truyền máy chủ gián đoạn...");
                             }
                         });
                 }
@@ -2569,10 +2591,34 @@
                             title.style.color = '#e74c3c'; 
                         }
                         if (btnReload) btnReload.style.display = 'inline-block'; 
-                    }, 20000); // 20s timeout
+                    }, 10000); // 10s timeout
                 }
 
                 // Lập tức lấy dữ liệu mới nhất
                 app.fetchGameState(); 
+            }
+        });
+
+        // ==========================================
+        // 🔥 CƠ CHẾ SELF-HEALING KHI ĐỔI MẠNG (WIFI <-> 4G)
+        // Tuyến Phòng Thủ Số 2: Lắng nghe Card mạng Trình Duyệt
+        // ==========================================
+        window.addEventListener('offline', () => {
+            app.showNetworkError('📡 Mất kết nối Internet...');
+        });
+
+        window.addEventListener('online', () => {
+            const title = document.getElementById('reconnect-title');
+            if (title) {
+                title.innerText = '⚡ Đang khôi phục kết nối...';
+                title.style.color = '#2ecc71';
+            }
+            
+            // 1. Fetch dữ liệu mới nhất ngay lập tức
+            app.fetchGameState();
+            
+            // 2. Tái khởi động đường ống Realtime (WebSocket) để sửa lỗi Zombie Connection
+            if (app.state.isPolling) {
+                app.startPolling();
             }
         });
