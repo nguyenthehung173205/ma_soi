@@ -1,5 +1,5 @@
-        const SUPABASE_URL = 'https://jbibiisduuyembkrsrms.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiaWJpaXNkdXV5ZW1ia3Jzcm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU1NzQ1ODUsImV4cCI6MjEwMTE1MDU4NX0.aOCowyQS5MDCtzZQrwkPjxim8kHw9GbeWFaElHg_gB0';
+        const SUPABASE_URL = 'https://qsamdvtztkldyqlifjbb.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzYW1kdnR6dGtsZHlxbGlmamJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0MDEzMjYsImV4cCI6MjEwMjk3NzMyNn0.1nvO8J9nv4jj3ibZo575JwP2zcQPd6RK5QYWI8xPMnc';
 
         async function callMatrix(action, payload = {}, signal = null) {
             try {
