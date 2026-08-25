@@ -1,6 +1,14 @@
         const SUPABASE_URL = 'https://murkjvrotfdqxcrqjogn.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11cmtqdnJvdGZkcXhjcnFqb2duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDU3MTIsImV4cCI6MjEwMzIyMTcxMn0.-nQ4Lk_2tmUIzrcdxXCFy9EcvDJVcIZq8vsO4Zgfr-4';
 
+        let globalSupabaseClient = null;
+        function getSupabaseClient() {
+            if (!globalSupabaseClient && window.supabase) {
+                globalSupabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+            return globalSupabaseClient;
+        }
+
         async function callMatrix(action, payload = {}, signal = null) {
             try {
                 const url = SUPABASE_URL + '/functions/v1/werewolf-engine';
@@ -371,7 +379,7 @@
 
                 // Lắng nghe qua Supabase Realtime thay vì loop liên tục
                 if (!this.realtimeChannel && window.supabase) {
-                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    const client = getSupabaseClient();
                     this.realtimeChannel = client.channel('room_' + this.state.roomCode)
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms', filter: 'room_code=eq.' + this.state.roomCode }, payload => {
                             if (this.state.isPolling) this.pollLoop();
@@ -403,7 +411,7 @@
                     this.pollingTimer = null;
                 }
                 if (this.realtimeChannel && window.supabase) {
-                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    const client = getSupabaseClient();
                     client.removeChannel(this.realtimeChannel);
                     this.realtimeChannel = null;
                 }
@@ -2289,7 +2297,7 @@
                 let flags = this.state.gameFlags || {};
                 flags.winner = winner;
                 try {
-                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    const client = getSupabaseClient();
                     await client.from('rooms').update({ game_flags: flags }).eq('room_code', this.state.roomCode);
                     window.alert("Đã kết thúc game thành công!");
                 } catch (e) {
