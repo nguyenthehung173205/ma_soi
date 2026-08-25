@@ -1,14 +1,6 @@
         const SUPABASE_URL = 'https://murkjvrotfdqxcrqjogn.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11cmtqdnJvdGZkcXhjcnFqb2duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc2NDU3MTIsImV4cCI6MjEwMzIyMTcxMn0.-nQ4Lk_2tmUIzrcdxXCFy9EcvDJVcIZq8vsO4Zgfr-4';
 
-        let globalSupabaseClient = null;
-        function getSupabaseClient() {
-            if (!globalSupabaseClient && window.supabase) {
-                globalSupabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-            return globalSupabaseClient;
-        }
-
         async function callMatrix(action, payload = {}, signal = null) {
             try {
                 const url = SUPABASE_URL + '/functions/v1/werewolf-engine';
@@ -54,7 +46,6 @@
                 nightCount: 0
             },
             pollingTimer: null,
-            reconnectTimeout: null, // Timeout an toàn chống kẹt loading
             isFetchingGameState: false, // Van khóa chống DDoS
 
             masterRoles: {
@@ -357,19 +348,6 @@
 
             realtimeChannel: null,
 
-            showNetworkError(msg) {
-                const overlay = document.getElementById('reconnect-overlay');
-                const title = document.getElementById('reconnect-title');
-                const btnReload = document.getElementById('btn-reconnect-reload');
-                
-                if (overlay && title) {
-                    overlay.style.display = 'flex';
-                    title.innerText = msg;
-                    title.style.color = '#e74c3c'; 
-                    if (btnReload) btnReload.style.display = 'inline-block';
-                }
-            },
-
             startPolling() {
                 this.stopPolling();
                 this.state.isPolling = true; 
@@ -379,7 +357,7 @@
 
                 // Lắng nghe qua Supabase Realtime thay vì loop liên tục
                 if (!this.realtimeChannel && window.supabase) {
-                    const client = getSupabaseClient();
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     this.realtimeChannel = client.channel('room_' + this.state.roomCode)
                         .on('postgres_changes', { event: '*', schema: 'public', table: 'rooms', filter: 'room_code=eq.' + this.state.roomCode }, payload => {
                             if (this.state.isPolling) this.pollLoop();
@@ -390,15 +368,6 @@
                         .subscribe((status) => {
                             if (status === 'SUBSCRIBED') {
                                 console.log("🟢 Băng tần thời gian thực (Realtime) đã được thiết lập thành công!");
-                                // Tuyến phòng thủ 1: Ẩn Overlay nếu vừa phục hồi và lấy bù dữ liệu
-                                const overlay = document.getElementById('reconnect-overlay');
-                                if (overlay && overlay.style.display !== 'none') {
-                                    overlay.style.display = 'none';
-                                    app.fetchGameState(); 
-                                }
-                            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                                console.warn("⚠️ Supabase báo mất kết nối:", status);
-                                app.showNetworkError("Đường truyền máy chủ gián đoạn...");
                             }
                         });
                 }
@@ -411,7 +380,7 @@
                     this.pollingTimer = null;
                 }
                 if (this.realtimeChannel && window.supabase) {
-                    const client = getSupabaseClient();
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     client.removeChannel(this.realtimeChannel);
                     this.realtimeChannel = null;
                 }
@@ -679,12 +648,6 @@
                     }
                 } catch (err) {
                     console.error("Lỗi cập nhật trạng thái:", err);
-                } finally {
-                    const reconnectOverlay = document.getElementById('reconnect-overlay');
-                    if (reconnectOverlay && !document.hidden) {
-                        reconnectOverlay.style.display = 'none'; 
-                        if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout); 
-                    }
                 }
             },
 
@@ -2297,7 +2260,7 @@
                 let flags = this.state.gameFlags || {};
                 flags.winner = winner;
                 try {
-                    const client = getSupabaseClient();
+                    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                     await client.from('rooms').update({ game_flags: flags }).eq('room_code', this.state.roomCode);
                     window.alert("Đã kết thúc game thành công!");
                 } catch (e) {
@@ -2564,69 +2527,5 @@
         document.getElementById('note-textarea').addEventListener('input', function(e) {
             if (app.state.role === 'gm' && app.state.roomCode) {
                 localStorage.setItem('gmNotes_' + app.state.roomCode, e.target.value);
-            }
-        });
-
-        // ==========================================
-        // 🔥 CƠ CHẾ RECONNECT KHI QUAY LẠI TAB / APP
-        // ==========================================
-        document.addEventListener('visibilitychange', () => {
-            // Bỏ qua nếu người dùng chưa vào phòng
-            if (!app.state || !app.state.roomCode) return;
-
-            if (document.hidden) {
-                // Tắt màn hình: Tạm dừng poll dữ liệu (tiết kiệm pin & mạng)
-                if (app.pollingTimer) clearTimeout(app.pollingTimer);
-            } else {
-                // Mở lại màn hình: Bật Overlay và ép fetch data
-                const overlay = document.getElementById('reconnect-overlay');
-                const btnReload = document.getElementById('btn-reconnect-reload');
-                const title = document.getElementById('reconnect-title');
-
-                if (overlay) {
-                    overlay.style.display = 'flex'; 
-                    if (btnReload) btnReload.style.display = 'none'; 
-                    if (title) {
-                        title.innerText = '⏳ Đang kết nối lại...';
-                        title.style.color = '#f1c40f';
-                    }
-                    
-                    // Timeout an toàn (Sau 10 giây vẫn lỗi thì cho Tải lại trang)
-                    if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout);
-                    app.reconnectTimeout = setTimeout(() => {
-                        if (title) {
-                            title.innerText = '⚠️ Mạng quá yếu hoặc mất kết nối';
-                            title.style.color = '#e74c3c'; 
-                        }
-                        if (btnReload) btnReload.style.display = 'inline-block'; 
-                    }, 10000); // 10s timeout
-                }
-
-                // Lập tức lấy dữ liệu mới nhất
-                app.fetchGameState(); 
-            }
-        });
-
-        // ==========================================
-        // 🔥 CƠ CHẾ SELF-HEALING KHI ĐỔI MẠNG (WIFI <-> 4G)
-        // Tuyến Phòng Thủ Số 2: Lắng nghe Card mạng Trình Duyệt
-        // ==========================================
-        window.addEventListener('offline', () => {
-            app.showNetworkError('📡 Mất kết nối Internet...');
-        });
-
-        window.addEventListener('online', () => {
-            const title = document.getElementById('reconnect-title');
-            if (title) {
-                title.innerText = '⚡ Đang khôi phục kết nối...';
-                title.style.color = '#2ecc71';
-            }
-            
-            // 1. Fetch dữ liệu mới nhất ngay lập tức
-            app.fetchGameState();
-            
-            // 2. Tái khởi động đường ống Realtime (WebSocket) để sửa lỗi Zombie Connection
-            if (app.state.isPolling) {
-                app.startPolling();
             }
         });
