@@ -2331,7 +2331,7 @@
         };
 
         // ==========================================
-        // 🔥 MÁY SỐC TIM & CƠ CHẾ RECONNECT KHI QUAY LẠI TAB
+        // 🔥 CƠ CHẾ RECONNECT KHI QUAY LẠI TAB
         // ==========================================
         document.addEventListener("visibilitychange", () => {
             // Bỏ qua nếu người dùng chưa vào phòng
