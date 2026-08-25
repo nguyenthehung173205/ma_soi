@@ -46,7 +46,6 @@
                 nightCount: 0
             },
             pollingTimer: null,
-            reconnectTimeout: null, // Timeout an toàn chống kẹt loading
             isFetchingGameState: false, // Van khóa chống DDoS
 
             masterRoles: {
@@ -349,19 +348,6 @@
 
             realtimeChannel: null,
 
-            showNetworkError(msg) {
-                const overlay = document.getElementById('reconnect-overlay');
-                const title = document.getElementById('reconnect-title');
-                const btnReload = document.getElementById('btn-reconnect-reload');
-                
-                if (overlay && title) {
-                    overlay.style.display = 'flex';
-                    title.innerText = msg;
-                    title.style.color = '#e74c3c'; 
-                    if (btnReload) btnReload.style.display = 'inline-block';
-                }
-            },
-
             startPolling() {
                 this.stopPolling();
                 this.state.isPolling = true; 
@@ -382,15 +368,6 @@
                         .subscribe((status) => {
                             if (status === 'SUBSCRIBED') {
                                 console.log("🟢 Băng tần thời gian thực (Realtime) đã được thiết lập thành công!");
-                                // Tuyến phòng thủ 1: Ẩn Overlay nếu vừa phục hồi và lấy bù dữ liệu
-                                const overlay = document.getElementById('reconnect-overlay');
-                                if (overlay && overlay.style.display !== 'none') {
-                                    overlay.style.display = 'none';
-                                    app.fetchGameState(); 
-                                }
-                            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                                console.warn("⚠️ Supabase báo mất kết nối:", status);
-                                app.showNetworkError("Đường truyền máy chủ gián đoạn...");
                             }
                         });
                 }
@@ -671,12 +648,6 @@
                     }
                 } catch (err) {
                     console.error("Lỗi cập nhật trạng thái:", err);
-                } finally {
-                    const reconnectOverlay = document.getElementById('reconnect-overlay');
-                    if (reconnectOverlay && !document.hidden) {
-                        reconnectOverlay.style.display = 'none'; 
-                        if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout); 
-                    }
                 }
             },
 
@@ -2556,69 +2527,5 @@
         document.getElementById('note-textarea').addEventListener('input', function(e) {
             if (app.state.role === 'gm' && app.state.roomCode) {
                 localStorage.setItem('gmNotes_' + app.state.roomCode, e.target.value);
-            }
-        });
-
-        // ==========================================
-        // 🔥 CƠ CHẾ RECONNECT KHI QUAY LẠI TAB / APP
-        // ==========================================
-        document.addEventListener('visibilitychange', () => {
-            // Bỏ qua nếu người dùng chưa vào phòng
-            if (!app.state || !app.state.roomCode) return;
-
-            if (document.hidden) {
-                // Tắt màn hình: Tạm dừng poll dữ liệu (tiết kiệm pin & mạng)
-                if (app.pollingTimer) clearTimeout(app.pollingTimer);
-            } else {
-                // Mở lại màn hình: Bật Overlay và ép fetch data
-                const overlay = document.getElementById('reconnect-overlay');
-                const btnReload = document.getElementById('btn-reconnect-reload');
-                const title = document.getElementById('reconnect-title');
-
-                if (overlay) {
-                    overlay.style.display = 'flex'; 
-                    if (btnReload) btnReload.style.display = 'none'; 
-                    if (title) {
-                        title.innerText = '⏳ Đang kết nối lại...';
-                        title.style.color = '#f1c40f';
-                    }
-                    
-                    // Timeout an toàn (Sau 10 giây vẫn lỗi thì cho Tải lại trang)
-                    if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout);
-                    app.reconnectTimeout = setTimeout(() => {
-                        if (title) {
-                            title.innerText = '⚠️ Mạng quá yếu hoặc mất kết nối';
-                            title.style.color = '#e74c3c'; 
-                        }
-                        if (btnReload) btnReload.style.display = 'inline-block'; 
-                    }, 10000); // 10s timeout
-                }
-
-                // Lập tức lấy dữ liệu mới nhất
-                app.fetchGameState(); 
-            }
-        });
-
-        // ==========================================
-        // 🔥 CƠ CHẾ SELF-HEALING KHI ĐỔI MẠNG (WIFI <-> 4G)
-        // Tuyến Phòng Thủ Số 2: Lắng nghe Card mạng Trình Duyệt
-        // ==========================================
-        window.addEventListener('offline', () => {
-            app.showNetworkError('📡 Mất kết nối Internet...');
-        });
-
-        window.addEventListener('online', () => {
-            const title = document.getElementById('reconnect-title');
-            if (title) {
-                title.innerText = '⚡ Đang khôi phục kết nối...';
-                title.style.color = '#2ecc71';
-            }
-            
-            // 1. Fetch dữ liệu mới nhất ngay lập tức
-            app.fetchGameState();
-            
-            // 2. Tái khởi động đường ống Realtime (WebSocket) để sửa lỗi Zombie Connection
-            if (app.state.isPolling) {
-                app.startPolling();
             }
         });
