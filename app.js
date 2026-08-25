@@ -2330,26 +2330,61 @@
             }
         };
 
+        // ==========================================
+        // 🔥 MÁY SỐC TIM & CƠ CHẾ RECONNECT KHI QUAY LẠI TAB
+        // ==========================================
         document.addEventListener("visibilitychange", () => {
-            // 🔥 MÁY SỐC TIM ĐIỆN TỪ (DEFIBRILLATOR PROTOCOL V2.0): TRẢM HỒN DAO!
-            if (document.visibilityState === 'visible' && app.state.roomCode) {
+            // Bỏ qua nếu người dùng chưa vào phòng
+            if (!app.state || !app.state.roomCode) return;
 
-                // 1. MÁY CHÉM KHÔNG GIAN: Hành quyết ngay lập tức luồng fetch cũ đang kẹt ở cõi hư vô! Tránh nghịch lý dòng thời gian!
+            if (document.hidden) {
+                // [TẮT MÀN HÌNH]: Tạm dừng poll dữ liệu (tiết kiệm pin & mạng)
+                if (app.pollingTimer) {
+                    clearTimeout(app.pollingTimer);
+                    app.pollingTimer = null; // Clean up
+                }
+            } else {
+                // [MỞ LẠI MÀN HÌNH]: Hồi sinh và tái kết nối
+
+                // 1. Bật Overlay UI ngay lập tức
+                const overlay = document.getElementById('reconnect-overlay');
+                const btnReload = document.getElementById('btn-reconnect-reload');
+                const title = document.getElementById('reconnect-title');
+
+                if (overlay) {
+                    overlay.style.display = 'flex'; 
+                    if (btnReload) btnReload.style.display = 'none'; 
+                    if (title) {
+                        title.innerText = '⏳ Đang kết nối lại...';
+                        title.style.color = '#f1c40f';
+                    }
+                    
+                    // Timeout an toàn (Sau 20 giây vẫn lỗi thì hiện nút Tải lại)
+                    if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout);
+                    app.reconnectTimeout = setTimeout(() => {
+                        if (title) {
+                            title.innerText = '⚠️ Mạng quá yếu hoặc mất kết nối';
+                            title.style.color = '#e74c3c'; 
+                        }
+                        if (btnReload) btnReload.style.display = 'inline-block'; 
+                    }, 20000); 
+                }
+
+                // 2. Máy chém không gian: Hủy luồng fetch cũ đang kẹt
                 if (app.pollingController) {
                     app.pollingController.abort();
                     app.pollingController = null;
                 }
 
-                // 2. Tẩy rửa mọi ma trận trạng thái kẹt
+                // 3. Tẩy rửa ma trận trạng thái kẹt
                 app.state.isSyncing = false;
                 app.isFetchingGameState = false;
-
                 if (app.pollingTimer) {
                     clearTimeout(app.pollingTimer);
                     app.pollingTimer = null;
                 }
 
-                // 3. Giáng luồng điện ép xung 350ms tinh khiết nhất để tái sinh!
+                // 4. Giáng luồng điện tái sinh (Kích hoạt vòng tuần hoàn an toàn)
                 app.state.isPolling = true;
                 app.pollLoop();
             }
@@ -2567,45 +2602,7 @@
             }
         });
 
-        // ==========================================
-        // 🔥 CƠ CHẾ RECONNECT KHI QUAY LẠI TAB / APP
-        // ==========================================
-        document.addEventListener('visibilitychange', () => {
-            // Bỏ qua nếu người dùng chưa vào phòng
-            if (!app.state || !app.state.roomCode) return;
 
-            if (document.hidden) {
-                // Tắt màn hình: Tạm dừng poll dữ liệu (tiết kiệm pin & mạng)
-                if (app.pollingTimer) clearTimeout(app.pollingTimer);
-            } else {
-                // Mở lại màn hình: Bật Overlay và ép fetch data
-                const overlay = document.getElementById('reconnect-overlay');
-                const btnReload = document.getElementById('btn-reconnect-reload');
-                const title = document.getElementById('reconnect-title');
-
-                if (overlay) {
-                    overlay.style.display = 'flex'; 
-                    if (btnReload) btnReload.style.display = 'none'; 
-                    if (title) {
-                        title.innerText = '⏳ Đang kết nối lại...';
-                        title.style.color = '#f1c40f';
-                    }
-                    
-                    // Timeout an toàn (Sau 10 giây vẫn lỗi thì cho Tải lại trang)
-                    if (app.reconnectTimeout) clearTimeout(app.reconnectTimeout);
-                    app.reconnectTimeout = setTimeout(() => {
-                        if (title) {
-                            title.innerText = '⚠️ Mạng quá yếu hoặc mất kết nối';
-                            title.style.color = '#e74c3c'; 
-                        }
-                        if (btnReload) btnReload.style.display = 'inline-block'; 
-                    }, 20000); // 20s timeout
-                }
-
-                // Lập tức lấy dữ liệu mới nhất
-                app.fetchGameState(); 
-            }
-        });
 
         // ==========================================
         // 🔥 CƠ CHẾ SELF-HEALING KHI ĐỔI MẠNG (WIFI <-> 4G)
