@@ -2206,7 +2206,7 @@
                 if (await this.confirmAction("Bạn có chắc chắn muốn đóng phòng này? Dữ liệu phòng sẽ bị xóa vĩnh viễn.")) {
 
                     // 🟢 [UI/UX TỐI THƯỢNG] BÁO HIỆU ĐANG ĐÁNH SẬP
-                    const btn = document.querySelector('button[onclick="app.endGame()"]');
+                    const btn = document.querySelector('button[onclick*="app.endGame"]');
                     const oldText = btn.innerText;
                     if (btn) {
                         btn.disabled = true;
