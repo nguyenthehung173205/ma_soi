@@ -2356,9 +2356,12 @@
                     clearTimeout(app.pollingTimer);
                     app.pollingTimer = null; // Clean up
                 }
+                // PHÁ KHÓA DEADLOCK: Nếu mạng bị OS suspend dở dang khi tắt máy, mở khóa ngay lập tức!
+                app.isFetchingGameState = false;
             } else {
                 // [MỞ LẠI MÀN HÌNH]: Hồi sinh và tái kết nối
-
+                app.isFetchingGameState = false; // Double check phá khóa deadlock
+                
                 // 1. Bật Overlay UI ngay lập tức
                 const overlay = document.getElementById('reconnect-overlay');
                 const btnReload = document.getElementById('btn-reconnect-reload');
