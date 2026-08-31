@@ -12,14 +12,14 @@
     <link rel="icon" type="image/png" href="https://vectorseek.com/wp-content/uploads/2023/09/Bozkurt-Ulku-Kurt-Logo-Vector.svg-.png">
     <!-- Open Graph (Hiển thị xem trước trên Facebook, Zalo...) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Ma Sói Online - Làng Trong Đêm">
+    <meta property="og:title" content="Ma Sói Online - The Ultimate Matrix">
     <meta property="og:description" content="Cùng bạn bè tranh tài phá án hoặc hóa thân thành dã thú khát máu. Vào làng ngay!">
     <meta property="og:image" content="https://nguyenthehung173205.github.io/ma_soi/ma_soi.png">
     <meta property="og:url" content="https://nguyenthehung173205.github.io/ma_soi/">
     
     <!-- Hiển thị xem trước trên Twitter / X -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Ma Sói Online - Làng Trong Đêm">
+    <meta name="twitter:title" content="Ma Sói Online - The Ultimate Matrix">
     <meta name="twitter:description" content="Cùng bạn bè tranh tài phá án hoặc hóa thân thành dã thú khát máu. Vào làng ngay!">
     <meta name="twitter:image" content="https://nguyenthehung173205.github.io/ma_soi/ma_soi.png">
 
@@ -211,10 +211,7 @@
             <div class="controls">
                 <button onclick="app.toggleTime('day', this)">🌤️ BAN NGÀY</button>
                 <button style="background: #2c3e50;" onclick="app.toggleTime('night', this)">🌙 BAN ĐÊM</button>
-                <button id="btn-ghost-vision" style="background: #9b59b6;" onclick="app.toggleGhostVision(this)">👁️ HỒN MA: ĐƯỢC XEM BÀI</button>
-                <button style="background: #e67e22;" onclick="document.getElementById('modal-gm-guide').classList.add('active')">📖 HƯỚNG DẪN QUẢN TRÒ</button>
-                <button class="btn-success" onclick="app.openRoleModal()">🃏 PHÁT BÀI MỚI</button>
-                <button class="btn-danger" onclick="app.endGame()">🚨 HỦY PHÒNG</button>
+                <button class="btn-secondary" onclick="document.getElementById('modal-gm-settings').classList.add('active')">⚙️ TÙY CHỈNH</button>
             </div>
             <button id="btn-ghost-leave" class="btn-secondary" style="display: none; margin-top: 10px;" onclick="app.confirmLeaveRoom()">🚪 THOÁT PHÒNG</button>
         </div>
@@ -326,6 +323,31 @@
                     style="background: #e67e22; font-size: 20px; padding: 15px;" onclick="app.resolveVote()">🔥 CHỐT KẾT
                     QUẢ NGAY 🔥</button>
             </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         MODAL: TÙY CHỈNH QUẢN TRÒ
+         ========================================= -->
+    <div id="modal-gm-settings" class="modal">
+        <div class="modal-content" style="max-width: 350px;">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">⚙️ TÙY CHỈNH</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn-success" onclick="app.openRoleModal(); document.getElementById('modal-gm-settings').classList.remove('active');" style="padding: 15px; font-size: 16px;">🃏 PHÁT BÀI MỚI</button>
+                
+                <button id="btn-ghost-vision" style="background: #9b59b6;" onclick="app.toggleGhostVision(this)">👻 HỒN MA: ĐƯỢC XEM BÀI</button>
+                
+                <button id="btn-manual-mode-toggle" style="background: #2c3e50;" onclick="app.toggleGameMode(this)">⚙️ CƠ CHẾ: TỰ ĐỘNG</button>
+                
+                <button style="background: #e67e22;" onclick="document.getElementById('modal-gm-guide').classList.add('active'); document.getElementById('modal-gm-settings').classList.remove('active');">📖 HƯỚNG DẪN QUẢN TRÒ</button>
+                
+                <hr style="border: 0; border-top: 1px solid rgba(0,0,0,0.1); margin: 5px 0;">
+                
+                <button class="btn-danger" onclick="app.endGame(); document.getElementById('modal-gm-settings').classList.remove('active');">🛑 HỦY PHÒNG</button>
+            </div>
+            
+            <button class="btn-secondary" style="margin-top: 20px;" onclick="document.getElementById('modal-gm-settings').classList.remove('active')">Đóng</button>
         </div>
     </div>
 
