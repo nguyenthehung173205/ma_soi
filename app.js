@@ -538,8 +538,8 @@
                             if (JSON.stringify(this.state.gameFlags) !== JSON.stringify(res.gameFlags)) hasChanges = true;
 
                             // 🚨 HỆ THỐNG PHÁT THANH TOÀN BẢN (GLOBAL MORNING ANNOUNCEMENT)
-                            if (res.time === 'day' && res.gameFlags.newsNight && this.state.lastSeenMorning !== res.gameFlags.newsNight) {
-                                this.state.lastSeenMorning = res.gameFlags.newsNight;
+                            if (res.time === 'day' && res.gameFlags.morningNewsId && this.state.lastSeenMorning !== res.gameFlags.morningNewsId) {
+                                this.state.lastSeenMorning = res.gameFlags.morningNewsId;
 
                                 if (this.state.role !== 'gm') {
                                     setTimeout(() => {
