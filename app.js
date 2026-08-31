@@ -176,6 +176,7 @@
                 // Tự động hiển thị nút Ghi chú và Tuyên bố chiến thắng trong menu thả xuống nếu là Quản trò
                 const btnNote = document.getElementById('btn-menu-note');
                 const btnWin = document.getElementById('btn-menu-declare-win');
+                const btnNightSummary = document.getElementById('btn-menu-night-summary');
                 if (btnNote) {
                     if (this.state.role === 'gm') btnNote.style.display = 'flex';
                     else btnNote.style.display = 'none';
@@ -183,6 +184,10 @@
                 if (btnWin) {
                     if (this.state.role === 'gm' && screenId === 'screen-gm') btnWin.style.display = 'flex';
                     else btnWin.style.display = 'none';
+                }
+                if (btnNightSummary) {
+                    if (this.state.role === 'gm' && screenId === 'screen-gm') btnNightSummary.style.display = 'flex';
+                    else btnNightSummary.style.display = 'none';
                 }
             },
 
@@ -2306,6 +2311,14 @@
                 }
             },
 
+            // ================= NHẬT KÝ ĐÊM QUẢN TRÒ =================
+            showNightSummaryModal() {
+                let summary = (this.state.gameFlags && this.state.gameFlags.nightSummary) 
+                    ? this.state.gameFlags.nightSummary 
+                    : "Chưa có thông tin (Ván đấu vừa mới bắt đầu hoặc đêm qua không có hành động nào đáng chú ý).";
+                this.showAnnouncement("📜 NHẬT KÝ ĐÊM QUA", summary);
+            },
+
             // ================= SỔ TAY GHI CHÚ QUẢN TRÒ =================
             openNoteModal() {
                 if (this.state.role !== 'gm') return;
@@ -2601,8 +2614,6 @@
                 localStorage.setItem('gmNotes_' + app.state.roomCode, e.target.value);
             }
         });
-
-
 
         // ==========================================
         // 🔥 CƠ CHẾ SELF-HEALING KHI ĐỔI MẠNG (WIFI <-> 4G)
