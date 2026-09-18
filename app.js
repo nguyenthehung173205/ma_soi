@@ -335,6 +335,17 @@
             leaveRoom() {
                 this.stopPolling();
                 document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+                
+                // 🔥 DỌN SẠCH GIAO DIỆN (UI) CŨ ĐỂ KHÔNG BỊ DÍNH LẠI KHI TẠO PHÒNG MỚI
+                const gmGrid = document.getElementById('gm-player-grid');
+                if (gmGrid) gmGrid.innerHTML = '';
+                
+                const activeSkills = document.getElementById('player-active-skills');
+                if (activeSkills) activeSkills.innerHTML = '';
+                
+                const morningNews = document.getElementById('player-morning-news');
+                if (morningNews) morningNews.style.display = 'none';
+
                 const currentRoom = this.state.roomCode;
                 localStorage.removeItem('werewolf_session');
                 localStorage.removeItem('werewolf_selected_roles');
