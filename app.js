@@ -2301,12 +2301,13 @@
             async declareWinner(winner) {
                 if (!(await this.confirmAction("Bạn có chắc chắn muốn kết thúc game và tuyên bố chiến thắng? Thao tác này sẽ hiển thị lên máy tất cả người chơi."))) return;
                 this.closeWinDeclareModal();
-                let flags = this.state.gameFlags || {};
-                flags.winner = winner;
                 try {
-                    const client = getSupabaseClient();
-                    await client.from('rooms').update({ game_flags: flags }).eq('room_code', this.state.roomCode);
-                    window.alert("Đã kết thúc game thành công!");
+                    const res = await callMatrix('declareWinner', { roomCode: this.state.roomCode, winner: winner });
+                    if (res.status === 'success') {
+                        window.alert("Đã kết thúc game thành công!");
+                    } else {
+                        window.alert(res.message || "Lỗi khi kết thúc game.");
+                    }
                 } catch (e) {
                     console.error("Lỗi khi kết thúc game:", e);
                     window.alert("Có lỗi xảy ra khi kết thúc game.");
