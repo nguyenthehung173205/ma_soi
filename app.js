@@ -334,6 +334,7 @@
 
             leaveRoom() {
                 this.stopPolling();
+                document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
                 const currentRoom = this.state.roomCode;
                 localStorage.removeItem('werewolf_session');
                 localStorage.removeItem('werewolf_selected_roles');
@@ -2216,6 +2217,7 @@
                     try {
                         const res = await callMatrix('endRoom', { roomCode: this.state.roomCode });
                         alert(res.message || "Đã đóng phòng.");
+                        document.getElementById('modal-gm-settings').classList.remove('active');
                         this.leaveRoom();
                     } catch (err) {
                         alert("Lỗi khi đóng phòng.");
