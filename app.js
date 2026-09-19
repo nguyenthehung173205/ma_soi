@@ -2001,8 +2001,8 @@
                             }
 
                             if (c.role === 'Sói Em') {
-                                if (cState.isAwakened && !cState.usedBrotherRevenge) atkHtml += '<button style="background: #c0392b" onclick="app.setPendingAction(\'' + targetId + '\', \'WOLF_BROTHER_REVENGE\', \'🐾 Sói Em Trả Thù\', \'' + c.id + '\')">🐾 Sói Em ' + c.name + ': Cắn trả thù</button>';
-                                else if (cState.isAwakened && cState.usedBrotherRevenge) atkHtml += '<button disabled style="background: #555;">🐾 Sói Em ' + c.name + ': Đã trả thù</button>';
+                                if (cState.isAwakened && !cState.usedBrotherRevenge) atkHtml += `<button style="background: #c0392b" onclick="app.setPendingAction('${targetId}', 'WOLF_BROTHER_REVENGE', '🐾 Sói Em Trả Thù', '${c.id}')">🐾 Sói Em ${c.name}: Cắn trả thù</button>`;
+                                else if (cState.isAwakened && cState.usedBrotherRevenge) atkHtml += `<button disabled style="background: #555;">🐾 Sói Em ${c.name}: Đã trả thù</button>`;
                             }
 
                             // --- BẢO VỆ ---
